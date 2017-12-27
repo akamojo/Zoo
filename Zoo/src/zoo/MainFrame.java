@@ -5,10 +5,13 @@
  */
 package zoo;
 
+import java.awt.Image;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import static zoo.Zoo.getShowPosition1;
+import static zoo.Zoo.getShowPosition2;
 
 /**
  *
@@ -21,6 +24,7 @@ public class MainFrame extends javax.swing.JFrame {
      */
     public MainFrame() {
         initComponents();
+        setIconImage(Zoo.getIcon());
     }
 
     /**
@@ -108,6 +112,7 @@ public class MainFrame extends javax.swing.JFrame {
 
     private void pracownicyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_pracownicyButtonActionPerformed
         PracownicyFrame prac = new PracownicyFrame();
+        prac.setLocation(getShowPosition2(prac));
         prac.setVisible(true);
     }//GEN-LAST:event_pracownicyButtonActionPerformed
 

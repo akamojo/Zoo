@@ -5,11 +5,15 @@
  */
 package zoo;
 
+import java.awt.Image;
+import java.awt.event.WindowEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.event.ListDataListener;
 
 /**
  *
@@ -18,32 +22,40 @@ import java.util.logging.Logger;
 public class PracownikFrame extends javax.swing.JFrame {
 
     private int id = -1;
+    private PracownicyFrame parent;
 
     /**
      * Creates new form PracownikFrame
      */
     public PracownikFrame() {
         initComponents();
+        setIconImage(Zoo.getIcon());
+    }
+    
+    public PracownikFrame(PracownicyFrame parent) {
+        this.parent = parent;
+        initComponents();
+        setIconImage(Zoo.getIcon());
     }
 
-    public void hideButton() {
-        deleteButton.setVisible(false);
+    public void visibleButton(boolean czy) {
+        deleteButton.setVisible(czy);
     }
     
     public void fill(int id) {
         try {
             Execute q = new Execute();
-            q.ExecuteQuery("select id, nazwisko, pensja, nvl(premia, 0), etaty_nazwa, godzin_tygodniowo, data_zatrudnienia from pracownicy where id = ?");
+            q.ExecutePreparedQuery("select id, nazwisko, pensja, nvl(premia, 0), etaty_nazwa, godzin_tygodniowo, data_zatrudnienia from pracownicy where id = ?");
             ((PreparedStatement) q.getStatement()).setInt(1, id);
-            q.fireQuery();
+            q.firePreparedQuery();
             q.getRs().next();
             idTextField.setText(q.getRs().getString(1));
             nazwiskoTextField.setText(q.getRs().getString(2));
             pensjaTextField.setText(q.getRs().getString(3));
             premiaTextField.setText(q.getRs().getString(4));
-            etatTextField.setText(q.getRs().getString(5));
+            etatComboBox.setSelectedItem(q.getRs().getString(5));
             godzinyTextField.setText(q.getRs().getString(6));
-            zatrudnionyTextField.setText(q.getRs().getString(7));
+            zatrudnionyTextField.setText(q.getRs().getDate(7).toString());
             String[] columns = new String[]{"Numer", "Czas wystawienia", "Id pracownika", "Uwagi", "Chip zwierzęcia", "Numer wybiegu"};
             CachingResultSetTableModel model = new CachingResultSetTableModel("select * from raporty where pracownicy_id = " + Integer.toString(id), columns, "ORDER BY numer");
             raportyTable.setModel(model);
@@ -72,7 +84,6 @@ public class PracownikFrame extends javax.swing.JFrame {
         nazwiskoLabel = new javax.swing.JLabel();
         nazwiskoTextField = new javax.swing.JTextField();
         etatLabel = new javax.swing.JLabel();
-        etatTextField = new javax.swing.JTextField();
         pensjaLabel = new javax.swing.JLabel();
         pensjaTextField = new javax.swing.JTextField();
         premiaTextField = new javax.swing.JTextField();
@@ -84,6 +95,7 @@ public class PracownikFrame extends javax.swing.JFrame {
         raportyPanel = new javax.swing.JPanel();
         raportyScrollPane = new javax.swing.JScrollPane();
         raportyTable = new javax.swing.JTable();
+        etatComboBox = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Zoo Pracownik");
@@ -145,13 +157,6 @@ public class PracownikFrame extends javax.swing.JFrame {
         gridBagConstraints.gridy = 4;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         mainPanel.add(etatLabel, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 5;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 0.5;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        mainPanel.add(etatTextField, gridBagConstraints);
 
         pensjaLabel.setText("Pensja");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -217,17 +222,9 @@ public class PracownikFrame extends javax.swing.JFrame {
 
             },
             new String [] {
-                "Numer", "Czas wystawienia", "Id pracownika", "Uwagi", "Chip zwierzęcia", "Numer wybiegu"
-            }
-        ) {
-            Class[] types = new Class [] {
-                java.lang.Integer.class, java.lang.String.class, java.lang.Integer.class, java.lang.String.class, java.lang.Integer.class, java.lang.Integer.class
-            };
 
-            public Class getColumnClass(int columnIndex) {
-                return types [columnIndex];
             }
-        });
+        ));
         raportyScrollPane.setViewportView(raportyTable);
 
         raportyPanel.add(raportyScrollPane, java.awt.BorderLayout.CENTER);
@@ -242,6 +239,15 @@ public class PracownikFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         mainPanel.add(raportyPanel, gridBagConstraints);
 
+        etatComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "DOZORCA", "SPRZEDAWCA", "WETERYNARZ" }));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 0.5;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        mainPanel.add(etatComboBox, gridBagConstraints);
+
         getContentPane().add(mainPanel, java.awt.BorderLayout.CENTER);
 
         pack();
@@ -254,25 +260,39 @@ public class PracownikFrame extends javax.swing.JFrame {
         if (this.id == -1) {
             up.ExecuteUpdate("INSERT INTO PRACOWNICY(NAZWISKO, PENSJA, PREMIA, ETATY_NAZWA, GODZIN_TYGODNIOWO, DATA_ZATRUDNIENIA)"
                     + " VALUES('" + nazwiskoTextField.getText() + "', " + pensjaTextField.getText() + ", " 
-                    + premiaTextField.getText() + ", '" + etatTextField.getText() + "', " + godzinyTextField.getText() + 
-                    //", DATE '" + zatrudnionyTextField.getText() + "')");      nie dziala z data
-                    ", DATE '2017-12-24')");
-            // odswiezanie glownej tabeli po dodaniu?
+                    + premiaTextField.getText() + ", '" + etatComboBox.getSelectedItem().toString() + "', " + godzinyTextField.getText() + 
+                    ", DATE '" + zatrudnionyTextField.getText() + "')");
+            Execute q = new Execute();
+            q.ExecuteQuery("SELECT ID FROM PRACOWNICY ORDER BY ID DESC FETCH FIRST 1 ROW ONLY");
+            try {
+                q.getRs().next();
+                int inserted_id = q.getRs().getInt(1);
+                fill(inserted_id);
+                visibleButton(true);
+            } catch (SQLException ex) {
+                Logger.getLogger(PracownikFrame.class.getName()).log(Level.SEVERE, null, ex);
+            }
+
         } else {
             up.ExecuteUpdate("UPDATE PRACOWNICY SET NAZWISKO = '" + nazwiskoTextField.getText() + "' WHERE ID = " + Integer.toString(id));
             up.ExecuteUpdate("UPDATE PRACOWNICY SET PENSJA = " + pensjaTextField.getText() + " WHERE ID = " + Integer.toString(id));
             up.ExecuteUpdate("UPDATE PRACOWNICY SET PREMIA = " + premiaTextField.getText() + " WHERE ID = " + Integer.toString(id));
-            up.ExecuteUpdate("UPDATE PRACOWNICY SET ETATY_NAZWA = '" + etatTextField.getText() + "' WHERE ID = " + Integer.toString(id));
+            up.ExecuteUpdate("UPDATE PRACOWNICY SET ETATY_NAZWA = '" + etatComboBox.getSelectedItem().toString() + "' WHERE ID = " + Integer.toString(id));
             up.ExecuteUpdate("UPDATE PRACOWNICY SET GODZIN_TYGODNIOWO = " + godzinyTextField.getText() + " WHERE ID = " + Integer.toString(id));
-            //up.ExecuteUpdate("UPDATE PRACOWNICY SET DATA_ZATRUDNIENIA = DATE '" + pensjaTextField.getText() + "' WHERE ID = " + Integer.toString(id));
-            // z data trzeba przemyslec
+            up.ExecuteUpdate("UPDATE PRACOWNICY SET DATA_ZATRUDNIENIA = DATE '" + zatrudnionyTextField.getText() + "' WHERE ID = " + Integer.toString(id));
+            fill(this.id);
         }
+        
+        parent.refresh();
+        
     }//GEN-LAST:event_changeButtonActionPerformed
 
     private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
         if (this.id != -1) {
             Execute up = new Execute();
             up.ExecuteUpdate("DELETE FROM PRACOWNICY WHERE ID = " + Integer.toString(id));
+            parent.refresh();
+            this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
         }
     }//GEN-LAST:event_deleteButtonActionPerformed
 
@@ -315,8 +335,8 @@ public class PracownikFrame extends javax.swing.JFrame {
     private javax.swing.JPanel buttonsPanel;
     private javax.swing.JButton changeButton;
     private javax.swing.JButton deleteButton;
+    private javax.swing.JComboBox<String> etatComboBox;
     private javax.swing.JLabel etatLabel;
-    private javax.swing.JTextField etatTextField;
     private javax.swing.JLabel godzinyLabel;
     private javax.swing.JTextField godzinyTextField;
     private javax.swing.JLabel idLabel;
@@ -334,4 +354,5 @@ public class PracownikFrame extends javax.swing.JFrame {
     private javax.swing.JLabel zatrudnionyLabel;
     private javax.swing.JTextField zatrudnionyTextField;
     // End of variables declaration//GEN-END:variables
+
 }

@@ -5,6 +5,7 @@
  */
 package zoo;
 
+import java.awt.Image;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -13,6 +14,7 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.table.AbstractTableModel;
+import static zoo.Zoo.getShowPosition2;
 
 /**
  *
@@ -25,6 +27,15 @@ public class PracownicyFrame extends javax.swing.JFrame {
      */
     public PracownicyFrame() {
         initComponents();
+        setIconImage(Zoo.getIcon());
+        String[] columns = new String[]{"Id", "Nazwisko", "Pensja", "Premia", "Etat", "Godziny", "Zatrudniony"};
+        CachingResultSetTableModel model = new CachingResultSetTableModel("select * from pracownicy", columns, "ORDER BY NAZWISKO");
+        pracownicyTable.setModel(model);
+        pracownicyTable.removeColumn(pracownicyTable.getColumnModel().getColumn(0));
+    }
+    
+    public void refresh() {
+        //((CachingResultSetTableModel) pracownicyTable.getModel()).fireTableDataChanged();
         String[] columns = new String[]{"Id", "Nazwisko", "Pensja", "Premia", "Etat", "Godziny", "Zatrudniony"};
         CachingResultSetTableModel model = new CachingResultSetTableModel("select * from pracownicy", columns, "ORDER BY NAZWISKO");
         pracownicyTable.setModel(model);
@@ -91,7 +102,8 @@ public class PracownicyFrame extends javax.swing.JFrame {
             if (selectionIndex >= 0) {
                 CachingResultSetTableModel tableModel = (CachingResultSetTableModel) pracownicyTable.getModel();
                 int selectedId = tableModel.getSelectedId(pracownicyTable.getSelectedRow());
-                PracownikFrame prac = new PracownikFrame();
+                PracownikFrame prac = new PracownikFrame(this);
+                prac.setLocation(getShowPosition2(prac));
                 prac.fill(selectedId);
                 prac.setVisible(true);
             }
@@ -99,11 +111,10 @@ public class PracownicyFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_pracownicyTableMouseClicked
 
     private void addButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addButtonActionPerformed
-        PracownikFrame prac = new PracownikFrame();
+        PracownikFrame prac = new PracownikFrame(this);
+        prac.setLocation(getShowPosition2(prac));
         prac.setVisible(true);
-        prac.hideButton();
-        // nie pojawia sie od razu tabelka z raportami, trzeba to madrzej zrobic
-        // co z id?
+        prac.visibleButton(false);
     }//GEN-LAST:event_addButtonActionPerformed
 
     /**

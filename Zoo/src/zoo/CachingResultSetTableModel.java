@@ -266,26 +266,6 @@ abstract class ResultSetTableModel extends AbstractTableModel {
             return string.getClass();
         }
     }
-    
-    /*
-    if (sqlType == Types.INTEGER) {
-            return integer.getClass();
-        } else if (sqlType == Types.NUMERIC) {
-            return doub.getClass();
-        } else if (sqlType == Types.FLOAT) {
-            return doub.getClass();
-        } else if (sqlType == Types.DOUBLE) {
-            return doub.getClass();
-        } else if (sqlType == 93) {
-            return date.getClass();
-        } else if (sqlType == Types.BIT) {
-            return bool.getClass();
-        } else if (sqlType == Types.BIGINT) {
-            return Long.class;
-        } else {
-            return string.getClass();
-        }
-    */
 
     public int getColumnCount() {
         try {

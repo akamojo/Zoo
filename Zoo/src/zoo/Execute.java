@@ -30,8 +30,20 @@ public class Execute {
     public Execute() {
         
     }
-
+    
     public void ExecuteQuery(String query) {
+        this.query = query;
+        Connection dbConnection = DBSupport.getConn();
+        try {
+            this.stmt = dbConnection.createStatement();
+            rs = stmt.executeQuery(query);
+            rsmd = rs.getMetaData();
+        } catch (SQLException ex) {
+            Logger.getLogger(DBSupport.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void ExecutePreparedQuery(String query) {
         this.query = query;
         Connection dbConnection = DBSupport.getConn();
         try {
@@ -52,7 +64,7 @@ public class Execute {
         }
     }
     
-    public void fireQuery() {
+    public void firePreparedQuery() {
         try {
             rs = pstmt.executeQuery();
             rsmd = rs.getMetaData();
@@ -61,7 +73,7 @@ public class Execute {
         }
     } 
 
-    /*public ExecuteQuery(String query, String where) {
+    /*public ExecutePreparedQuery(String query, String where) {
         this.query = query;
         this.where = where;
         Connection dbConnection = DBSupport.getConn();

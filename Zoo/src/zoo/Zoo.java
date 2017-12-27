@@ -5,7 +5,9 @@
  */
 package zoo;
 
+import java.awt.Dimension;
 import java.awt.Image;
+import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -19,6 +21,8 @@ import java.sql.Statement;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JDialog;
+import javax.swing.JFrame;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.UIManager;
@@ -30,7 +34,15 @@ import javax.swing.UnsupportedLookAndFeelException;
  */
 public class Zoo {
 
-    private static Connection conn;
+    private static Image icon;
+
+    public static Image getIcon() {
+        return icon;
+    }
+
+    public static void setIcon(Image icon) {
+        Zoo.icon = icon;
+    }
 
     /**
      * @param args the command line arguments
@@ -40,9 +52,17 @@ public class Zoo {
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
+                
+                URL url = Zoo.class.getResource("zoo.png");
+                Toolkit kit = Toolkit.getDefaultToolkit();
+                Zoo.icon = kit.createImage(url);
+                
                 MainFrame zoo = new MainFrame();
+                zoo.setLocation(getShowPosition1(zoo));
                 DBSupport.connect();
+
                 zoo.setVisible(true);
+                
                 try {
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                 } catch (ClassNotFoundException ex) {
@@ -59,13 +79,29 @@ public class Zoo {
         });
 
     }
-
-    public Connection getConn() {
-        return conn;
+    
+    public static Point getShowPosition1(JFrame frame) {
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        Dimension frameSize = frame.getSize();
+        if (frameSize.height > screenSize.height) {
+          frameSize.height = screenSize.height;
+        }
+        if (frameSize.width > screenSize.width) {
+          frameSize.width = screenSize.width;
+        }
+        return new Point((screenSize.width - frameSize.width) / 2, (screenSize.height - frameSize.height) / 2);
     }
-
-    public void setConn(Connection conn) {
-        this.conn = conn;
+    
+    public static Point getShowPosition2(JFrame frame) {
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        Dimension frameSize = frame.getSize();
+        if (frameSize.height > screenSize.height) {
+          frameSize.height = screenSize.height;
+        }
+        if (frameSize.width > screenSize.width) {
+          frameSize.width = screenSize.width;
+        }
+        return new Point((screenSize.width - frameSize.width) / 2, (screenSize.height - frameSize.height) / 2);
     }
 
 }
