@@ -1,0 +1,119 @@
+/*
+ * To change this license header, choose License Headers in Project Properties.
+ * To change this template file, choose Tools | Templates
+ * and open the template in the editor.
+ */
+package zoo;
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.sql.Statement;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+/**
+ *
+ * @author akamojo
+ */
+public class Execute {
+    
+    private ResultSet rs;
+    private ResultSetMetaData rsmd;
+    protected String query;
+    private PreparedStatement pstmt = null;
+    private Statement stmt = null;
+    protected String where;
+    
+    public Execute() {
+        
+    }
+
+    public void ExecuteQuery(String query) {
+        this.query = query;
+        Connection dbConnection = DBSupport.getConn();
+        try {
+            this.pstmt = dbConnection.prepareStatement(query);
+        } catch (SQLException ex) {
+            Logger.getLogger(DBSupport.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void ExecuteUpdate(String query) {
+        this.query = query;
+        Connection dbConnection = DBSupport.getConn();
+        try {
+            this.stmt = dbConnection.createStatement();
+            int changes = stmt.executeUpdate(query);
+        } catch (SQLException ex) {
+            Logger.getLogger(DBSupport.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    public void fireQuery() {
+        try {
+            rs = pstmt.executeQuery();
+            rsmd = rs.getMetaData();
+        } catch (SQLException ex) {
+            Logger.getLogger(Execute.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    } 
+
+    /*public ExecuteQuery(String query, String where) {
+        this.query = query;
+        this.where = where;
+        Connection dbConnection = DBSupport.getConn();
+        try {
+            pstmt = dbConnection.createStatement();
+            rs = pstmt.executeQuery(query + " where " + where);
+            rsmd = rs.getMetaData();
+        } catch (SQLException ex) {
+            Logger.getLogger(DBSupport.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }*/
+
+    public ResultSet getRs() {
+        return rs;
+    }
+
+    public void setRs(ResultSet rs) {
+        this.rs = rs;
+    }
+
+    public ResultSetMetaData getRsmd() {
+        return rsmd;
+    }
+
+    public void setRsmd(ResultSetMetaData rsmd) {
+        this.rsmd = rsmd;
+    }
+
+    public String getQuery() {
+        return query;
+    }
+
+    public void setQuery(String query) {
+        this.query = query;
+    }
+
+    public Statement getStatement() {
+        return pstmt;
+    }
+
+    public void setPstmt(PreparedStatement pstmt) {
+        this.pstmt = pstmt;
+    }
+
+    public String getWhere() {
+        return where;
+    }
+
+    public void setWhere(String where) {
+        this.where = where;
+    }
+    
+    
+    
+}
