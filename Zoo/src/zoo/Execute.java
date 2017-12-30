@@ -5,6 +5,7 @@
  */
 package zoo;
 
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -13,24 +14,25 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 /**
  *
  * @author akamojo
  */
 public class Execute {
-    
+
     private ResultSet rs;
     private ResultSetMetaData rsmd;
     protected String query;
     private PreparedStatement pstmt = null;
     private Statement stmt = null;
     protected String where;
-    
+
     public Execute() {
-        
+
     }
-    
+
     public void ExecuteQuery(String query) {
         this.query = query;
         Connection dbConnection = DBSupport.getConn();
@@ -39,7 +41,18 @@ public class Execute {
             rs = stmt.executeQuery(query);
             rsmd = rs.getMetaData();
         } catch (SQLException ex) {
-            Logger.getLogger(DBSupport.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), query + ":\n" + ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
+            //Logger.getLogger(DBSupport.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void ExecuteCall(String fun) {
+        try {
+            CallableStatement stmt = DBSupport.getConn().prepareCall("{call " + fun + "}");
+            stmt.execute();
+            stmt.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(Execute.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -49,10 +62,11 @@ public class Execute {
         try {
             this.pstmt = dbConnection.prepareStatement(query);
         } catch (SQLException ex) {
-            Logger.getLogger(DBSupport.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), query + ":\n" + ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
+            //Logger.getLogger(DBSupport.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     public void ExecuteUpdate(String query) {
         this.query = query;
         Connection dbConnection = DBSupport.getConn();
@@ -60,18 +74,20 @@ public class Execute {
             this.stmt = dbConnection.createStatement();
             int changes = stmt.executeUpdate(query);
         } catch (SQLException ex) {
-            Logger.getLogger(DBSupport.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), query + ":\n" + ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
+            //Logger.getLogger(DBSupport.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     public void firePreparedQuery() {
         try {
             rs = pstmt.executeQuery();
             rsmd = rs.getMetaData();
         } catch (SQLException ex) {
-            Logger.getLogger(Execute.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), query + ":\n" + ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
+            //Logger.getLogger(Execute.class.getName()).log(Level.SEVERE, null, ex);
         }
-    } 
+    }
 
     /*public ExecutePreparedQuery(String query, String where) {
         this.query = query;
@@ -85,7 +101,6 @@ public class Execute {
             Logger.getLogger(DBSupport.class.getName()).log(Level.SEVERE, null, ex);
         }
     }*/
-
     public ResultSet getRs() {
         return rs;
     }
@@ -125,7 +140,5 @@ public class Execute {
     public void setWhere(String where) {
         this.where = where;
     }
-    
-    
-    
+
 }

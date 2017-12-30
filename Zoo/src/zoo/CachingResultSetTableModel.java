@@ -6,12 +6,10 @@ import java.sql.*;
 import java.util.*;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JTextField;
 import javax.swing.table.*;
 
-//import org.apache.commons.logging.Log;
-//import org.apache.commons.logging.LogFactory;
 public class CachingResultSetTableModel extends ResultSetTableModel {
-    //private static final Log log = LogFactory.getLog(CachingResultSetTableModel.class);
 
     private ArrayList cache;
     private int columnCount;
@@ -127,7 +125,7 @@ public class CachingResultSetTableModel extends ResultSetTableModel {
         ((Object[]) cache.get(r))[c] = aValue;
         super.fireTableCellUpdated(r, c);
     }
-    
+
     //moje
     public int getSelectedId(int r) {
         if (r < cache.size()) {
@@ -258,6 +256,8 @@ abstract class ResultSetTableModel extends AbstractTableModel {
         }
         if (sqlType == Types.INTEGER) {
             return integer.getClass();
+        } else if (sqlType == Types.TIMESTAMP) {
+            return JTextField.class;
         } else if (sqlType == Types.FLOAT) {
             return doub.getClass();
         } else if (sqlType == 93) {

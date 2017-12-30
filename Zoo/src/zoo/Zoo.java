@@ -103,5 +103,17 @@ public class Zoo {
         }
         return new Point((screenSize.width - frameSize.width) / 2, (screenSize.height - frameSize.height) / 2);
     }
+    
+    public static Point getShowPosition2D(JDialog frame) {
+        Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+        Dimension frameSize = frame.getSize();
+        if (frameSize.height > screenSize.height) {
+          frameSize.height = screenSize.height;
+        }
+        if (frameSize.width > screenSize.width) {
+          frameSize.width = screenSize.width;
+        }
+        return new Point((screenSize.width - frameSize.width) / 2, (screenSize.height - frameSize.height) / 2);
+    }
 
 }

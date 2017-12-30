@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.event.ListDataListener;
+import static zoo.Zoo.getShowPosition2;
 
 /**
  *
@@ -24,6 +25,14 @@ public class PracownikFrame extends javax.swing.JFrame {
     private int id = -1;
     private PracownicyFrame parent;
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     /**
      * Creates new form PracownikFrame
      */
@@ -31,7 +40,7 @@ public class PracownikFrame extends javax.swing.JFrame {
         initComponents();
         setIconImage(Zoo.getIcon());
     }
-    
+
     public PracownikFrame(PracownicyFrame parent) {
         this.parent = parent;
         initComponents();
@@ -41,7 +50,12 @@ public class PracownikFrame extends javax.swing.JFrame {
     public void visibleButton(boolean czy) {
         deleteButton.setVisible(czy);
     }
-    
+
+    public void defaultDate() {
+        java.sql.Date date = new java.sql.Date(System.currentTimeMillis());
+        zatrudnionyTextField.setText(date.toString());
+    }
+
     public void fill(int id) {
         try {
             Execute q = new Execute();
@@ -49,6 +63,7 @@ public class PracownikFrame extends javax.swing.JFrame {
             ((PreparedStatement) q.getStatement()).setInt(1, id);
             q.firePreparedQuery();
             q.getRs().next();
+
             idTextField.setText(q.getRs().getString(1));
             nazwiskoTextField.setText(q.getRs().getString(2));
             pensjaTextField.setText(q.getRs().getString(3));
@@ -56,13 +71,38 @@ public class PracownikFrame extends javax.swing.JFrame {
             etatComboBox.setSelectedItem(q.getRs().getString(5));
             godzinyTextField.setText(q.getRs().getString(6));
             zatrudnionyTextField.setText(q.getRs().getDate(7).toString());
-            String[] columns = new String[]{"Numer", "Czas wystawienia", "Id pracownika", "Uwagi", "Chip zwierzęcia", "Numer wybiegu"};
-            CachingResultSetTableModel model = new CachingResultSetTableModel("select * from raporty where pracownicy_id = " + Integer.toString(id), columns, "ORDER BY numer");
-            raportyTable.setModel(model);
+
+            if (((String) etatComboBox.getSelectedItem()).compareTo("SPRZEDAWCA") == 0) {
+                raportyPanel.setVisible(false);
+                biletyPanel.setVisible(true);
+                String[] columns = new String[]{"Numer", "Wiek klienta", "Czas sprzedaży", "Id sprzedawcy", "Typ biletu"};
+                CachingResultSetTableModel model = new CachingResultSetTableModel("select * from bilety where pracownicy_id = " + Integer.toString(id), columns, "ORDER BY nr");
+                biletyTable.setModel(model);
+            } else {
+                biletyPanel.setVisible(false);
+                raportyPanel.setVisible(true);
+                String[] columns = new String[]{"Numer", "Czas wystawienia", "Id pracownika", "Uwagi", "Chip zwierzęcia", "Numer wybiegu"};
+                CachingResultSetTableModel model = new CachingResultSetTableModel("select * from raporty where pracownicy_id = " + Integer.toString(id), columns, "ORDER BY numer");
+                raportyTable.setModel(model);
+            }
+
             this.id = id;
+
         } catch (SQLException ex) {
             Logger.getLogger(PracownikFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    public void refreshBilety() {
+        String[] columns = new String[]{"Numer", "Wiek klienta", "Czas sprzedaży", "Id sprzedawcy", "Typ biletu"};
+        CachingResultSetTableModel model = new CachingResultSetTableModel("select * from bilety where pracownicy_id = " + Integer.toString(this.id), columns, "ORDER BY nr");
+        biletyTable.setModel(model);
+    }
+
+    public void refreshRaporty() {
+        String[] columns = new String[]{"Numer", "Czas wystawienia", "Id pracownika", "Uwagi", "Chip zwierzęcia", "Numer wybiegu"};
+        CachingResultSetTableModel model = new CachingResultSetTableModel("select * from raporty where pracownicy_id = " + Integer.toString(this.id), columns, "ORDER BY numer");
+        raportyTable.setModel(model);
     }
 
     /**
@@ -92,10 +132,17 @@ public class PracownikFrame extends javax.swing.JFrame {
         godzinyTextField = new javax.swing.JTextField();
         zatrudnionyLabel = new javax.swing.JLabel();
         zatrudnionyTextField = new javax.swing.JTextField();
+        etatComboBox = new javax.swing.JComboBox<>();
+        biletyPanel = new javax.swing.JPanel();
+        buttonBiletyPanel = new javax.swing.JPanel();
+        addBiletButton = new javax.swing.JButton();
+        biletyScrollPane = new javax.swing.JScrollPane();
+        biletyTable = new javax.swing.JTable();
         raportyPanel = new javax.swing.JPanel();
         raportyScrollPane = new javax.swing.JScrollPane();
         raportyTable = new javax.swing.JTable();
-        etatComboBox = new javax.swing.JComboBox<>();
+        buttonRaportyPanel = new javax.swing.JPanel();
+        addRaportButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Zoo Pracownik");
@@ -214,6 +261,50 @@ public class PracownikFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         mainPanel.add(zatrudnionyTextField, gridBagConstraints);
 
+        etatComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "DOZORCA", "SPRZEDAWCA", "WETERYNARZ" }));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.weightx = 0.5;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        mainPanel.add(etatComboBox, gridBagConstraints);
+
+        biletyPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Bilety"));
+        biletyPanel.setLayout(new java.awt.BorderLayout());
+
+        addBiletButton.setText("Sprzedaj bilet");
+        addBiletButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                addBiletButtonMouseClicked(evt);
+            }
+        });
+        buttonBiletyPanel.add(addBiletButton);
+
+        biletyPanel.add(buttonBiletyPanel, java.awt.BorderLayout.PAGE_START);
+
+        biletyTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+
+            }
+        ));
+        biletyScrollPane.setViewportView(biletyTable);
+
+        biletyPanel.add(biletyScrollPane, java.awt.BorderLayout.CENTER);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 8;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 0.7;
+        gridBagConstraints.weighty = 0.7;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        mainPanel.add(biletyPanel, gridBagConstraints);
+
         raportyPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Raporty"));
         raportyPanel.setLayout(new java.awt.BorderLayout());
 
@@ -225,9 +316,19 @@ public class PracownikFrame extends javax.swing.JFrame {
 
             }
         ));
+        raportyTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                raportyTableMouseClicked(evt);
+            }
+        });
         raportyScrollPane.setViewportView(raportyTable);
 
         raportyPanel.add(raportyScrollPane, java.awt.BorderLayout.CENTER);
+
+        addRaportButton.setText("Dodaj raport");
+        buttonRaportyPanel.add(addRaportButton);
+
+        raportyPanel.add(buttonRaportyPanel, java.awt.BorderLayout.PAGE_START);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -239,15 +340,6 @@ public class PracownikFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         mainPanel.add(raportyPanel, gridBagConstraints);
 
-        etatComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "DOZORCA", "SPRZEDAWCA", "WETERYNARZ" }));
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 5;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 0.5;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        mainPanel.add(etatComboBox, gridBagConstraints);
-
         getContentPane().add(mainPanel, java.awt.BorderLayout.CENTER);
 
         pack();
@@ -256,12 +348,12 @@ public class PracownikFrame extends javax.swing.JFrame {
     private void changeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_changeButtonActionPerformed
 
         Execute up = new Execute();
-        
+
         if (this.id == -1) {
             up.ExecuteUpdate("INSERT INTO PRACOWNICY(NAZWISKO, PENSJA, PREMIA, ETATY_NAZWA, GODZIN_TYGODNIOWO, DATA_ZATRUDNIENIA)"
-                    + " VALUES('" + nazwiskoTextField.getText() + "', " + pensjaTextField.getText() + ", " 
-                    + premiaTextField.getText() + ", '" + etatComboBox.getSelectedItem().toString() + "', " + godzinyTextField.getText() + 
-                    ", DATE '" + zatrudnionyTextField.getText() + "')");
+                    + " VALUES('" + nazwiskoTextField.getText() + "', " + pensjaTextField.getText() + ", "
+                    + premiaTextField.getText() + ", '" + etatComboBox.getSelectedItem().toString() + "', " + godzinyTextField.getText()
+                    + ", DATE '" + zatrudnionyTextField.getText() + "')");
             Execute q = new Execute();
             q.ExecuteQuery("SELECT ID FROM PRACOWNICY ORDER BY ID DESC FETCH FIRST 1 ROW ONLY");
             try {
@@ -282,9 +374,9 @@ public class PracownikFrame extends javax.swing.JFrame {
             up.ExecuteUpdate("UPDATE PRACOWNICY SET DATA_ZATRUDNIENIA = DATE '" + zatrudnionyTextField.getText() + "' WHERE ID = " + Integer.toString(id));
             fill(this.id);
         }
-        
+
         parent.refresh();
-        
+
     }//GEN-LAST:event_changeButtonActionPerformed
 
     private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
@@ -295,6 +387,25 @@ public class PracownikFrame extends javax.swing.JFrame {
             this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
         }
     }//GEN-LAST:event_deleteButtonActionPerformed
+
+    private void raportyTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_raportyTableMouseClicked
+        if (evt.getClickCount() == 2) {
+            int selectionIndex = raportyTable.getSelectionModel().getMinSelectionIndex();
+            if (selectionIndex >= 0) {
+                CachingResultSetTableModel tableModel = (CachingResultSetTableModel) raportyTable.getModel();
+                int selectedId = tableModel.getSelectedId(raportyTable.getSelectedRow());
+                RaportFrame rap = new RaportFrame(this);
+                rap.setLocation(getShowPosition2(rap));
+                rap.setVisible(true);
+            }
+        }
+    }//GEN-LAST:event_raportyTableMouseClicked
+
+    private void addBiletButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addBiletButtonMouseClicked
+        BiletDialog bilet = new BiletDialog(this, rootPaneCheckingEnabled);
+        bilet.setLocation(Zoo.getShowPosition2D(bilet));
+        bilet.setVisible(true);
+    }//GEN-LAST:event_addBiletButtonMouseClicked
 
     /**
      * @param args the command line arguments
@@ -332,6 +443,13 @@ public class PracownikFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton addBiletButton;
+    private javax.swing.JButton addRaportButton;
+    private javax.swing.JPanel biletyPanel;
+    private javax.swing.JScrollPane biletyScrollPane;
+    private javax.swing.JTable biletyTable;
+    private javax.swing.JPanel buttonBiletyPanel;
+    private javax.swing.JPanel buttonRaportyPanel;
     private javax.swing.JPanel buttonsPanel;
     private javax.swing.JButton changeButton;
     private javax.swing.JButton deleteButton;
