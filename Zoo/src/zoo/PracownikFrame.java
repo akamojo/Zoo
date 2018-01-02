@@ -13,6 +13,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import javax.swing.event.ListDataListener;
 import static zoo.Zoo.getShowPosition2;
 
@@ -78,12 +79,14 @@ public class PracownikFrame extends javax.swing.JFrame {
                 String[] columns = new String[]{"Numer", "Wiek klienta", "Czas sprzedaży", "Id sprzedawcy", "Typ biletu"};
                 CachingResultSetTableModel model = new CachingResultSetTableModel("select * from bilety where pracownicy_id = " + Integer.toString(id), columns, "ORDER BY nr");
                 biletyTable.setModel(model);
+                biletyTable.removeColumn(biletyTable.getColumnModel().getColumn(0));
             } else {
                 biletyPanel.setVisible(false);
                 raportyPanel.setVisible(true);
                 String[] columns = new String[]{"Numer", "Czas wystawienia", "Id pracownika", "Uwagi", "Chip zwierzęcia", "Numer wybiegu"};
                 CachingResultSetTableModel model = new CachingResultSetTableModel("select * from raporty where pracownicy_id = " + Integer.toString(id), columns, "ORDER BY numer");
                 raportyTable.setModel(model);
+                raportyTable.removeColumn(raportyTable.getColumnModel().getColumn(0));
             }
 
             this.id = id;
@@ -97,12 +100,14 @@ public class PracownikFrame extends javax.swing.JFrame {
         String[] columns = new String[]{"Numer", "Wiek klienta", "Czas sprzedaży", "Id sprzedawcy", "Typ biletu"};
         CachingResultSetTableModel model = new CachingResultSetTableModel("select * from bilety where pracownicy_id = " + Integer.toString(this.id), columns, "ORDER BY nr");
         biletyTable.setModel(model);
+        biletyTable.removeColumn(biletyTable.getColumnModel().getColumn(0));
     }
 
     public void refreshRaporty() {
         String[] columns = new String[]{"Numer", "Czas wystawienia", "Id pracownika", "Uwagi", "Chip zwierzęcia", "Numer wybiegu"};
         CachingResultSetTableModel model = new CachingResultSetTableModel("select * from raporty where pracownicy_id = " + Integer.toString(this.id), columns, "ORDER BY numer");
         raportyTable.setModel(model);
+        raportyTable.removeColumn(raportyTable.getColumnModel().getColumn(0));
     }
 
     /**
@@ -133,16 +138,16 @@ public class PracownikFrame extends javax.swing.JFrame {
         zatrudnionyLabel = new javax.swing.JLabel();
         zatrudnionyTextField = new javax.swing.JTextField();
         etatComboBox = new javax.swing.JComboBox<>();
-        biletyPanel = new javax.swing.JPanel();
-        buttonBiletyPanel = new javax.swing.JPanel();
-        addBiletButton = new javax.swing.JButton();
-        biletyScrollPane = new javax.swing.JScrollPane();
-        biletyTable = new javax.swing.JTable();
         raportyPanel = new javax.swing.JPanel();
         raportyScrollPane = new javax.swing.JScrollPane();
         raportyTable = new javax.swing.JTable();
         buttonRaportyPanel = new javax.swing.JPanel();
         addRaportButton = new javax.swing.JButton();
+        biletyPanel = new javax.swing.JPanel();
+        buttonBiletyPanel = new javax.swing.JPanel();
+        addBiletButton = new javax.swing.JButton();
+        biletyScrollPane = new javax.swing.JScrollPane();
+        biletyTable = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Zoo Pracownik");
@@ -270,6 +275,46 @@ public class PracownikFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         mainPanel.add(etatComboBox, gridBagConstraints);
 
+        raportyPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Raporty"));
+        raportyPanel.setLayout(new java.awt.BorderLayout());
+
+        raportyTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+
+            }
+        ));
+        raportyTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                raportyTableMouseClicked(evt);
+            }
+        });
+        raportyScrollPane.setViewportView(raportyTable);
+
+        raportyPanel.add(raportyScrollPane, java.awt.BorderLayout.CENTER);
+
+        addRaportButton.setText("Dodaj raport");
+        addRaportButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                addRaportButtonMouseClicked(evt);
+            }
+        });
+        buttonRaportyPanel.add(addRaportButton);
+
+        raportyPanel.add(buttonRaportyPanel, java.awt.BorderLayout.PAGE_START);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 8;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 0.7;
+        gridBagConstraints.weighty = 0.7;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        mainPanel.add(raportyPanel, gridBagConstraints);
+
         biletyPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Bilety"));
         biletyPanel.setLayout(new java.awt.BorderLayout());
 
@@ -305,41 +350,6 @@ public class PracownikFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         mainPanel.add(biletyPanel, gridBagConstraints);
 
-        raportyPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Raporty"));
-        raportyPanel.setLayout(new java.awt.BorderLayout());
-
-        raportyTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-
-            }
-        ));
-        raportyTable.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                raportyTableMouseClicked(evt);
-            }
-        });
-        raportyScrollPane.setViewportView(raportyTable);
-
-        raportyPanel.add(raportyScrollPane, java.awt.BorderLayout.CENTER);
-
-        addRaportButton.setText("Dodaj raport");
-        buttonRaportyPanel.add(addRaportButton);
-
-        raportyPanel.add(buttonRaportyPanel, java.awt.BorderLayout.PAGE_START);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 8;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 0.7;
-        gridBagConstraints.weighty = 0.7;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        mainPanel.add(raportyPanel, gridBagConstraints);
-
         getContentPane().add(mainPanel, java.awt.BorderLayout.CENTER);
 
         pack();
@@ -350,29 +360,65 @@ public class PracownikFrame extends javax.swing.JFrame {
         Execute up = new Execute();
 
         if (this.id == -1) {
-            up.ExecuteUpdate("INSERT INTO PRACOWNICY(NAZWISKO, PENSJA, PREMIA, ETATY_NAZWA, GODZIN_TYGODNIOWO, DATA_ZATRUDNIENIA)"
-                    + " VALUES('" + nazwiskoTextField.getText() + "', " + pensjaTextField.getText() + ", "
-                    + premiaTextField.getText() + ", '" + etatComboBox.getSelectedItem().toString() + "', " + godzinyTextField.getText()
-                    + ", DATE '" + zatrudnionyTextField.getText() + "')");
-            Execute q = new Execute();
-            q.ExecuteQuery("SELECT ID FROM PRACOWNICY ORDER BY ID DESC FETCH FIRST 1 ROW ONLY");
             try {
+                up.ExecutePreparedQuery("INSERT INTO PRACOWNICY(NAZWISKO, PENSJA, PREMIA, ETATY_NAZWA, GODZIN_TYGODNIOWO, DATA_ZATRUDNIENIA) "
+                        + "VALUES(?, ?, ?, ?, ?, ?)");
+                ((PreparedStatement) up.getStatement()).setString(1, nazwiskoTextField.getText());
+                ((PreparedStatement) up.getStatement()).setFloat(2, Float.parseFloat(pensjaTextField.getText()));
+                ((PreparedStatement) up.getStatement()).setFloat(3, Float.parseFloat(premiaTextField.getText()));
+                ((PreparedStatement) up.getStatement()).setString(4, etatComboBox.getSelectedItem().toString());
+                ((PreparedStatement) up.getStatement()).setInt(5, Integer.parseInt(godzinyTextField.getText()));
+                ((PreparedStatement) up.getStatement()).setDate(6, java.sql.Date.valueOf(zatrudnionyTextField.getText()));
+                up.firePreparedUpdate();
+
+                /*up.ExecuteUpdate("INSERT INTO PRACOWNICY(NAZWISKO, PENSJA, PREMIA, ETATY_NAZWA, GODZIN_TYGODNIOWO, DATA_ZATRUDNIENIA)"
+                        + " VALUES('" + nazwiskoTextField.getText() + "', " + pensjaTextField.getText() + ", "
+                        + premiaTextField.getText() + ", '" + etatComboBox.getSelectedItem().toString() + "', " + godzinyTextField.getText()
+                        + ", DATE '" + zatrudnionyTextField.getText() + "')");*/
+                Execute q = new Execute();
+                q.ExecuteQuery("SELECT ID FROM PRACOWNICY ORDER BY ID DESC FETCH FIRST 1 ROW ONLY");
                 q.getRs().next();
                 int inserted_id = q.getRs().getInt(1);
                 fill(inserted_id);
                 visibleButton(true);
-            } catch (SQLException ex) {
-                Logger.getLogger(PracownikFrame.class.getName()).log(Level.SEVERE, null, ex);
+
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
+                //Logger.getLogger(PracownikFrame.class.getName()).log(Level.SEVERE, null, ex);
             }
 
         } else {
-            up.ExecuteUpdate("UPDATE PRACOWNICY SET NAZWISKO = '" + nazwiskoTextField.getText() + "' WHERE ID = " + Integer.toString(id));
-            up.ExecuteUpdate("UPDATE PRACOWNICY SET PENSJA = " + pensjaTextField.getText() + " WHERE ID = " + Integer.toString(id));
-            up.ExecuteUpdate("UPDATE PRACOWNICY SET PREMIA = " + premiaTextField.getText() + " WHERE ID = " + Integer.toString(id));
-            up.ExecuteUpdate("UPDATE PRACOWNICY SET ETATY_NAZWA = '" + etatComboBox.getSelectedItem().toString() + "' WHERE ID = " + Integer.toString(id));
-            up.ExecuteUpdate("UPDATE PRACOWNICY SET GODZIN_TYGODNIOWO = " + godzinyTextField.getText() + " WHERE ID = " + Integer.toString(id));
-            up.ExecuteUpdate("UPDATE PRACOWNICY SET DATA_ZATRUDNIENIA = DATE '" + zatrudnionyTextField.getText() + "' WHERE ID = " + Integer.toString(id));
-            fill(this.id);
+            try {
+                up.ExecutePreparedQuery("UPDATE PRACOWNICY SET NAZWISKO = ? WHERE ID = " + Integer.toString(id));
+                ((PreparedStatement) up.getStatement()).setString(1, nazwiskoTextField.getText());
+                up.firePreparedUpdate();
+                up.ExecutePreparedQuery("UPDATE PRACOWNICY SET PENSJA = ? WHERE ID = " + Integer.toString(id));
+                ((PreparedStatement) up.getStatement()).setFloat(1, Float.parseFloat(pensjaTextField.getText()));
+                up.firePreparedUpdate();
+                up.ExecutePreparedQuery("UPDATE PRACOWNICY SET PREMIA = ? WHERE ID = " + Integer.toString(id));
+                ((PreparedStatement) up.getStatement()).setFloat(1, Float.parseFloat(premiaTextField.getText()));
+                up.firePreparedUpdate();
+                up.ExecutePreparedQuery("UPDATE PRACOWNICY SET ETATY_NAZWA = ? WHERE ID = " + Integer.toString(id));
+                ((PreparedStatement) up.getStatement()).setString(1, etatComboBox.getSelectedItem().toString());
+                up.firePreparedUpdate();
+                up.ExecutePreparedQuery("UPDATE PRACOWNICY SET GODZIN_TYGODNIOWO = ? WHERE ID = " + Integer.toString(id));
+                ((PreparedStatement) up.getStatement()).setInt(1, Integer.parseInt(godzinyTextField.getText()));
+                up.firePreparedUpdate();
+                up.ExecutePreparedQuery("UPDATE PRACOWNICY SET DATA_ZATRUDNIENIA = ? WHERE ID = " + Integer.toString(id));
+                ((PreparedStatement) up.getStatement()).setDate(1, java.sql.Date.valueOf(zatrudnionyTextField.getText()));
+                up.firePreparedUpdate();
+
+                /*up.ExecuteUpdate("UPDATE PRACOWNICY SET NAZWISKO = '" + nazwiskoTextField.getText() + "' WHERE ID = " + Integer.toString(id));
+                up.ExecuteUpdate("UPDATE PRACOWNICY SET PENSJA = " + pensjaTextField.getText() + " WHERE ID = " + Integer.toString(id));
+                up.ExecuteUpdate("UPDATE PRACOWNICY SET PREMIA = " + premiaTextField.getText() + " WHERE ID = " + Integer.toString(id));
+                up.ExecuteUpdate("UPDATE PRACOWNICY SET ETATY_NAZWA = '" + etatComboBox.getSelectedItem().toString() + "' WHERE ID = " + Integer.toString(id));
+                up.ExecuteUpdate("UPDATE PRACOWNICY SET GODZIN_TYGODNIOWO = " + godzinyTextField.getText() + " WHERE ID = " + Integer.toString(id));
+                up.ExecuteUpdate("UPDATE PRACOWNICY SET DATA_ZATRUDNIENIA = DATE '" + zatrudnionyTextField.getText() + "' WHERE ID = " + Integer.toString(id));*/
+                fill(this.id);
+            } catch (Exception ex) {
+                JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
+                //Logger.getLogger(PracownikFrame.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
 
         parent.refresh();
@@ -388,24 +434,45 @@ public class PracownikFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_deleteButtonActionPerformed
 
+    private void addBiletButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addBiletButtonMouseClicked
+        BiletDialog bilet = new BiletDialog(this, rootPaneCheckingEnabled);
+        bilet.setLocation(Zoo.getShowPosition2D(bilet));
+        bilet.setVisible(true);
+    }//GEN-LAST:event_addBiletButtonMouseClicked
+
+    private void addRaportButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addRaportButtonMouseClicked
+        RaportDialog raport = new RaportDialog(this, rootPaneCheckingEnabled);
+        raport.setLocation(Zoo.getShowPosition2D(raport));
+        if (((String) etatComboBox.getSelectedItem()).compareTo("WETERYNARZ") == 0) {
+            raport.setInfo(this.id, 1);
+        } else {
+            raport.setInfo(this.id, 0);
+        }
+        raport.setVisible(true);
+    }//GEN-LAST:event_addRaportButtonMouseClicked
+
     private void raportyTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_raportyTableMouseClicked
         if (evt.getClickCount() == 2) {
             int selectionIndex = raportyTable.getSelectionModel().getMinSelectionIndex();
             if (selectionIndex >= 0) {
                 CachingResultSetTableModel tableModel = (CachingResultSetTableModel) raportyTable.getModel();
                 int selectedId = tableModel.getSelectedId(raportyTable.getSelectedRow());
-                RaportFrame rap = new RaportFrame(this);
-                rap.setLocation(getShowPosition2(rap));
-                rap.setVisible(true);
+                RaportDialog raport = new RaportDialog(this, rootPaneCheckingEnabled);
+                raport.setLocation(Zoo.getShowPosition2D(raport));
+
+                Execute q = new Execute();
+                q.ExecuteQuery("SELECT UWAGI FROM RAPORTY WHERE NUMER = " + Integer.toString(selectedId));
+
+                try {
+                    q.getRs().next();
+                    raport.fill(q.getRs().getString(1));
+                    raport.setVisible(true);
+                } catch (SQLException ex) {
+                    Logger.getLogger(PracownikFrame.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
     }//GEN-LAST:event_raportyTableMouseClicked
-
-    private void addBiletButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addBiletButtonMouseClicked
-        BiletDialog bilet = new BiletDialog(this, rootPaneCheckingEnabled);
-        bilet.setLocation(Zoo.getShowPosition2D(bilet));
-        bilet.setVisible(true);
-    }//GEN-LAST:event_addBiletButtonMouseClicked
 
     /**
      * @param args the command line arguments

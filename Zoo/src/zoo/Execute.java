@@ -52,7 +52,8 @@ public class Execute {
             stmt.execute();
             stmt.close();
         } catch (SQLException ex) {
-            Logger.getLogger(Execute.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), query + ":\n" + ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
+            //Logger.getLogger(Execute.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -87,6 +88,10 @@ public class Execute {
             JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), query + ":\n" + ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
             //Logger.getLogger(Execute.class.getName()).log(Level.SEVERE, null, ex);
         }
+    }
+
+    public void firePreparedUpdate() throws SQLException {
+        pstmt.executeUpdate();
     }
 
     /*public ExecutePreparedQuery(String query, String where) {

@@ -29,7 +29,8 @@ public class PracownicyFrame extends javax.swing.JFrame {
         initComponents();
         setIconImage(Zoo.getIcon());
         String[] columns = new String[]{"Id", "Nazwisko", "Pensja", "Premia", "Etat", "Godziny", "Zatrudniony"};
-        CachingResultSetTableModel model = new CachingResultSetTableModel("select * from pracownicy", columns, "ORDER BY NAZWISKO");
+        CachingResultSetTableModel model = new CachingResultSetTableModel("select ID, NAZWISKO, PENSJA, PREMIA, ETATY_NAZWA, GODZIN_TYGODNIOWO, DATA_ZATRUDNIENIA"
+                + " from pracownicy WHERE DATA_ZWOLNIENIA IS NULL", columns, "ORDER BY NAZWISKO");
         pracownicyTable.setModel(model);
         pracownicyTable.removeColumn(pracownicyTable.getColumnModel().getColumn(0));
     }
@@ -37,7 +38,8 @@ public class PracownicyFrame extends javax.swing.JFrame {
     public void refresh() {
         //((CachingResultSetTableModel) pracownicyTable.getModel()).fireTableDataChanged();
         String[] columns = new String[]{"Id", "Nazwisko", "Pensja", "Premia", "Etat", "Godziny", "Zatrudniony"};
-        CachingResultSetTableModel model = new CachingResultSetTableModel("select * from pracownicy", columns, "ORDER BY NAZWISKO");
+        CachingResultSetTableModel model = new CachingResultSetTableModel("select ID, NAZWISKO, PENSJA, PREMIA, ETATY_NAZWA, GODZIN_TYGODNIOWO, DATA_ZATRUDNIENIA "
+                + "from pracownicy WHERE DATA_ZWOLNIENIA IS NULL", columns, "ORDER BY NAZWISKO");
         pracownicyTable.setModel(model);
         pracownicyTable.removeColumn(pracownicyTable.getColumnModel().getColumn(0));
     }

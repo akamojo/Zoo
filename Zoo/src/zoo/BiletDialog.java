@@ -42,6 +42,7 @@ public class BiletDialog extends javax.swing.JDialog {
         setMinimumSize(new java.awt.Dimension(200, 150));
         setPreferredSize(new java.awt.Dimension(200, 150));
 
+        biletPanel.setPreferredSize(new java.awt.Dimension(100, 100));
         biletPanel.setLayout(new java.awt.GridBagLayout());
 
         wiekLabel.setText("Podaj wiek klienta:");
