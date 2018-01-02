@@ -41,6 +41,7 @@ public class MainFrame extends javax.swing.JFrame {
         ZooLabel = new javax.swing.JLabel();
         PracownicyPanel = new javax.swing.JPanel();
         pracownicyButton = new javax.swing.JButton();
+        wybiegiButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Zoo");
@@ -90,13 +91,22 @@ public class MainFrame extends javax.swing.JFrame {
                 pracownicyButtonActionPerformed(evt);
             }
         });
+        PracownicyPanel.add(pracownicyButton, new java.awt.GridBagConstraints());
+
+        wybiegiButton.setText("Wybiegi i zwierzęta");
+        wybiegiButton.setMaximumSize(new java.awt.Dimension(300, 100));
+        wybiegiButton.setMinimumSize(new java.awt.Dimension(300, 50));
+        wybiegiButton.setPreferredSize(new java.awt.Dimension(300, 50));
+        wybiegiButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                wybiegiButtonActionPerformed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.weightx = 0.2;
-        gridBagConstraints.weighty = 0.2;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        PracownicyPanel.add(pracownicyButton, gridBagConstraints);
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        PracownicyPanel.add(wybiegiButton, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -124,6 +134,12 @@ public class MainFrame extends javax.swing.JFrame {
         }
         System.out.println("Rozłączono z bazą danych");
     }//GEN-LAST:event_formWindowClosing
+
+    private void wybiegiButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_wybiegiButtonActionPerformed
+        WybiegiFrame w = new WybiegiFrame();
+        w.setLocation(getShowPosition2(w));
+        w.setVisible(true);
+    }//GEN-LAST:event_wybiegiButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -166,5 +182,6 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JLabel ZooLabel;
     private javax.swing.JPanel ZooPanel;
     private javax.swing.JButton pracownicyButton;
+    private javax.swing.JButton wybiegiButton;
     // End of variables declaration//GEN-END:variables
 }

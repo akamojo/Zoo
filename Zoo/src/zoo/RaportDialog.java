@@ -10,6 +10,7 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -188,7 +189,7 @@ public class RaportDialog extends javax.swing.JDialog {
                 ((PreparedStatement) up.getStatement()).setInt(3, Integer.parseInt(zwierzeTextField.getText()));
                 up.firePreparedUpdate();
             } catch (SQLException ex) {
-                Logger.getLogger(RaportDialog.class.getName()).log(Level.SEVERE, null, ex);
+                JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
             }
         } else {
             try {
@@ -198,7 +199,7 @@ public class RaportDialog extends javax.swing.JDialog {
                 ((PreparedStatement) up.getStatement()).setInt(3, Integer.parseInt(wybiegTextField.getText()));
                 up.firePreparedUpdate();
             } catch (SQLException ex) {
-                Logger.getLogger(RaportDialog.class.getName()).log(Level.SEVERE, null, ex);
+                JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
             }
         }
         parent.refreshRaporty();
