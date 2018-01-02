@@ -117,7 +117,7 @@ public class PracownicyFrame extends javax.swing.JFrame {
         prac.setLocation(getShowPosition2(prac));
         prac.setVisible(true);
         prac.visibleButton(false);
-        prac.defaultDate();
+        prac.emptyView();
     }//GEN-LAST:event_addButtonActionPerformed
 
     /**

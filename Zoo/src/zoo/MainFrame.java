@@ -91,7 +91,9 @@ public class MainFrame extends javax.swing.JFrame {
                 pracownicyButtonActionPerformed(evt);
             }
         });
-        PracownicyPanel.add(pracownicyButton, new java.awt.GridBagConstraints());
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        PracownicyPanel.add(pracownicyButton, gridBagConstraints);
 
         wybiegiButton.setText("Wybiegi i zwierzęta");
         wybiegiButton.setMaximumSize(new java.awt.Dimension(300, 100));
@@ -106,6 +108,7 @@ public class MainFrame extends javax.swing.JFrame {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         PracownicyPanel.add(wybiegiButton, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();

@@ -5,6 +5,11 @@
  */
 package zoo;
 
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author akamojo
@@ -76,10 +81,19 @@ public class BiletDialog extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void okButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_okButtonMouseClicked
-        Execute c = new Execute();
-        c.ExecuteCall("sprzedaz_biletu(" + wiekTextField.getText() + ", " + parent.getId() + ")");
-        parent.refreshBilety();
-        wiekTextField.setText("");
+        try {
+            Execute c = new Execute();
+            //c.ExecuteCall("sprzedaz_biletu(" + wiekTextField.getText() + ", " + parent.getId() + ")");
+            c.ExecuteCall("sprzedaz_biletu(?, ?)");
+            c.getCstmt().setInt(1, Integer.parseInt(wiekTextField.getText()));
+            c.getCstmt().setInt(2, parent.getId());
+            c.fireCall();
+            parent.refreshBilety();
+            wiekTextField.setText("");
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
+            //Logger.getLogger(BiletDialog.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_okButtonMouseClicked
 
     /**

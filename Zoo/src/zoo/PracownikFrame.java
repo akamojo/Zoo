@@ -52,9 +52,11 @@ public class PracownikFrame extends javax.swing.JFrame {
         deleteButton.setVisible(czy);
     }
 
-    public void defaultDate() {
+    public void emptyView() {
         java.sql.Date date = new java.sql.Date(System.currentTimeMillis());
         zatrudnionyTextField.setText(date.toString());
+        addRaportButton.setVisible(false);
+        addBiletButton.setVisible(false);
     }
 
     public void fill(int id) {
@@ -90,6 +92,8 @@ public class PracownikFrame extends javax.swing.JFrame {
             }
 
             this.id = id;
+            addBiletButton.setVisible(true);
+            addRaportButton.setVisible(true);
 
         } catch (SQLException ex) {
             Logger.getLogger(PracownikFrame.class.getName()).log(Level.SEVERE, null, ex);
@@ -427,8 +431,10 @@ public class PracownikFrame extends javax.swing.JFrame {
 
     private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
         if (this.id != -1) {
+            java.sql.Date date = new java.sql.Date(System.currentTimeMillis());
             Execute up = new Execute();
-            up.ExecuteUpdate("DELETE FROM PRACOWNICY WHERE ID = " + Integer.toString(id));
+            up.ExecuteUpdate("UPDATE PRACOWNICY SET DATA_ZWOLNIENIA = DATE '" + date.toString() + "' WHERE ID = " + Integer.toString(this.id));
+            //up.ExecuteUpdate("DELETE FROM PRACOWNICY WHERE ID = " + Integer.toString(id));
             parent.refresh();
             this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
         }
