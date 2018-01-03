@@ -42,6 +42,7 @@ public class MainFrame extends javax.swing.JFrame {
         PracownicyPanel = new javax.swing.JPanel();
         pracownicyButton = new javax.swing.JButton();
         wybiegiButton = new javax.swing.JButton();
+        biletyButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Zoo");
@@ -111,6 +112,21 @@ public class MainFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         PracownicyPanel.add(wybiegiButton, gridBagConstraints);
 
+        biletyButton.setText("Bilety");
+        biletyButton.setMaximumSize(new java.awt.Dimension(300, 100));
+        biletyButton.setMinimumSize(new java.awt.Dimension(300, 50));
+        biletyButton.setPreferredSize(new java.awt.Dimension(300, 50));
+        biletyButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                biletyButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        PracownicyPanel.add(biletyButton, gridBagConstraints);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -143,6 +159,12 @@ public class MainFrame extends javax.swing.JFrame {
         w.setLocation(getShowPosition2(w));
         w.setVisible(true);
     }//GEN-LAST:event_wybiegiButtonActionPerformed
+
+    private void biletyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_biletyButtonActionPerformed
+        BiletyFrame bilet = new BiletyFrame();
+        bilet.setLocation(getShowPosition2(bilet));
+        bilet.setVisible(true);
+    }//GEN-LAST:event_biletyButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -184,6 +206,7 @@ public class MainFrame extends javax.swing.JFrame {
     private javax.swing.JPanel PracownicyPanel;
     private javax.swing.JLabel ZooLabel;
     private javax.swing.JPanel ZooPanel;
+    private javax.swing.JButton biletyButton;
     private javax.swing.JButton pracownicyButton;
     private javax.swing.JButton wybiegiButton;
     // End of variables declaration//GEN-END:variables

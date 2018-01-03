@@ -447,8 +447,8 @@ public class PracownikFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_addBiletButtonMouseClicked
 
     private void addRaportButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addRaportButtonMouseClicked
-        RaportDialog raport = new RaportDialog(this, rootPaneCheckingEnabled);
-        raport.setLocation(Zoo.getShowPosition2D(raport));
+        RaportFrame raport = new RaportFrame(this);
+        raport.setLocation(Zoo.getShowPosition2(raport));
         if (((String) etatComboBox.getSelectedItem()).compareTo("WETERYNARZ") == 0) {
             raport.setInfo(this.id, 1);
         } else {
@@ -463,8 +463,8 @@ public class PracownikFrame extends javax.swing.JFrame {
             if (selectionIndex >= 0) {
                 CachingResultSetTableModel tableModel = (CachingResultSetTableModel) raportyTable.getModel();
                 int selectedId = tableModel.getSelectedId(raportyTable.getSelectedRow());
-                RaportDialog raport = new RaportDialog(this, rootPaneCheckingEnabled);
-                raport.setLocation(Zoo.getShowPosition2D(raport));
+                RaportFrame raport = new RaportFrame(this);
+                raport.setLocation(Zoo.getShowPosition2(raport));
 
                 Execute q = new Execute();
                 q.ExecuteQuery("SELECT UWAGI FROM RAPORTY WHERE NUMER = " + Integer.toString(selectedId));

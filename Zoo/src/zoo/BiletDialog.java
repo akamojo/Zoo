@@ -16,14 +16,14 @@ import javax.swing.JOptionPane;
  */
 public class BiletDialog extends javax.swing.JDialog {
 
-    private PracownikFrame parent;
-    
+    private java.awt.Frame parent;
+
     /**
      * Creates new form BiletDialog
      */
     public BiletDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
-        this.parent = (PracownikFrame) parent;
+        this.parent = parent;
         initComponents();
     }
 
@@ -84,11 +84,18 @@ public class BiletDialog extends javax.swing.JDialog {
         try {
             Execute c = new Execute();
             //c.ExecuteCall("sprzedaz_biletu(" + wiekTextField.getText() + ", " + parent.getId() + ")");
-            c.ExecuteCall("sprzedaz_biletu(?, ?)");
-            c.getCstmt().setInt(1, Integer.parseInt(wiekTextField.getText()));
-            c.getCstmt().setInt(2, parent.getId());
-            c.fireCall();
-            parent.refreshBilety();
+            if (parent instanceof PracownikFrame) {
+                c.ExecuteCall("sprzedaz_biletu(?, ?)");
+                c.getCstmt().setInt(1, Integer.parseInt(wiekTextField.getText()));
+                c.getCstmt().setInt(2, ((PracownikFrame) parent).getId());
+                c.fireCall();
+                ((PracownikFrame) parent).refreshBilety();
+            } else {
+                c.ExecuteCall("sprzedaz_biletu(?)");
+                c.getCstmt().setInt(1, Integer.parseInt(wiekTextField.getText()));
+                c.fireCall();
+                ((BiletyFrame) parent).refresh();
+            }
             wiekTextField.setText("");
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
