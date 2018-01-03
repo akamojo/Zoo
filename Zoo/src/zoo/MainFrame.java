@@ -10,6 +10,7 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JLabel;
 import static zoo.Zoo.getShowPosition1;
 import static zoo.Zoo.getShowPosition2;
 
@@ -25,6 +26,37 @@ public class MainFrame extends javax.swing.JFrame {
     public MainFrame() {
         initComponents();
         setIconImage(Zoo.getIcon());
+        setCuteImageInBackground();
+    }
+    
+    public void setCuteImageInBackground() {
+        java.awt.GridBagConstraints gridBagConstraints;
+        ImagePanel cute = new ImagePanel();
+        cute.setMinimumSize(new java.awt.Dimension(500, 300));
+        cute.setPreferredSize(new java.awt.Dimension(500, 300));
+        cute.setLayout(new java.awt.GridBagLayout());
+        JLabel CuteLabel = new javax.swing.JLabel();
+        
+        CuteLabel.setFont(new java.awt.Font("Consolas", 1, 48)); // NOI18N
+        CuteLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
+        CuteLabel.setText("Zoo");
+        
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.ipadx = 284;
+        gridBagConstraints.ipady = 12;
+        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        cute.add(CuteLabel, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 0.5;
+        getContentPane().add(cute, gridBagConstraints);
     }
 
     /**
@@ -37,18 +69,18 @@ public class MainFrame extends javax.swing.JFrame {
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
-        ZooPanel = new javax.swing.JPanel();
-        ZooLabel = new javax.swing.JLabel();
-        PracownicyPanel = new javax.swing.JPanel();
+        buttonsPanel = new javax.swing.JPanel();
         pracownicyButton = new javax.swing.JButton();
         wybiegiButton = new javax.swing.JButton();
         biletyButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Zoo");
-        setMinimumSize(new java.awt.Dimension(700, 500));
+        setMinimumSize(new java.awt.Dimension(500, 600));
         setName("Zoo"); // NOI18N
-        setSize(new java.awt.Dimension(700, 500));
+        setPreferredSize(new java.awt.Dimension(500, 600));
+        setResizable(false);
+        setSize(new java.awt.Dimension(500, 600));
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -56,32 +88,8 @@ public class MainFrame extends javax.swing.JFrame {
         });
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
-        ZooPanel.setMinimumSize(new java.awt.Dimension(100, 100));
-        ZooPanel.setLayout(new java.awt.GridBagLayout());
-
-        ZooLabel.setFont(new java.awt.Font("Consolas", 1, 48)); // NOI18N
-        ZooLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
-        ZooLabel.setText("Zoo");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.ipadx = 284;
-        gridBagConstraints.ipady = 12;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        ZooPanel.add(ZooLabel, gridBagConstraints);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 1.0;
-        gridBagConstraints.weighty = 0.5;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        getContentPane().add(ZooPanel, gridBagConstraints);
-
-        PracownicyPanel.setMinimumSize(new java.awt.Dimension(100, 100));
-        PracownicyPanel.setLayout(new java.awt.GridBagLayout());
+        buttonsPanel.setMinimumSize(new java.awt.Dimension(100, 100));
+        buttonsPanel.setLayout(new java.awt.GridBagLayout());
 
         pracownicyButton.setText("Pracownicy");
         pracownicyButton.setMaximumSize(new java.awt.Dimension(300, 100));
@@ -94,7 +102,7 @@ public class MainFrame extends javax.swing.JFrame {
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        PracownicyPanel.add(pracownicyButton, gridBagConstraints);
+        buttonsPanel.add(pracownicyButton, gridBagConstraints);
 
         wybiegiButton.setText("Wybiegi i zwierzęta");
         wybiegiButton.setMaximumSize(new java.awt.Dimension(300, 100));
@@ -110,7 +118,7 @@ public class MainFrame extends javax.swing.JFrame {
         gridBagConstraints.gridy = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        PracownicyPanel.add(wybiegiButton, gridBagConstraints);
+        buttonsPanel.add(wybiegiButton, gridBagConstraints);
 
         biletyButton.setText("Bilety");
         biletyButton.setMaximumSize(new java.awt.Dimension(300, 100));
@@ -125,7 +133,7 @@ public class MainFrame extends javax.swing.JFrame {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        PracownicyPanel.add(biletyButton, gridBagConstraints);
+        buttonsPanel.add(biletyButton, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -133,8 +141,7 @@ public class MainFrame extends javax.swing.JFrame {
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        getContentPane().add(PracownicyPanel, gridBagConstraints);
+        getContentPane().add(buttonsPanel, gridBagConstraints);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -203,10 +210,8 @@ public class MainFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel PracownicyPanel;
-    private javax.swing.JLabel ZooLabel;
-    private javax.swing.JPanel ZooPanel;
     private javax.swing.JButton biletyButton;
+    private javax.swing.JPanel buttonsPanel;
     private javax.swing.JButton pracownicyButton;
     private javax.swing.JButton wybiegiButton;
     // End of variables declaration//GEN-END:variables
