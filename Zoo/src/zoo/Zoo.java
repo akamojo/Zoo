@@ -5,6 +5,7 @@
  */
 package zoo;
 
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Image;
 import java.awt.Point;
@@ -21,8 +22,10 @@ import java.sql.Statement;
 import java.util.Properties;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JButton;
 import javax.swing.JDialog;
 import javax.swing.JFrame;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 import javax.swing.UIManager;
@@ -59,9 +62,14 @@ public class Zoo {
                 
                 MainFrame zoo = new MainFrame();
                 zoo.setLocation(getShowPosition1(zoo));
-                DBSupport.connect();
-
                 zoo.setVisible(true);
+
+                try {
+                    DBSupport.connect();
+                } catch (SQLException ex) {
+                    zoo.disableButtons();
+                    JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Nie udało się połączyć z bazą danych.", "Fatal error :c", JOptionPane.ERROR_MESSAGE);
+                }
                 
                 try {
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

@@ -5,11 +5,13 @@
  */
 package zoo;
 
+import java.awt.Component;
 import java.awt.Image;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JButton;
 import javax.swing.JLabel;
 import static zoo.Zoo.getShowPosition1;
 import static zoo.Zoo.getShowPosition2;
@@ -27,6 +29,12 @@ public class MainFrame extends javax.swing.JFrame {
         initComponents();
         setIconImage(Zoo.getIcon());
         setCuteImageInBackground();
+    }
+    
+    public void disableButtons() {
+        this.biletyButton.setEnabled(false);
+        this.pracownicyButton.setEnabled(false);
+        this.wybiegiButton.setEnabled(false);
     }
     
     public void setCuteImageInBackground() {
@@ -155,10 +163,10 @@ public class MainFrame extends javax.swing.JFrame {
     private void formWindowClosing(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_formWindowClosing
         try {
             DBSupport.getConn().close();
-        } catch (SQLException ex) {
-            Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
+            System.out.println("Rozłączono z bazą danych");
+        } catch (Exception ex) {
+            // Logger.getLogger(MainFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
-        System.out.println("Rozłączono z bazą danych");
     }//GEN-LAST:event_formWindowClosing
 
     private void wybiegiButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_wybiegiButtonActionPerformed

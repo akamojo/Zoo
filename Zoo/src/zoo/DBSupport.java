@@ -24,16 +24,12 @@ public class DBSupport {
         return conn;
     }
 
-    public static void connect() {
-        try {
-            Properties connectionProps = new Properties();
-            connectionProps.put("user", "inf127216");
-            connectionProps.put("password", "lubieciastka");
-            DBSupport.conn = DriverManager.getConnection("jdbc:oracle:thin:@//admlab2.cs.put.poznan.pl:1521/dblab02_students.cs.put.poznan.pl", connectionProps);
-            System.out.println("Połączono z bazą danych");
-        } catch (SQLException ex) {
-            Logger.getLogger(DBSupport.class.getName()).log(Level.SEVERE, null, ex);
-        }
+    public static void connect() throws SQLException {
+        Properties connectionProps = new Properties();
+        connectionProps.put("user", "inf127216");
+        connectionProps.put("password", "lubieciastka");
+        DBSupport.conn = DriverManager.getConnection("jdbc:oracle:thin:@//admlab2.cs.put.poznan.pl:1521/dblab02_students.cs.put.poznan.pl", connectionProps);
+        System.out.println("Połączono z bazą danych");
     }
 
 }
