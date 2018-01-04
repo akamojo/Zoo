@@ -5,20 +5,25 @@
  */
 package zoo;
 
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+
 /**
  *
  * @author akamojo
  */
 public class BiletDialog extends javax.swing.JDialog {
 
-    private PracownikFrame parent;
-    
+    private java.awt.Frame parent;
+
     /**
      * Creates new form BiletDialog
      */
     public BiletDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
-        this.parent = (PracownikFrame) parent;
+        this.parent = parent;
         initComponents();
     }
 
@@ -76,10 +81,26 @@ public class BiletDialog extends javax.swing.JDialog {
     }// </editor-fold>//GEN-END:initComponents
 
     private void okButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_okButtonMouseClicked
-        Execute c = new Execute();
-        c.ExecuteCall("sprzedaz_biletu(" + wiekTextField.getText() + ", " + parent.getId() + ")");
-        parent.refreshBilety();
-        wiekTextField.setText("");
+        try {
+            Execute c = new Execute();
+            //c.ExecuteCall("sprzedaz_biletu(" + wiekTextField.getText() + ", " + parent.getId() + ")");
+            if (parent instanceof PracownikFrame) {
+                c.ExecuteCall("sprzedaz_biletu(?, ?)");
+                c.getCstmt().setInt(1, Integer.parseInt(wiekTextField.getText()));
+                c.getCstmt().setInt(2, ((PracownikFrame) parent).getId());
+                c.fireCall();
+                ((PracownikFrame) parent).refreshBilety();
+            } else {
+                c.ExecuteCall("sprzedaz_biletu(?)");
+                c.getCstmt().setInt(1, Integer.parseInt(wiekTextField.getText()));
+                c.fireCall();
+                ((BiletyFrame) parent).refresh();
+            }
+            wiekTextField.setText("");
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
+            //Logger.getLogger(BiletDialog.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }//GEN-LAST:event_okButtonMouseClicked
 
     /**

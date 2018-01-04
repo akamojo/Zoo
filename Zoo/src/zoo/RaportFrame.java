@@ -8,29 +8,32 @@ package zoo;
 import java.awt.event.WindowEvent;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
+import static zoo.Zoo.getShowPosition2;
 
 /**
  *
  * @author akamojo
  */
-public class RaportDialog extends javax.swing.JDialog {
+public class RaportFrame extends javax.swing.JFrame {
 
     private int id;
     private int etat;
     private PracownikFrame parent;
-
+    
     /**
-     * Creates new form RaportDialog
+     * Creates new form RaportFrame
      */
-    public RaportDialog(java.awt.Frame parent, boolean modal) {
-        super(parent, modal);
-        this.parent = (PracownikFrame) parent;
+    public RaportFrame() {
         initComponents();
     }
-
+    
+    public RaportFrame(PracownikFrame parent) {
+        this.parent = parent;
+        setIconImage(Zoo.getIcon());
+        initComponents();
+    }
+    
     public void setInfo(int id, int etat) {
         this.id = id;
         this.etat = etat;
@@ -61,6 +64,8 @@ public class RaportDialog extends javax.swing.JDialog {
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
+        linkPanel = new javax.swing.JPanel();
+        linkButton = new javax.swing.JButton();
         wybiegPanel = new javax.swing.JPanel();
         wybiegLabel = new javax.swing.JLabel();
         wybiegTextField = new javax.swing.JTextField();
@@ -77,6 +82,16 @@ public class RaportDialog extends javax.swing.JDialog {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Raport");
         getContentPane().setLayout(new java.awt.GridBagLayout());
+
+        linkButton.setText("Wyświetl dostępne zwierzęta i wybiegi");
+        linkButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                linkButtonMouseClicked(evt);
+            }
+        });
+        linkPanel.add(linkButton);
+
+        getContentPane().add(linkPanel, new java.awt.GridBagConstraints());
 
         wybiegPanel.setLayout(new java.awt.GridBagLayout());
 
@@ -95,7 +110,7 @@ public class RaportDialog extends javax.swing.JDialog {
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridy = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 0.5;
         gridBagConstraints.weighty = 0.5;
@@ -118,7 +133,7 @@ public class RaportDialog extends javax.swing.JDialog {
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridy = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 0.5;
         gridBagConstraints.weighty = 0.5;
@@ -154,7 +169,7 @@ public class RaportDialog extends javax.swing.JDialog {
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridy = 2;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 0.5;
         gridBagConstraints.weighty = 0.5;
@@ -170,7 +185,7 @@ public class RaportDialog extends javax.swing.JDialog {
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
+        gridBagConstraints.gridy = 3;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 0.1;
         gridBagConstraints.weighty = 0.1;
@@ -206,6 +221,12 @@ public class RaportDialog extends javax.swing.JDialog {
         this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
     }//GEN-LAST:event_changeButtonMouseClicked
 
+    private void linkButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_linkButtonMouseClicked
+        WybiegiFrame w = new WybiegiFrame();
+        w.setLocation(getShowPosition2(w));
+        w.setVisible(true);
+    }//GEN-LAST:event_linkButtonMouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -223,27 +244,20 @@ public class RaportDialog extends javax.swing.JDialog {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(RaportDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(RaportFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(RaportDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(RaportFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(RaportDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(RaportFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(RaportDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(RaportFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
-        /* Create and display the dialog */
+        /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                RaportDialog dialog = new RaportDialog(new javax.swing.JFrame(), true);
-                dialog.addWindowListener(new java.awt.event.WindowAdapter() {
-                    @Override
-                    public void windowClosing(java.awt.event.WindowEvent e) {
-                        System.exit(0);
-                    }
-                });
-                dialog.setVisible(true);
+                new RaportFrame().setVisible(true);
             }
         });
     }
@@ -251,6 +265,8 @@ public class RaportDialog extends javax.swing.JDialog {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel buttonPanel;
     private javax.swing.JButton changeButton;
+    private javax.swing.JButton linkButton;
+    private javax.swing.JPanel linkPanel;
     private javax.swing.JLabel uwagiLabel;
     private javax.swing.JPanel uwagiPanel;
     private javax.swing.JScrollPane uwagiScrollPane;

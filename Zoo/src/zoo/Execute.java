@@ -26,6 +26,7 @@ public class Execute {
     private ResultSetMetaData rsmd;
     protected String query;
     private PreparedStatement pstmt = null;
+    private CallableStatement cstmt = null;
     private Statement stmt = null;
     protected String where;
 
@@ -48,12 +49,19 @@ public class Execute {
 
     public void ExecuteCall(String fun) {
         try {
-            CallableStatement stmt = DBSupport.getConn().prepareCall("{call " + fun + "}");
-            stmt.execute();
-            stmt.close();
+            this.cstmt = DBSupport.getConn().prepareCall("{call " + fun + "}");
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), query + ":\n" + ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
             //Logger.getLogger(Execute.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    public void fireCall() {
+        try {
+            cstmt.execute();
+            cstmt.close();
+        } catch (SQLException ex) {
+            Logger.getLogger(Execute.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
@@ -144,6 +152,14 @@ public class Execute {
 
     public void setWhere(String where) {
         this.where = where;
+    }
+
+    public CallableStatement getCstmt() {
+        return cstmt;
+    }
+
+    public void setCstmt(CallableStatement cstmt) {
+        this.cstmt = cstmt;
     }
 
 }
