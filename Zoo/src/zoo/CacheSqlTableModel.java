@@ -9,14 +9,23 @@ import java.util.logging.Logger;
 import javax.swing.JTextField;
 import javax.swing.table.*;
 
-public class CacheSqlTableModel extends SqlTableModel {
+public class CachingResultSetTableModel extends ResultSetTableModel {
 
     private ArrayList cache;
     private int columnCount;
     private Class[] columnClasses;
+    private String sortedColumnName;
+    private String originalOrderBy = "";
 
-    public CacheSqlTableModel(String query, String[] columnsNames, String orderBy) {
+    public CachingResultSetTableModel(String[] columnsNames) {
+        super(columnsNames);
+        columnCount = columnsNames.length;
+        cache = new ArrayList();
+    }
+
+    public CachingResultSetTableModel(String query, String[] columnsNames, String orderBy) {
         super(query, columnsNames, orderBy);
+        this.originalOrderBy = orderBy;
         try {
             cache = new ArrayList();
             columnCount = super.getColumnCount();
@@ -36,6 +45,13 @@ public class CacheSqlTableModel extends SqlTableModel {
             super.fireTableDataChanged();
         } catch (SQLException ex) {
             Logger.getLogger(DBSupport.class.getName()).log(Level.SEVERE, null, ex);
+            //RoadSupport.showMessage(roadpartner.resources.Messages.getMessage("dbError"), e);
+        }
+        if (orderBy.length() > 0) {
+            String orderedField = orderBy.substring(9);
+            if (query != null && query.startsWith("select")) {
+                sortedColumnName = orderedField;
+            }
         }
     }
 
@@ -43,8 +59,58 @@ public class CacheSqlTableModel extends SqlTableModel {
         this.query = query;
     }
 
+    public void refresh() {
+        if (query != null && query.length() > 0) {
+            clearCache();
+            appendRows(query);
+            System.out.println(query);
+        }
+    }
+
     public void clearCache() {
         cache.clear();
+    }
+
+    public void appendRows(Object[][] rows) {
+        if (rows.length > 0) {
+            columnClasses = new Class[columnCount];
+            for (int j = 0; j < columnCount; j++) {
+                columnClasses[j] = rows[0][j].getClass();
+            }
+            for (int i = 0; i < rows.length; i++) {
+                Object[] row = rows[i];
+                appendRow(row, false);
+            }
+            super.fireTableDataChanged();
+        }
+    }
+
+    public boolean appendRows(String query) {
+        if (super.appendRows(query)) {
+            try {
+                columnCount = super.getColumnCount();
+                columnClasses = new Class[columnCount];
+                for (int j = 0; j < columnCount; j++) {
+                    columnClasses[j] = super.getColumnClass(j);
+                }
+                ResultSet rs = getResultSet();
+                while (rs.next()) {
+                    Object[] row = new Object[columnCount];
+                    for (int j = 0; j < columnCount; j++) {
+                        row[j] = rs.getObject(j + 1);
+                    }
+                    appendRow(row, false);
+                }
+                closeStatement();
+                super.fireTableDataChanged();
+            } catch (SQLException ex) {
+                Logger.getLogger(DBSupport.class.getName()).log(Level.SEVERE, null, ex);
+                return false;
+            }
+        } else {
+            return false;
+        }
+        return true;
     }
 
     public Object getValueAt(int r, int c) {
@@ -60,6 +126,7 @@ public class CacheSqlTableModel extends SqlTableModel {
         super.fireTableCellUpdated(r, c);
     }
 
+    //moje
     public int getSelectedId(int r) {
         if (r < cache.size()) {
             return ((BigDecimal) ((Object[]) cache.get(r))[0]).intValue();
@@ -84,24 +151,29 @@ public class CacheSqlTableModel extends SqlTableModel {
         return (Object[]) cache.get(rowNumber);
     }
 
+    public Object[] getRows() {
+        Object[][] row = new Object[0][getColumnCount()];
+        return cache.toArray(row);
+    }
+
     public void appendRow(Object[] row) {
         appendRow(row, true);
     }
-    
+
     public void appendRow(int index, Object[] row) {
         appendRow(index, row, true);
     }
 
-    public void appendRow(Object[] row, boolean change) {
+    public void appendRow(Object[] row, boolean fireChangeEvent) {
         cache.add(row);
-        if (change) {
+        if (fireChangeEvent) {
             super.fireTableDataChanged();
         }
     }
 
-    public void appendRow(int index, Object[] row, boolean change) {
+    public void appendRow(int index, Object[] row, boolean FireChangeEvent) {
         cache.add(index, row);
-        if (change) {
+        if (FireChangeEvent) {
             super.fireTableDataChanged();
         }
     }
@@ -113,7 +185,7 @@ public class CacheSqlTableModel extends SqlTableModel {
 
 }
 
-abstract class SqlTableModel extends AbstractTableModel {
+abstract class ResultSetTableModel extends AbstractTableModel {
 
     private ResultSet rs;
     private ResultSetMetaData rsmd;
@@ -122,7 +194,11 @@ abstract class SqlTableModel extends AbstractTableModel {
     private Statement statement = null;
     protected String orderBy;
 
-    public SqlTableModel(String query, String[] columnsNames, String orderBy) {
+    public ResultSetTableModel(String[] columnsNames) {
+        this.columnsNames = columnsNames;
+    }
+
+    public ResultSetTableModel(String query, String[] columnsNames, String orderBy) {
         this.columnsNames = columnsNames;
         this.query = query;
         this.orderBy = orderBy;
@@ -136,13 +212,26 @@ abstract class SqlTableModel extends AbstractTableModel {
         }
     }
 
-    public void closeStatement() {
+    public boolean appendRows(String query) {
+        this.query = query;
+        Connection dbConnection = DBSupport.getConn();
+        try {
+            statement = dbConnection.createStatement();
+            rs = statement.executeQuery(query + " " + orderBy);
+            rsmd = rs.getMetaData();
+        } catch (SQLException ex) {
+            Logger.getLogger(DBSupport.class.getName()).log(Level.SEVERE, null, ex);
+            return false;
+        }
+        return true;
+    }
+
+    protected void closeStatement() {
         if (statement != null) {
             try {
                 rs.close();
                 statement.close();
             } catch (SQLException ex) {
-                Logger.getLogger(DBSupport.class.getName()).log(Level.SEVERE, null, ex);
             }
             statement = null;
         }
@@ -154,22 +243,27 @@ abstract class SqlTableModel extends AbstractTableModel {
 
     public Class getColumnClass(int c) {
         int sqlType;
+        Integer integer = new Integer(0);
+        String string = "String";
+        Boolean bool = new Boolean(true);
+        Double doub = new Double(1.2);
+        java.sql.Date date = new java.sql.Date(System.currentTimeMillis());
         try {
             sqlType = rsmd.getColumnType(c + 1);
         } catch (SQLException ex) {
             Logger.getLogger(DBSupport.class.getName()).log(Level.SEVERE, null, ex);
-            return String.class;
+            return string.getClass();
         }
         if (sqlType == Types.INTEGER) {
-            return Integer.class;
+            return integer.getClass();
         } else if (sqlType == Types.TIMESTAMP) {
             return JTextField.class;
         } else if (sqlType == Types.FLOAT) {
-            return Double.class;
+            return doub.getClass();
         } else if (sqlType == 93) {
-            return java.sql.Date.class;
+            return date.getClass();
         } else {
-            return String.class;
+            return string.getClass();
         }
     }
 
