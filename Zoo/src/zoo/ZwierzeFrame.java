@@ -14,6 +14,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
+import static zoo.Zoo.getShowPosition2;
 
 /**
  *
@@ -342,6 +343,11 @@ public class ZwierzeFrame extends javax.swing.JFrame {
         mainPanel.add(gatunekComboBox, gridBagConstraints);
 
         newGatunekButton.setText("Nowy gatunek...");
+        newGatunekButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                newGatunekButtonActionPerformed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 1;
@@ -499,6 +505,16 @@ public class ZwierzeFrame extends javax.swing.JFrame {
     private void plecComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_plecComboBoxActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_plecComboBoxActionPerformed
+
+    private void newGatunekButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newGatunekButtonActionPerformed
+        try {
+            GatunekFrame w = new GatunekFrame();
+            w.setLocation(getShowPosition2(w));
+            w.setVisible(true);
+        } catch (SQLException ex) {
+            Logger.getLogger(ZwierzeFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }//GEN-LAST:event_newGatunekButtonActionPerformed
 
     /**
      * @param args the command line arguments

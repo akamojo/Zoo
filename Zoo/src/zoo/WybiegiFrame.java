@@ -85,10 +85,13 @@ public class WybiegiFrame extends javax.swing.JFrame {
         wybiegiTable = new javax.swing.JTable();
         tableScrollPaneZwierzeta = new javax.swing.JScrollPane();
         zwierzetaTable = new javax.swing.JTable();
+        moreButtonsPanel = new javax.swing.JPanel();
+        showGatunkiButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Zoo Wybiegi i zwierzęta");
         setMinimumSize(new java.awt.Dimension(250, 250));
+        getContentPane().setLayout(new java.awt.GridBagLayout());
 
         buttonPanel.setLayout(new java.awt.GridBagLayout());
 
@@ -160,7 +163,13 @@ public class WybiegiFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         buttonPanel.add(removeZwierzeButton, gridBagConstraints);
 
-        getContentPane().add(buttonPanel, java.awt.BorderLayout.PAGE_START);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 0.5;
+        gridBagConstraints.weighty = 0.5;
+        getContentPane().add(buttonPanel, gridBagConstraints);
 
         tablePanel.setLayout(new java.awt.GridBagLayout());
 
@@ -216,7 +225,38 @@ public class WybiegiFrame extends javax.swing.JFrame {
         gridBagConstraints.weighty = 0.5;
         tablePanel.add(tableScrollPaneZwierzeta, gridBagConstraints);
 
-        getContentPane().add(tablePanel, java.awt.BorderLayout.CENTER);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 5.0;
+        gridBagConstraints.weighty = 5.0;
+        getContentPane().add(tablePanel, gridBagConstraints);
+
+        moreButtonsPanel.setLayout(new java.awt.GridBagLayout());
+
+        showGatunkiButton.setText("Gatunki zwierząt");
+        showGatunkiButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                showGatunkiButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.gridheight = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        moreButtonsPanel.add(showGatunkiButton, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 0.5;
+        gridBagConstraints.weighty = 0.5;
+        getContentPane().add(moreButtonsPanel, gridBagConstraints);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -329,6 +369,17 @@ public class WybiegiFrame extends javax.swing.JFrame {
         // TODO add your handling code here:
     }//GEN-LAST:event_tableScrollPaneZwierzetaMouseClicked
 
+    private void showGatunkiButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showGatunkiButtonActionPerformed
+        try {
+            GatunekFrame z = new GatunekFrame();
+            z.setShowZwierzetaMode();
+            z.setLocation(getShowPosition2(z));
+            z.setVisible(true);
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_showGatunkiButtonActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -368,9 +419,11 @@ public class WybiegiFrame extends javax.swing.JFrame {
     private javax.swing.JButton addWybiegButton;
     private javax.swing.JButton addZwierzeButton;
     private javax.swing.JPanel buttonPanel;
+    private javax.swing.JPanel moreButtonsPanel;
     private javax.swing.JButton removeWybiegButton;
     private javax.swing.JButton removeZwierzeButton;
     private javax.swing.JButton showAllButton;
+    private javax.swing.JButton showGatunkiButton;
     private javax.swing.JPanel tablePanel;
     private javax.swing.JScrollPane tableScrollPaneWybiegi;
     private javax.swing.JScrollPane tableScrollPaneZwierzeta;
