@@ -237,12 +237,12 @@ public class WybiegiFrame extends javax.swing.JFrame {
                     }
                     
                     JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), description, "Opis wybiegu numer " + wNr, JOptionPane.PLAIN_MESSAGE);
-
+				
                 } catch (SQLException ex) {
                     JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
                 }
-            }
-        }  
+			}
+		}
     }//GEN-LAST:event_wybiegiTableMouseClicked
 
     private void showAllButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showAllButtonActionPerformed

@@ -5,6 +5,10 @@
  */
 package zoo;
 
+import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 /**
  *
  * @author akamojo
@@ -71,6 +75,11 @@ public class BiletyFrame extends javax.swing.JFrame {
 
             }
         ));
+        biletyTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                biletyTableMouseClicked(evt);
+            }
+        });
         biletyScrollPane.setViewportView(biletyTable);
 
         biletyPanel.add(biletyScrollPane, java.awt.BorderLayout.CENTER);
@@ -85,6 +94,21 @@ public class BiletyFrame extends javax.swing.JFrame {
         bilet.setLocation(Zoo.getShowPosition2D(bilet));
         bilet.setVisible(true);
     }//GEN-LAST:event_kupBiletButtonMouseClicked
+
+    private void biletyTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_biletyTableMouseClicked
+        if (evt.getClickCount() == 2) {
+            int selectionIndex = biletyTable.getSelectionModel().getMinSelectionIndex();
+            if (selectionIndex >= 0) {
+                CacheSqlTableModel tableModel = (CacheSqlTableModel) biletyTable.getModel();
+                int selectedId = tableModel.getSelectedId(biletyTable.getSelectedRow());
+                OcenyFrame oceny = new OcenyFrame();
+                oceny.setNumer(selectedId);
+                oceny.refresh();
+                oceny.setLocation(Zoo.getShowPosition2(oceny));
+                oceny.setVisible(true);
+            }
+        }
+    }//GEN-LAST:event_biletyTableMouseClicked
 
     /**
      * @param args the command line arguments
