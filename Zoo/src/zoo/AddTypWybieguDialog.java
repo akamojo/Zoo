@@ -5,23 +5,22 @@
  */
 package zoo;
 
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.awt.event.WindowEvent;
+import java.sql.PreparedStatement;
 import javax.swing.JOptionPane;
 
 /**
  *
- * @author akamojo
+ * @author julka
  */
-public class BiletDialog extends javax.swing.JDialog {
+public class AddTypWybieguDialog extends javax.swing.JDialog {
 
     private java.awt.Frame parent;
 
     /**
-     * Creates new form BiletDialog
+     * Creates new form AddTypWybieguDialog
      */
-    public BiletDialog(java.awt.Frame parent, boolean modal) {
+    public AddTypWybieguDialog(java.awt.Frame parent, boolean modal) {
         super(parent, modal);
         this.parent = parent;
         initComponents();
@@ -37,30 +36,28 @@ public class BiletDialog extends javax.swing.JDialog {
     private void initComponents() {
         java.awt.GridBagConstraints gridBagConstraints;
 
-        biletPanel = new javax.swing.JPanel();
-        wiekLabel = new javax.swing.JLabel();
-        wiekTextField = new javax.swing.JTextField();
+        typWybieguPanel = new javax.swing.JPanel();
+        podajTypLabel = new javax.swing.JLabel();
+        typTextField = new javax.swing.JTextField();
         okButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Sprzedaż biletu");
-        setMinimumSize(new java.awt.Dimension(200, 150));
 
-        biletPanel.setPreferredSize(new java.awt.Dimension(100, 100));
-        biletPanel.setLayout(new java.awt.GridBagLayout());
+        typWybieguPanel.setPreferredSize(new java.awt.Dimension(100, 100));
+        typWybieguPanel.setLayout(new java.awt.GridBagLayout());
 
-        wiekLabel.setText("Podaj wiek klienta:");
+        podajTypLabel.setText("Wprowadz nowy typ:");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        biletPanel.add(wiekLabel, gridBagConstraints);
+        typWybieguPanel.add(podajTypLabel, gridBagConstraints);
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        biletPanel.add(wiekTextField, gridBagConstraints);
+        typWybieguPanel.add(typTextField, gridBagConstraints);
 
         okButton.setText("OK");
         okButton.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -72,33 +69,49 @@ public class BiletDialog extends javax.swing.JDialog {
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 2;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        biletPanel.add(okButton, gridBagConstraints);
+        typWybieguPanel.add(okButton, gridBagConstraints);
 
-        getContentPane().add(biletPanel, java.awt.BorderLayout.CENTER);
+        javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
+        getContentPane().setLayout(layout);
+        layout.setHorizontalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 224, Short.MAX_VALUE)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(typWybieguPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 224, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 0, Short.MAX_VALUE)))
+        );
+        layout.setVerticalGroup(
+            layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGap(0, 131, Short.MAX_VALUE)
+            .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                .addGroup(layout.createSequentialGroup()
+                    .addGap(0, 0, Short.MAX_VALUE)
+                    .addComponent(typWybieguPanel, javax.swing.GroupLayout.PREFERRED_SIZE, 131, javax.swing.GroupLayout.PREFERRED_SIZE)
+                    .addGap(0, 0, Short.MAX_VALUE)))
+        );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
 
     private void okButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_okButtonMouseClicked
         try {
-            Execute c = new Execute();
-            //c.ExecuteCall("sprzedaz_biletu(" + wiekTextField.getText() + ", " + parent.getId() + ")");
-            if (parent instanceof PracownikFrame) {
-                c.ExecuteCall("sprzedaz_biletu(?, ?)");
-                c.getCstmt().setInt(1, Integer.parseInt(wiekTextField.getText()));
-                c.getCstmt().setInt(2, ((PracownikFrame) parent).getId());
-                c.fireCall();
-                ((PracownikFrame) parent).refreshBilety();
-            } else {
-                c.ExecuteCall("sprzedaz_biletu(?)");
-                c.getCstmt().setInt(1, Integer.parseInt(wiekTextField.getText()));
-                c.fireCall();
-                ((BiletyFrame) parent).refresh();
+            String data = typTextField.getText();
+            
+            if (data.length() > 0) {
+                Execute exec = new Execute();
+                exec.ExecutePreparedQuery("INSERT INTO TYPY_WYBIEGU(NAZWA) VALUES(?)");
+                ((PreparedStatement) exec.getStatement()).setString(1, typTextField.getText());
+                exec.firePreparedUpdate();
+                this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
+
+                typTextField.setText("");
+                ((AddWybiegFrame) parent).updateWybiegiTypes();
             }
-            wiekTextField.setText("");
+
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
-            //Logger.getLogger(BiletDialog.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_okButtonMouseClicked
 
@@ -119,20 +132,20 @@ public class BiletDialog extends javax.swing.JDialog {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(BiletDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(AddTypWybieguDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(BiletDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(AddTypWybieguDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(BiletDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(AddTypWybieguDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(BiletDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(AddTypWybieguDialog.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         //</editor-fold>
 
         /* Create and display the dialog */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                BiletDialog dialog = new BiletDialog(new javax.swing.JFrame(), true);
+                AddTypWybieguDialog dialog = new AddTypWybieguDialog(new javax.swing.JFrame(), true);
                 dialog.addWindowListener(new java.awt.event.WindowAdapter() {
                     @Override
                     public void windowClosing(java.awt.event.WindowEvent e) {
@@ -145,9 +158,9 @@ public class BiletDialog extends javax.swing.JDialog {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
-    private javax.swing.JPanel biletPanel;
     private javax.swing.JButton okButton;
-    private javax.swing.JLabel wiekLabel;
-    private javax.swing.JTextField wiekTextField;
+    private javax.swing.JLabel podajTypLabel;
+    private javax.swing.JTextField typTextField;
+    private javax.swing.JPanel typWybieguPanel;
     // End of variables declaration//GEN-END:variables
 }

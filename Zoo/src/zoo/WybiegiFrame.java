@@ -6,13 +6,20 @@
 package zoo;
 
 import java.awt.Image;
+import java.awt.Point;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
+import java.awt.event.WindowEvent;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
+import javax.swing.JTable;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.AbstractTableModel;
@@ -43,16 +50,16 @@ public class WybiegiFrame extends javax.swing.JFrame {
     }
     
     public void refreshAll() {
-        //((CachingResultSetTableModel) pracownicyTable.getModel()).fireTableDataChanged();
-        CachingResultSetTableModel model = new CachingResultSetTableModel("select nr, typy_wybiegu_nazwa, powierzchnia from wybiegi", columnsWybiegi, "ORDER BY NR");
+        //((CacheSqlTableModel) pracownicyTable.getModel()).fireTableDataChanged();
+        CacheSqlTableModel model = new CacheSqlTableModel("select nr, typy_wybiegu_nazwa, powierzchnia from wybiegi", columnsWybiegi, "ORDER BY NR");
         wybiegiTable.setModel(model);
                 
-        model = new CachingResultSetTableModel("select gatunki_nazwa, plec, chip from zwierzeta", columnsZwierzeta, "ORDER BY CHIP");
+        model = new CacheSqlTableModel("select gatunki_nazwa, plec, chip from zwierzeta", columnsZwierzeta, "ORDER BY CHIP");
         zwierzetaTable.setModel(model);
     }
     
     public void refreshZwierzeta(String numerWybiegu) {
-        CachingResultSetTableModel model = new CachingResultSetTableModel("select gatunki_nazwa, plec, chip from zwierzeta"
+        CacheSqlTableModel model = new CacheSqlTableModel("select gatunki_nazwa, plec, chip from zwierzeta"
                 + " where wybiegi_nr = " + numerWybiegu, columnsZwierzeta, "ORDER BY CHIP");
         zwierzetaTable.setModel(model);
     }
@@ -71,7 +78,7 @@ public class WybiegiFrame extends javax.swing.JFrame {
         showAllButton = new javax.swing.JButton();
         addWybiegButton = new javax.swing.JButton();
         removeWybiegButton = new javax.swing.JButton();
-        addZwierzeButton3 = new javax.swing.JButton();
+        addZwierzeButton = new javax.swing.JButton();
         removeZwierzeButton = new javax.swing.JButton();
         tablePanel = new javax.swing.JPanel();
         tableScrollPaneWybiegi = new javax.swing.JScrollPane();
@@ -82,7 +89,6 @@ public class WybiegiFrame extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Zoo Wybiegi i zwierzęta");
         setMinimumSize(new java.awt.Dimension(250, 250));
-        setPreferredSize(new java.awt.Dimension(1000, 500));
 
         buttonPanel.setLayout(new java.awt.GridBagLayout());
 
@@ -102,6 +108,11 @@ public class WybiegiFrame extends javax.swing.JFrame {
 
         addWybiegButton.setText("Dodaj wybieg");
         addWybiegButton.setHorizontalAlignment(javax.swing.SwingConstants.TRAILING);
+        addWybiegButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                addWybiegButtonMouseClicked(evt);
+            }
+        });
         addWybiegButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 addWybiegButtonActionPerformed(evt);
@@ -125,17 +136,17 @@ public class WybiegiFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         buttonPanel.add(removeWybiegButton, gridBagConstraints);
 
-        addZwierzeButton3.setText("Dodaj zwierzę");
-        addZwierzeButton3.addActionListener(new java.awt.event.ActionListener() {
+        addZwierzeButton.setText("Dodaj zwierzę");
+        addZwierzeButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
-                addZwierzeButton3ActionPerformed(evt);
+                addZwierzeButtonActionPerformed(evt);
             }
         });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 2;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        buttonPanel.add(addZwierzeButton3, gridBagConstraints);
+        buttonPanel.add(addZwierzeButton, gridBagConstraints);
 
         removeZwierzeButton.setText("Usuń zwierzę");
         removeZwierzeButton.addActionListener(new java.awt.event.ActionListener() {
@@ -176,6 +187,12 @@ public class WybiegiFrame extends javax.swing.JFrame {
         gridBagConstraints.weighty = 0.5;
         tablePanel.add(tableScrollPaneWybiegi, gridBagConstraints);
 
+        tableScrollPaneZwierzeta.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tableScrollPaneZwierzetaMouseClicked(evt);
+            }
+        });
+
         zwierzetaTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -205,18 +222,27 @@ public class WybiegiFrame extends javax.swing.JFrame {
     }// </editor-fold>//GEN-END:initComponents
 
     private void wybiegiTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_wybiegiTableMouseClicked
-        
-        /*if (evt.getClickCount() == 2) {
-            int selectionIndex = wybiegiTable.getSelectionModel().getMinSelectionIndex();
-            if (selectionIndex >= 0) {
-                CachingResultSetTableModel tableModel = (CachingResultSetTableModel) wybiegiTable.getModel();
-                int selectedId = tableModel.getSelectedId(wybiegiTable.getSelectedRow());
-                PracownikFrame prac = new PracownikFrame(this);
-                prac.setLocation(getShowPosition2(prac));
-                prac.fill(selectedId);
-                prac.setVisible(true);
+        if (evt.getClickCount() == 2) {
+            int row = wybiegiTable.getSelectedRow();
+            if (row != -1) {
+                try {
+                    Execute q = new Execute();
+                    String wNr = wybiegiTable.getValueAt(row, 0).toString();
+                    q.ExecuteQuery("SELECT OPIS_WYBIEGU FROM WYBIEGI WHERE NR = " + wNr);
+                    
+                    q.getRs().next();
+                    String description = q.getRs().getString(1);;
+                    if (q.getRs().wasNull()) {
+                        description = new String("Brak opisu");
+                    }
+                    
+                    JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), description, "Opis wybiegu numer " + wNr, JOptionPane.PLAIN_MESSAGE);
+
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
+                }
             }
-        }*/
+        }  
     }//GEN-LAST:event_wybiegiTableMouseClicked
 
     private void showAllButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showAllButtonActionPerformed
@@ -224,24 +250,84 @@ public class WybiegiFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_showAllButtonActionPerformed
 
     private void zwierzetaTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_zwierzetaTableMouseClicked
-        // TODO add your handling code here:
+        if (evt.getClickCount() == 2) {
+            int row = zwierzetaTable.getSelectedRow();
+            if (row != -1) {
+                try {
+                    ZwierzeFrame z = new ZwierzeFrame(this, new Integer(zwierzetaTable.getValueAt(row, 2).toString()));
+                    z.setLocation(getShowPosition2(z));
+                    z.setVisible(true);
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        }        
     }//GEN-LAST:event_zwierzetaTableMouseClicked
 
     private void addWybiegButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addWybiegButtonActionPerformed
-        // TODO add your handling code here:
+        try {
+            AddWybiegFrame w = new AddWybiegFrame(this);
+            w.setLocation(getShowPosition2(w));
+            w.setVisible(true);
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_addWybiegButtonActionPerformed
 
     private void removeWybiegButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeWybiegButtonActionPerformed
-        // TODO add your handling code here:
+        try {
+            Execute exec = new Execute();
+            exec.ExecutePreparedQuery("DELETE FROM WYBIEGI WHERE NR = ?");
+            int row = wybiegiTable.getSelectedRow();
+            if (row != -1)
+                ((PreparedStatement) exec.getStatement()).setInt(1, new Integer(wybiegiTable.getValueAt(row, 0).toString()));
+            int result = exec.firePreparedUpdate_getCount();
+            if (result > 0) {
+                JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Wybieg usunięty!", "Sukces", JOptionPane.INFORMATION_MESSAGE);
+                this.refreshAll();
+            }
+            else {
+                // err...
+            }
+            
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_removeWybiegButtonActionPerformed
 
-    private void addZwierzeButton3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addZwierzeButton3ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_addZwierzeButton3ActionPerformed
+    private void addZwierzeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addZwierzeButtonActionPerformed
+        try {
+            ZwierzeFrame z = new ZwierzeFrame(this);
+            z.setLocation(getShowPosition2(z));
+            z.setVisible(true);
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_addZwierzeButtonActionPerformed
 
     private void removeZwierzeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_removeZwierzeButtonActionPerformed
-        // TODO add your handling code here:
+        // co z zwierzętami?
+        // taki sam problem jak pracownik - zwierzę zostaje w raporcie
+        // i w ocenie klienta! 
+        int row = zwierzetaTable.getSelectedRow();
+        if (row != -1) {
+            java.sql.Date date = new java.sql.Date(System.currentTimeMillis());
+            Execute exec = new Execute();
+            String chip = zwierzetaTable.getValueAt(row, 2).toString();
+            int result = exec.ExecuteUpdate_getChanges("UPDATE ZWIERZETA SET DATA_OPUSZCZENIA_ZOO = DATE '" + date.toString() + "' WHERE CHIP = " + chip);
+            if (result > 0) {
+                JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Zwierzę zostało usunięte z ZOO; nadal istnieje w raportach i ocenach.", "Sukces", JOptionPane.INFORMATION_MESSAGE);
+            }
+        }
     }//GEN-LAST:event_removeZwierzeButtonActionPerformed
+
+    private void addWybiegButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_addWybiegButtonMouseClicked
+        // nie chcę tego i nie umiem usunąć :<
+    }//GEN-LAST:event_addWybiegButtonMouseClicked
+
+    private void tableScrollPaneZwierzetaMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableScrollPaneZwierzetaMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_tableScrollPaneZwierzetaMouseClicked
 
     /**
      * @param args the command line arguments
@@ -280,7 +366,7 @@ public class WybiegiFrame extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addWybiegButton;
-    private javax.swing.JButton addZwierzeButton3;
+    private javax.swing.JButton addZwierzeButton;
     private javax.swing.JPanel buttonPanel;
     private javax.swing.JButton removeWybiegButton;
     private javax.swing.JButton removeZwierzeButton;

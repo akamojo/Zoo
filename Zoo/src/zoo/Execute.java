@@ -87,6 +87,21 @@ public class Execute {
             //Logger.getLogger(DBSupport.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
+    
+    public int ExecuteUpdate_getChanges(String query) {
+        this.query = query;
+        Connection dbConnection = DBSupport.getConn();
+        int changes = -1;
+        try {
+            this.stmt = dbConnection.createStatement();
+            changes = stmt.executeUpdate(query);
+            return changes;
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), query + ":\n" + ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
+            //Logger.getLogger(DBSupport.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return changes;
+    }
 
     public void firePreparedQuery() {
         try {
@@ -100,6 +115,11 @@ public class Execute {
 
     public void firePreparedUpdate() throws SQLException {
         pstmt.executeUpdate();
+    }
+    
+    public int firePreparedUpdate_getCount() throws SQLException {
+        int result = pstmt.executeUpdate();
+        return result;
     }
 
     /*public ExecutePreparedQuery(String query, String where) {

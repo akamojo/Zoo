@@ -79,14 +79,14 @@ public class PracownikFrame extends javax.swing.JFrame {
                 raportyPanel.setVisible(false);
                 biletyPanel.setVisible(true);
                 String[] columns = new String[]{"Numer", "Wiek klienta", "Czas sprzedaży", "Id sprzedawcy", "Typ biletu"};
-                CachingResultSetTableModel model = new CachingResultSetTableModel("select * from bilety where pracownicy_id = " + Integer.toString(id), columns, "ORDER BY nr");
+                CacheSqlTableModel model = new CacheSqlTableModel("select * from bilety where pracownicy_id = " + Integer.toString(id), columns, "ORDER BY nr");
                 biletyTable.setModel(model);
                 biletyTable.removeColumn(biletyTable.getColumnModel().getColumn(0));
             } else {
                 biletyPanel.setVisible(false);
                 raportyPanel.setVisible(true);
                 String[] columns = new String[]{"Numer", "Czas wystawienia", "Id pracownika", "Uwagi", "Chip zwierzęcia", "Numer wybiegu"};
-                CachingResultSetTableModel model = new CachingResultSetTableModel("select * from raporty where pracownicy_id = " + Integer.toString(id), columns, "ORDER BY numer");
+                CacheSqlTableModel model = new CacheSqlTableModel("select * from raporty where pracownicy_id = " + Integer.toString(id), columns, "ORDER BY numer");
                 raportyTable.setModel(model);
                 raportyTable.removeColumn(raportyTable.getColumnModel().getColumn(0));
             }
@@ -102,14 +102,14 @@ public class PracownikFrame extends javax.swing.JFrame {
 
     public void refreshBilety() {
         String[] columns = new String[]{"Numer", "Wiek klienta", "Czas sprzedaży", "Id sprzedawcy", "Typ biletu"};
-        CachingResultSetTableModel model = new CachingResultSetTableModel("select * from bilety where pracownicy_id = " + Integer.toString(this.id), columns, "ORDER BY nr");
+        CacheSqlTableModel model = new CacheSqlTableModel("select * from bilety where pracownicy_id = " + Integer.toString(this.id), columns, "ORDER BY nr");
         biletyTable.setModel(model);
         biletyTable.removeColumn(biletyTable.getColumnModel().getColumn(0));
     }
 
     public void refreshRaporty() {
         String[] columns = new String[]{"Numer", "Czas wystawienia", "Id pracownika", "Uwagi", "Chip zwierzęcia", "Numer wybiegu"};
-        CachingResultSetTableModel model = new CachingResultSetTableModel("select * from raporty where pracownicy_id = " + Integer.toString(this.id), columns, "ORDER BY numer");
+        CacheSqlTableModel model = new CacheSqlTableModel("select * from raporty where pracownicy_id = " + Integer.toString(this.id), columns, "ORDER BY numer");
         raportyTable.setModel(model);
         raportyTable.removeColumn(raportyTable.getColumnModel().getColumn(0));
     }
@@ -156,7 +156,6 @@ public class PracownikFrame extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Zoo Pracownik");
         setMinimumSize(new java.awt.Dimension(650, 600));
-        setPreferredSize(new java.awt.Dimension(650, 600));
 
         changeButton.setText("Zatwierdź");
         changeButton.addActionListener(new java.awt.event.ActionListener() {
@@ -461,7 +460,7 @@ public class PracownikFrame extends javax.swing.JFrame {
         if (evt.getClickCount() == 2) {
             int selectionIndex = raportyTable.getSelectionModel().getMinSelectionIndex();
             if (selectionIndex >= 0) {
-                CachingResultSetTableModel tableModel = (CachingResultSetTableModel) raportyTable.getModel();
+                CacheSqlTableModel tableModel = (CacheSqlTableModel) raportyTable.getModel();
                 int selectedId = tableModel.getSelectedId(raportyTable.getSelectedRow());
                 RaportFrame raport = new RaportFrame(this);
                 raport.setLocation(Zoo.getShowPosition2(raport));

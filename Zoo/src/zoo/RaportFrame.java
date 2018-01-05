@@ -81,6 +81,7 @@ public class RaportFrame extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Raport");
+        setResizable(false);
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
         linkButton.setText("Wyświetl dostępne zwierzęta i wybiegi");

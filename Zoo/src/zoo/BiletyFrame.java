@@ -18,14 +18,14 @@ public class BiletyFrame extends javax.swing.JFrame {
         initComponents();
         setIconImage(Zoo.getIcon());
         String[] columns = new String[]{"Numer", "Wiek klienta", "Czas sprzedaży", "Id sprzedawcy", "Typ biletu"};
-        CachingResultSetTableModel model = new CachingResultSetTableModel("select * from bilety", columns, "ORDER BY NR");
+        CacheSqlTableModel model = new CacheSqlTableModel("select * from bilety", columns, "ORDER BY NR");
         biletyTable.setModel(model);
         biletyTable.removeColumn(biletyTable.getColumnModel().getColumn(0));
     }
 
     public void refresh() {
         String[] columns = new String[]{"Numer", "Wiek klienta", "Czas sprzedaży", "Id sprzedawcy", "Typ biletu"};
-        CachingResultSetTableModel model = new CachingResultSetTableModel("select * from bilety", columns, "ORDER BY NR");
+        CacheSqlTableModel model = new CacheSqlTableModel("select * from bilety", columns, "ORDER BY NR");
         biletyTable.setModel(model);
         biletyTable.removeColumn(biletyTable.getColumnModel().getColumn(0));
     }

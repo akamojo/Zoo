@@ -9,23 +9,14 @@ import java.util.logging.Logger;
 import javax.swing.JTextField;
 import javax.swing.table.*;
 
-public class CachingResultSetTableModel extends ResultSetTableModel {
+public class CacheSqlTableModel extends SqlTableModel {
 
     private ArrayList cache;
     private int columnCount;
     private Class[] columnClasses;
-    private String sortedColumnName;
-    private String originalOrderBy = "";
 
-    public CachingResultSetTableModel(String[] columnsNames) {
-        super(columnsNames);
-        columnCount = columnsNames.length;
-        cache = new ArrayList();
-    }
-
-    public CachingResultSetTableModel(String query, String[] columnsNames, String orderBy) {
+    public CacheSqlTableModel(String query, String[] columnsNames, String orderBy) {
         super(query, columnsNames, orderBy);
-        this.originalOrderBy = orderBy;
         try {
             cache = new ArrayList();
             columnCount = super.getColumnCount();
@@ -45,13 +36,6 @@ public class CachingResultSetTableModel extends ResultSetTableModel {
             super.fireTableDataChanged();
         } catch (SQLException ex) {
             Logger.getLogger(DBSupport.class.getName()).log(Level.SEVERE, null, ex);
-            //RoadSupport.showMessage(roadpartner.resources.Messages.getMessage("dbError"), e);
-        }
-        if (orderBy.length() > 0) {
-            String orderedField = orderBy.substring(9);
-            if (query != null && query.startsWith("select")) {
-                sortedColumnName = orderedField;
-            }
         }
     }
 
@@ -59,58 +43,8 @@ public class CachingResultSetTableModel extends ResultSetTableModel {
         this.query = query;
     }
 
-    public void refresh() {
-        if (query != null && query.length() > 0) {
-            clearCache();
-            appendRows(query);
-            System.out.println(query);
-        }
-    }
-
     public void clearCache() {
         cache.clear();
-    }
-
-    public void appendRows(Object[][] rows) {
-        if (rows.length > 0) {
-            columnClasses = new Class[columnCount];
-            for (int j = 0; j < columnCount; j++) {
-                columnClasses[j] = rows[0][j].getClass();
-            }
-            for (int i = 0; i < rows.length; i++) {
-                Object[] row = rows[i];
-                appendRow(row, false);
-            }
-            super.fireTableDataChanged();
-        }
-    }
-
-    public boolean appendRows(String query) {
-        if (super.appendRows(query)) {
-            try {
-                columnCount = super.getColumnCount();
-                columnClasses = new Class[columnCount];
-                for (int j = 0; j < columnCount; j++) {
-                    columnClasses[j] = super.getColumnClass(j);
-                }
-                ResultSet rs = getResultSet();
-                while (rs.next()) {
-                    Object[] row = new Object[columnCount];
-                    for (int j = 0; j < columnCount; j++) {
-                        row[j] = rs.getObject(j + 1);
-                    }
-                    appendRow(row, false);
-                }
-                closeStatement();
-                super.fireTableDataChanged();
-            } catch (SQLException ex) {
-                Logger.getLogger(DBSupport.class.getName()).log(Level.SEVERE, null, ex);
-                return false;
-            }
-        } else {
-            return false;
-        }
-        return true;
     }
 
     public Object getValueAt(int r, int c) {
@@ -126,7 +60,6 @@ public class CachingResultSetTableModel extends ResultSetTableModel {
         super.fireTableCellUpdated(r, c);
     }
 
-    //moje
     public int getSelectedId(int r) {
         if (r < cache.size()) {
             return ((BigDecimal) ((Object[]) cache.get(r))[0]).intValue();
@@ -151,29 +84,24 @@ public class CachingResultSetTableModel extends ResultSetTableModel {
         return (Object[]) cache.get(rowNumber);
     }
 
-    public Object[] getRows() {
-        Object[][] row = new Object[0][getColumnCount()];
-        return cache.toArray(row);
-    }
-
     public void appendRow(Object[] row) {
         appendRow(row, true);
     }
-
+    
     public void appendRow(int index, Object[] row) {
         appendRow(index, row, true);
     }
 
-    public void appendRow(Object[] row, boolean fireChangeEvent) {
+    public void appendRow(Object[] row, boolean change) {
         cache.add(row);
-        if (fireChangeEvent) {
+        if (change) {
             super.fireTableDataChanged();
         }
     }
 
-    public void appendRow(int index, Object[] row, boolean FireChangeEvent) {
+    public void appendRow(int index, Object[] row, boolean change) {
         cache.add(index, row);
-        if (FireChangeEvent) {
+        if (change) {
             super.fireTableDataChanged();
         }
     }
@@ -185,7 +113,7 @@ public class CachingResultSetTableModel extends ResultSetTableModel {
 
 }
 
-abstract class ResultSetTableModel extends AbstractTableModel {
+abstract class SqlTableModel extends AbstractTableModel {
 
     private ResultSet rs;
     private ResultSetMetaData rsmd;
@@ -194,11 +122,7 @@ abstract class ResultSetTableModel extends AbstractTableModel {
     private Statement statement = null;
     protected String orderBy;
 
-    public ResultSetTableModel(String[] columnsNames) {
-        this.columnsNames = columnsNames;
-    }
-
-    public ResultSetTableModel(String query, String[] columnsNames, String orderBy) {
+    public SqlTableModel(String query, String[] columnsNames, String orderBy) {
         this.columnsNames = columnsNames;
         this.query = query;
         this.orderBy = orderBy;
@@ -212,26 +136,13 @@ abstract class ResultSetTableModel extends AbstractTableModel {
         }
     }
 
-    public boolean appendRows(String query) {
-        this.query = query;
-        Connection dbConnection = DBSupport.getConn();
-        try {
-            statement = dbConnection.createStatement();
-            rs = statement.executeQuery(query + " " + orderBy);
-            rsmd = rs.getMetaData();
-        } catch (SQLException ex) {
-            Logger.getLogger(DBSupport.class.getName()).log(Level.SEVERE, null, ex);
-            return false;
-        }
-        return true;
-    }
-
-    protected void closeStatement() {
+    public void closeStatement() {
         if (statement != null) {
             try {
                 rs.close();
                 statement.close();
             } catch (SQLException ex) {
+                Logger.getLogger(DBSupport.class.getName()).log(Level.SEVERE, null, ex);
             }
             statement = null;
         }
@@ -243,27 +154,22 @@ abstract class ResultSetTableModel extends AbstractTableModel {
 
     public Class getColumnClass(int c) {
         int sqlType;
-        Integer integer = new Integer(0);
-        String string = "String";
-        Boolean bool = new Boolean(true);
-        Double doub = new Double(1.2);
-        java.sql.Date date = new java.sql.Date(System.currentTimeMillis());
         try {
             sqlType = rsmd.getColumnType(c + 1);
         } catch (SQLException ex) {
             Logger.getLogger(DBSupport.class.getName()).log(Level.SEVERE, null, ex);
-            return string.getClass();
+            return String.class;
         }
         if (sqlType == Types.INTEGER) {
-            return integer.getClass();
+            return Integer.class;
         } else if (sqlType == Types.TIMESTAMP) {
             return JTextField.class;
         } else if (sqlType == Types.FLOAT) {
-            return doub.getClass();
+            return Double.class;
         } else if (sqlType == 93) {
-            return date.getClass();
+            return java.sql.Date.class;
         } else {
-            return string.getClass();
+            return String.class;
         }
     }
 

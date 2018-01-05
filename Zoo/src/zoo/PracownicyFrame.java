@@ -29,16 +29,16 @@ public class PracownicyFrame extends javax.swing.JFrame {
         initComponents();
         setIconImage(Zoo.getIcon());
         String[] columns = new String[]{"Id", "Nazwisko", "Pensja", "Premia", "Etat", "Godziny", "Zatrudniony"};
-        CachingResultSetTableModel model = new CachingResultSetTableModel("select ID, NAZWISKO, PENSJA, PREMIA, ETATY_NAZWA, GODZIN_TYGODNIOWO, DATA_ZATRUDNIENIA"
+        CacheSqlTableModel model = new CacheSqlTableModel("select ID, NAZWISKO, PENSJA, PREMIA, ETATY_NAZWA, GODZIN_TYGODNIOWO, DATA_ZATRUDNIENIA"
                 + " from pracownicy WHERE DATA_ZWOLNIENIA IS NULL", columns, "ORDER BY NAZWISKO");
         pracownicyTable.setModel(model);
         pracownicyTable.removeColumn(pracownicyTable.getColumnModel().getColumn(0));
     }
     
     public void refresh() {
-        //((CachingResultSetTableModel) pracownicyTable.getModel()).fireTableDataChanged();
+        //((CacheSqlTableModel) pracownicyTable.getModel()).fireTableDataChanged();
         String[] columns = new String[]{"Id", "Nazwisko", "Pensja", "Premia", "Etat", "Godziny", "Zatrudniony"};
-        CachingResultSetTableModel model = new CachingResultSetTableModel("select ID, NAZWISKO, PENSJA, PREMIA, ETATY_NAZWA, GODZIN_TYGODNIOWO, DATA_ZATRUDNIENIA "
+        CacheSqlTableModel model = new CacheSqlTableModel("select ID, NAZWISKO, PENSJA, PREMIA, ETATY_NAZWA, GODZIN_TYGODNIOWO, DATA_ZATRUDNIENIA "
                 + "from pracownicy WHERE DATA_ZWOLNIENIA IS NULL", columns, "ORDER BY NAZWISKO");
         pracownicyTable.setModel(model);
         pracownicyTable.removeColumn(pracownicyTable.getColumnModel().getColumn(0));
@@ -102,7 +102,7 @@ public class PracownicyFrame extends javax.swing.JFrame {
         if (evt.getClickCount() == 2) {
             int selectionIndex = pracownicyTable.getSelectionModel().getMinSelectionIndex();
             if (selectionIndex >= 0) {
-                CachingResultSetTableModel tableModel = (CachingResultSetTableModel) pracownicyTable.getModel();
+                CacheSqlTableModel tableModel = (CacheSqlTableModel) pracownicyTable.getModel();
                 int selectedId = tableModel.getSelectedId(pracownicyTable.getSelectedRow());
                 PracownikFrame prac = new PracownikFrame(this);
                 prac.setLocation(getShowPosition2(prac));
