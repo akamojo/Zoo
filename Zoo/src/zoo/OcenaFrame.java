@@ -64,9 +64,9 @@ public class OcenaFrame extends javax.swing.JFrame {
         questionLabel = new javax.swing.JLabel();
         questionComboBox = new javax.swing.JComboBox<>();
         gwiazdkiLabel = new javax.swing.JLabel();
-        gwiazdkiTextField = new javax.swing.JTextField();
         numerLabel = new javax.swing.JLabel();
         numerTextField = new javax.swing.JTextField();
+        gwiazdkiSpinner = new javax.swing.JSpinner();
         komentarzLabel = new javax.swing.JLabel();
         komentarzScrollPane = new javax.swing.JScrollPane();
         komentarzTextArea = new javax.swing.JTextArea();
@@ -112,13 +112,6 @@ public class OcenaFrame extends javax.swing.JFrame {
         gridBagConstraints.gridy = 1;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         infoPanel.add(gwiazdkiLabel, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 0.5;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        infoPanel.add(gwiazdkiTextField, gridBagConstraints);
 
         numerLabel.setText("Numer wybiegu lub chip zwierzęcia:");
         gridBagConstraints = new java.awt.GridBagConstraints();
@@ -133,6 +126,15 @@ public class OcenaFrame extends javax.swing.JFrame {
         gridBagConstraints.weightx = 0.5;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         infoPanel.add(numerTextField, gridBagConstraints);
+
+        gwiazdkiSpinner.setModel(new javax.swing.SpinnerNumberModel(1, 1, 5, 1));
+        gwiazdkiSpinner.setEditor(new javax.swing.JSpinner.NumberEditor(gwiazdkiSpinner, ""));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        infoPanel.add(gwiazdkiSpinner, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
@@ -188,7 +190,7 @@ public class OcenaFrame extends javax.swing.JFrame {
         if (questionComboBox.getSelectedIndex() == 0) {
             try {
                 up.ExecutePreparedQuery("INSERT INTO OCENY(LICZBA_GWIAZDEK, KOMENTARZ, NUMER_BILETU, ZWIERZETA_CHIP) VALUES(?, ?, ?, ?)");
-                ((PreparedStatement) up.getStatement()).setInt(1, Integer.parseInt(gwiazdkiTextField.getText()));
+                ((PreparedStatement) up.getStatement()).setInt(1, Integer.parseInt(gwiazdkiSpinner.getValue().toString()));
                 ((PreparedStatement) up.getStatement()).setString(2, komentarzTextArea.getText());
                 ((PreparedStatement) up.getStatement()).setInt(3, this.numer);
                 ((PreparedStatement) up.getStatement()).setInt(4, Integer.parseInt(numerTextField.getText()));
@@ -199,7 +201,7 @@ public class OcenaFrame extends javax.swing.JFrame {
         } else {
             try {
                 up.ExecutePreparedQuery("INSERT INTO OCENY(LICZBA_GWIAZDEK, KOMENTARZ, NUMER_BILETU, WYBIEGI_NR) VALUES(?, ?, ?, ?)");
-                ((PreparedStatement) up.getStatement()).setInt(1, Integer.parseInt(gwiazdkiTextField.getText()));
+                ((PreparedStatement) up.getStatement()).setInt(1, Integer.parseInt(gwiazdkiSpinner.getValue().toString()));
                 ((PreparedStatement) up.getStatement()).setString(2, komentarzTextArea.getText());
                 ((PreparedStatement) up.getStatement()).setInt(3, this.numer);
                 ((PreparedStatement) up.getStatement()).setInt(4, Integer.parseInt(numerTextField.getText()));
@@ -257,7 +259,7 @@ public class OcenaFrame extends javax.swing.JFrame {
     private javax.swing.JButton addButton;
     private javax.swing.JPanel buttonPanel;
     private javax.swing.JLabel gwiazdkiLabel;
-    private javax.swing.JTextField gwiazdkiTextField;
+    private javax.swing.JSpinner gwiazdkiSpinner;
     private javax.swing.JPanel infoPanel;
     private javax.swing.JLabel komentarzLabel;
     private javax.swing.JScrollPane komentarzScrollPane;

@@ -6,7 +6,9 @@
 package zoo;
 
 import java.awt.Image;
+import java.awt.event.KeyEvent;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -34,7 +36,7 @@ public class PracownicyFrame extends javax.swing.JFrame {
         pracownicyTable.setModel(model);
         pracownicyTable.removeColumn(pracownicyTable.getColumnModel().getColumn(0));
     }
-    
+
     public void refresh() {
         //((CacheSqlTableModel) pracownicyTable.getModel()).fireTableDataChanged();
         String[] columns = new String[]{"Id", "Nazwisko", "Pensja", "Premia", "Etat", "Godziny", "Zatrudniony"};
@@ -53,6 +55,9 @@ public class PracownicyFrame extends javax.swing.JFrame {
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
 
+        searchPanel = new javax.swing.JPanel();
+        searchLabel = new javax.swing.JLabel();
+        searchTextField = new javax.swing.JTextField();
         buttonPanel = new javax.swing.JPanel();
         addButton = new javax.swing.JButton();
         tablePanel = new javax.swing.JPanel();
@@ -64,6 +69,19 @@ public class PracownicyFrame extends javax.swing.JFrame {
         setMinimumSize(new java.awt.Dimension(250, 250));
         setPreferredSize(new java.awt.Dimension(600, 500));
 
+        searchLabel.setText("Wyszukaj pracownika po nazwisku:");
+        searchPanel.add(searchLabel);
+
+        searchTextField.setPreferredSize(new java.awt.Dimension(100, 20));
+        searchTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                searchTextFieldKeyPressed(evt);
+            }
+        });
+        searchPanel.add(searchTextField);
+
+        getContentPane().add(searchPanel, java.awt.BorderLayout.PAGE_START);
+
         addButton.setText("Dodaj nowego pracownika");
         addButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -72,7 +90,7 @@ public class PracownicyFrame extends javax.swing.JFrame {
         });
         buttonPanel.add(addButton);
 
-        getContentPane().add(buttonPanel, java.awt.BorderLayout.PAGE_START);
+        getContentPane().add(buttonPanel, java.awt.BorderLayout.PAGE_END);
 
         tablePanel.setLayout(new java.awt.BorderLayout());
 
@@ -120,6 +138,20 @@ public class PracownicyFrame extends javax.swing.JFrame {
         prac.emptyView();
     }//GEN-LAST:event_addButtonActionPerformed
 
+    private void searchTextFieldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchTextFieldKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            if (searchTextField.getText().isEmpty()) {
+                refresh();
+            } else {
+                String[] columns = new String[]{"Id", "Nazwisko", "Pensja", "Premia", "Etat", "Godziny", "Zatrudniony"};
+                CacheSqlTableModel model = new CacheSqlTableModel("select ID, NAZWISKO, PENSJA, PREMIA, ETATY_NAZWA, GODZIN_TYGODNIOWO, DATA_ZATRUDNIENIA "
+                        + "from pracownicy WHERE DATA_ZWOLNIENIA IS NULL AND LOWER(NAZWISKO) LIKE ? ", columns, "ORDER BY NAZWISKO", searchTextField.getText().toLowerCase());
+                pracownicyTable.setModel(model);
+                pracownicyTable.removeColumn(pracownicyTable.getColumnModel().getColumn(0));
+            }
+        }
+    }//GEN-LAST:event_searchTextFieldKeyPressed
+
     /**
      * @param args the command line arguments
      */
@@ -159,6 +191,9 @@ public class PracownicyFrame extends javax.swing.JFrame {
     private javax.swing.JButton addButton;
     private javax.swing.JPanel buttonPanel;
     private javax.swing.JTable pracownicyTable;
+    private javax.swing.JLabel searchLabel;
+    private javax.swing.JPanel searchPanel;
+    private javax.swing.JTextField searchTextField;
     private javax.swing.JPanel tablePanel;
     private javax.swing.JScrollPane tableScrollPane;
     // End of variables declaration//GEN-END:variables
