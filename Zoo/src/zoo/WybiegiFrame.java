@@ -43,16 +43,16 @@ public class WybiegiFrame extends javax.swing.JFrame {
     }
     
     public void refreshAll() {
-        //((CachingResultSetTableModel) pracownicyTable.getModel()).fireTableDataChanged();
-        CachingResultSetTableModel model = new CachingResultSetTableModel("select nr, typy_wybiegu_nazwa, powierzchnia from wybiegi", columnsWybiegi, "ORDER BY NR");
+        //((CacheSqlTableModel) pracownicyTable.getModel()).fireTableDataChanged();
+        CacheSqlTableModel model = new CacheSqlTableModel("select nr, typy_wybiegu_nazwa, powierzchnia from wybiegi", columnsWybiegi, "ORDER BY NR");
         wybiegiTable.setModel(model);
                 
-        model = new CachingResultSetTableModel("select gatunki_nazwa, plec, chip from zwierzeta", columnsZwierzeta, "ORDER BY CHIP");
+        model = new CacheSqlTableModel("select gatunki_nazwa, plec, chip from zwierzeta", columnsZwierzeta, "ORDER BY CHIP");
         zwierzetaTable.setModel(model);
     }
     
     public void refreshZwierzeta(String numerWybiegu) {
-        CachingResultSetTableModel model = new CachingResultSetTableModel("select gatunki_nazwa, plec, chip from zwierzeta"
+        CacheSqlTableModel model = new CacheSqlTableModel("select gatunki_nazwa, plec, chip from zwierzeta"
                 + " where wybiegi_nr = " + numerWybiegu, columnsZwierzeta, "ORDER BY CHIP");
         zwierzetaTable.setModel(model);
     }
@@ -209,7 +209,7 @@ public class WybiegiFrame extends javax.swing.JFrame {
         /*if (evt.getClickCount() == 2) {
             int selectionIndex = wybiegiTable.getSelectionModel().getMinSelectionIndex();
             if (selectionIndex >= 0) {
-                CachingResultSetTableModel tableModel = (CachingResultSetTableModel) wybiegiTable.getModel();
+                CacheSqlTableModel tableModel = (CacheSqlTableModel) wybiegiTable.getModel();
                 int selectedId = tableModel.getSelectedId(wybiegiTable.getSelectedRow());
                 PracownikFrame prac = new PracownikFrame(this);
                 prac.setLocation(getShowPosition2(prac));

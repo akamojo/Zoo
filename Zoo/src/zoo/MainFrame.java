@@ -86,7 +86,6 @@ public class MainFrame extends javax.swing.JFrame {
         setTitle("Zoo");
         setMinimumSize(new java.awt.Dimension(500, 600));
         setName("Zoo"); // NOI18N
-        setPreferredSize(new java.awt.Dimension(500, 600));
         setResizable(false);
         setSize(new java.awt.Dimension(500, 600));
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -128,7 +127,7 @@ public class MainFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         buttonsPanel.add(wybiegiButton, gridBagConstraints);
 
-        biletyButton.setText("Bilety");
+        biletyButton.setText("Klienci i bilety");
         biletyButton.setMaximumSize(new java.awt.Dimension(300, 100));
         biletyButton.setMinimumSize(new java.awt.Dimension(300, 50));
         biletyButton.setPreferredSize(new java.awt.Dimension(300, 50));
