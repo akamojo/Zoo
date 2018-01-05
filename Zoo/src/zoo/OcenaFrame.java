@@ -198,7 +198,7 @@ public class OcenaFrame extends javax.swing.JFrame {
             }
         } else {
             try {
-                up.ExecutePreparedQuery("INSERT INTO OCENY(LICZBA_GWIAZDEK, KOMENTARZ, NUMER_BILETU, WYBIERGI_NR) VALUES(?, ?, ?, ?)");
+                up.ExecutePreparedQuery("INSERT INTO OCENY(LICZBA_GWIAZDEK, KOMENTARZ, NUMER_BILETU, WYBIEGI_NR) VALUES(?, ?, ?, ?)");
                 ((PreparedStatement) up.getStatement()).setInt(1, Integer.parseInt(gwiazdkiTextField.getText()));
                 ((PreparedStatement) up.getStatement()).setString(2, komentarzTextArea.getText());
                 ((PreparedStatement) up.getStatement()).setInt(3, this.numer);

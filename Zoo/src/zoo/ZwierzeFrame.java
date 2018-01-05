@@ -476,6 +476,7 @@ public class ZwierzeFrame extends javax.swing.JFrame {
         if (result > 0) {
             JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Zwierzę zostało usunięte z ZOO; nadal istnieje w raportach i ocenach.", 
                     "Sukces", JOptionPane.INFORMATION_MESSAGE);
+            this.fill(new Integer(chip));
         }
     }//GEN-LAST:event_deleteButtonActionPerformed
 
