@@ -20,20 +20,21 @@ public class RaportFrame extends javax.swing.JFrame {
     private int id;
     private int etat;
     private PracownikFrame parent;
-    
+    private int nr = -1;
+
     /**
      * Creates new form RaportFrame
      */
     public RaportFrame() {
         initComponents();
     }
-    
+
     public RaportFrame(PracownikFrame parent) {
         this.parent = parent;
         setIconImage(Zoo.getIcon());
         initComponents();
     }
-    
+
     public void setInfo(int id, int etat) {
         this.id = id;
         this.etat = etat;
@@ -45,11 +46,12 @@ public class RaportFrame extends javax.swing.JFrame {
             wybiegPanel.setVisible(false);
         }
     }
-    
-    public void fill(String uwagi) {
+
+    public void fill(int nr, String uwagi) {
         zwierzePanel.setVisible(false);
         wybiegPanel.setVisible(false);
         uwagiTextArea.setText(uwagi);
+        //this.nr = nr;
         uwagiTextArea.setEditable(false);
         buttonPanel.setVisible(false);
     }
@@ -146,7 +148,6 @@ public class RaportFrame extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.anchor = java.awt.GridBagConstraints.NORTHWEST;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         uwagiPanel.add(uwagiLabel, gridBagConstraints);
 
@@ -199,27 +200,38 @@ public class RaportFrame extends javax.swing.JFrame {
 
     private void changeButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_changeButtonMouseClicked
         Execute up = new Execute();
-        if (etat == 1) {
-            try {
-                up.ExecutePreparedQuery("INSERT INTO RAPORTY(PRACOWNICY_ID, UWAGI, ZWIERZETA_CHIP) VALUES(?, ?, ?)");
-                ((PreparedStatement) up.getStatement()).setInt(1, id);
-                ((PreparedStatement) up.getStatement()).setString(2, uwagiTextArea.getText());
-                ((PreparedStatement) up.getStatement()).setInt(3, Integer.parseInt(zwierzeTextField.getText()));
-                up.firePreparedUpdate();
-            } catch (SQLException ex) {
-                JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
+        if (this.nr == -1) {
+            if (etat == 1) {
+                try {
+                    up.ExecutePreparedQuery("INSERT INTO RAPORTY(PRACOWNICY_ID, UWAGI, ZWIERZETA_CHIP) VALUES(?, ?, ?)");
+                    up.getStatement().setInt(1, id);
+                    up.getStatement().setString(2, uwagiTextArea.getText());
+                    up.getStatement().setInt(3, Integer.parseInt(zwierzeTextField.getText()));
+                    up.firePreparedUpdate();
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                try {
+                    up.ExecutePreparedQuery("INSERT INTO RAPORTY(PRACOWNICY_ID, UWAGI, WYBIEGI_NR) VALUES(?, ?, ?)");
+                    up.getStatement().setInt(1, id);
+                    up.getStatement().setString(2, uwagiTextArea.getText());
+                    up.getStatement().setInt(3, Integer.parseInt(wybiegTextField.getText()));
+                    up.firePreparedUpdate();
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
+                }
             }
         } else {
             try {
-                up.ExecutePreparedQuery("INSERT INTO RAPORTY(PRACOWNICY_ID, UWAGI, WYBIEGI_NR) VALUES(?, ?, ?)");
-                ((PreparedStatement) up.getStatement()).setInt(1, id);
-                ((PreparedStatement) up.getStatement()).setString(2, uwagiTextArea.getText());
-                ((PreparedStatement) up.getStatement()).setInt(3, Integer.parseInt(wybiegTextField.getText()));
+                up.ExecutePreparedQuery("UPDATE RAPORTY SET UWAGI = ? WHERE NUMER = " + Integer.toString(this.nr));
+                up.getStatement().setString(1, uwagiTextArea.getText());
                 up.firePreparedUpdate();
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
             }
         }
+
         parent.refreshRaporty();
         this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
     }//GEN-LAST:event_changeButtonMouseClicked
