@@ -29,7 +29,8 @@ public class GatunekFrame extends javax.swing.JFrame {
     private boolean newGatunek;
     private boolean showZwierzetaMode = false;
     
-    public String[] columnsZwierzeta = {"Gatunek", "Plec", "Chip"};
+    public String[] columnsZwierzeta = {"Numer wybiegu", "Płeć", "Waga", "Chip"};
+
 
 
     /**
@@ -70,6 +71,11 @@ public class GatunekFrame extends javax.swing.JFrame {
     public void setShowZwierzetaMode() throws SQLException {
         
         this.loadFirstGatunek();
+        this.setShowZw();
+    }
+    
+    public void setShowZw() throws SQLException {
+        newGatunek = false;
         
         this.showZwierzetaMode = true;
         gatunekComboBox.setEnabled(true);
@@ -77,7 +83,16 @@ public class GatunekFrame extends javax.swing.JFrame {
         
         nazwaGatunkuTxtField.setVisible(false);
         zwierzetaPanel.setVisible(true);
+        
         gatunekComboBox.setModel(this.loadGatunki());
+    }
+    
+    public void setShowZwierzetaModeWith(String gatunek) throws SQLException {
+        
+        this.fill(gatunek);
+        this.setShowZw();
+        gatunekComboBox.setSelectedItem(gatunek);
+
         
     }
     
@@ -90,15 +105,6 @@ public class GatunekFrame extends javax.swing.JFrame {
         this.fill(first);
     }
 
-    /*
-    public GatunekFrame(PracownicyFrame parent) throws SQLException {
-        this.parent = parent;
-        initComponents();
-        kategoriaComboBox.setModel(this.loadKategorie());
-        typWybieguComboBox.setModel(this.loadWybiegiTypes());
-        setIconImage(Zoo.getIcon());
-    }
-    */
     
     public void updateGatunki() throws SQLException {
         gatunekComboBox.setModel(this.loadGatunki());
@@ -200,10 +206,15 @@ public class GatunekFrame extends javax.swing.JFrame {
             
             typWybieguComboBox.setSelectedItem(exec.getRs().getString(6));
 
-            
             kategoriaComboBox.setEnabled(false);
             typWybieguComboBox.setEnabled(false);
             nazwaGatunkuTxtField.setEditable(false);
+            
+            CacheSqlTableModel model = new CacheSqlTableModel("select wybiegi_nr, plec, waga, chip from zwierzeta "
+                    + "where gatunki_nazwa = '" + nazwaGatunku + "'", columnsZwierzeta, "order by wybiegi_nr");
+            zwierzetaTable.setModel(model);
+            
+            gatunekComboBox.setSelectedItem(nazwaGatunku);
             
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
@@ -353,7 +364,7 @@ public class GatunekFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         mainPanel.add(kategoriaComboBox, gridBagConstraints);
 
-        zwierzetaPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Raporty"));
+        zwierzetaPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Zwierzęta"));
         zwierzetaPanel.setLayout(new java.awt.BorderLayout());
 
         zwierzetaTable.setModel(new javax.swing.table.DefaultTableModel(
@@ -476,20 +487,19 @@ public class GatunekFrame extends javax.swing.JFrame {
                 ((PreparedStatement) exec.getStatement()).setString(5, kategoriaComboBox.getSelectedItem().toString());
 
                 if ("".equals(stadoTextField.getText().toString().trim()))
-                    ((PreparedStatement) exec.getStatement()).setNull(6, java.sql.Types.DATE);
+                    ((PreparedStatement) exec.getStatement()).setNull(6, java.sql.Types.INTEGER);
                 else
                     ((PreparedStatement) exec.getStatement()).setInt(6, new Integer(stadoTextField.getText().toString()));
 
                 ((PreparedStatement) exec.getStatement()).setString(7, typWybieguComboBox.getSelectedItem().toString());
                 exec.firePreparedUpdate();
-                this.fill(nazwaGatunkuTxtField.getText().toString());
                 nazwaGatunkuTxtField.setEditable(false);
                 newGatunek = false;
                 
-                this.setShowZwierzetaMode();
+                this.setShowZwierzetaModeWith(nazwaGatunkuTxtField.getText().toString());
             }
             else {
-                String nazwa = nazwaGatunkuTxtField.getText().toString();
+                String nazwa = "'" + nazwaGatunkuTxtField.getText().toString() + "'";
                 
                 exec.ExecutePreparedQuery("UPDATE GATUNKI SET ILOSC_POZYWIENIA = ? WHERE NAZWA = " + nazwa);
                 ((PreparedStatement) exec.getStatement()).setInt(1, new Integer(ilPozTextField.getText().toString()));
@@ -527,7 +537,14 @@ public class GatunekFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_kategoriaComboBoxActionPerformed
 
     private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
-        // TODO add your handling code here:
+        try {
+            Execute up = new Execute();
+            up.ExecuteUpdate("DELETE FROM GATUNKI WHERE NAZWA = '" + gatunekComboBox.getSelectedItem().toString() + "'");
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Gatunek usunięty!", "DELETE", JOptionPane.INFORMATION_MESSAGE);
+            this.loadFirstGatunek();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_deleteButtonActionPerformed
 
     private void gatunekComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gatunekComboBoxActionPerformed
@@ -538,7 +555,33 @@ public class GatunekFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_gatunekComboBoxActionPerformed
 
     private void addGatunekButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addGatunekButtonActionPerformed
-        // TODO add your handling code here:
+        try {
+            
+            kategoriaComboBox.setModel(this.loadKategorie());
+            typWybieguComboBox.setModel(this.loadWybiegiTypes());
+            
+            nazwaGatunkuTxtField.setEditable(true); // na momencik
+            newGatunek = true;
+        
+            this.showZwierzetaMode = true;
+            gatunekComboBox.setEnabled(false);
+            gatunekComboBox.setVisible(false);
+
+            nazwaGatunkuTxtField.setVisible(true);
+            zwierzetaPanel.setVisible(false);
+            
+            kategoriaComboBox.setEnabled(true);
+            typWybieguComboBox.setEnabled(true);
+            
+            nazwaGatunkuTxtField.setText("");
+            ilPozTextField.setText("");
+            rodzPozTextField.setText("");
+            przestrzenTextField.setText("");
+            stadoTextField.setText("");
+            
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
+        }
     }//GEN-LAST:event_addGatunekButtonActionPerformed
 
     /**
