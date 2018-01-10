@@ -158,7 +158,7 @@ public class Execute {
         this.query = query;
     }
 
-    public Statement getStatement() {
+    public PreparedStatement getStatement() {
         return pstmt;
     }
 

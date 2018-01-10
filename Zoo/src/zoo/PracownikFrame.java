@@ -366,12 +366,12 @@ public class PracownikFrame extends javax.swing.JFrame {
             try {
                 up.ExecutePreparedQuery("INSERT INTO PRACOWNICY(NAZWISKO, PENSJA, PREMIA, ETATY_NAZWA, GODZIN_TYGODNIOWO, DATA_ZATRUDNIENIA) "
                         + "VALUES(?, ?, ?, ?, ?, ?)");
-                ((PreparedStatement) up.getStatement()).setString(1, nazwiskoTextField.getText());
-                ((PreparedStatement) up.getStatement()).setFloat(2, Float.parseFloat(pensjaTextField.getText()));
-                ((PreparedStatement) up.getStatement()).setFloat(3, Float.parseFloat(premiaTextField.getText()));
-                ((PreparedStatement) up.getStatement()).setString(4, etatComboBox.getSelectedItem().toString());
-                ((PreparedStatement) up.getStatement()).setInt(5, Integer.parseInt(godzinyTextField.getText()));
-                ((PreparedStatement) up.getStatement()).setDate(6, java.sql.Date.valueOf(zatrudnionyTextField.getText()));
+                 up.getStatement().setString(1, nazwiskoTextField.getText());
+                 up.getStatement().setFloat(2, Float.parseFloat(pensjaTextField.getText()));
+                 up.getStatement().setFloat(3, Float.parseFloat(premiaTextField.getText()));
+                 up.getStatement().setString(4, etatComboBox.getSelectedItem().toString());
+                 up.getStatement().setInt(5, Integer.parseInt(godzinyTextField.getText()));
+                 up.getStatement().setDate(6, java.sql.Date.valueOf(zatrudnionyTextField.getText()));
                 up.firePreparedUpdate();
 
                 /*up.ExecuteUpdate("INSERT INTO PRACOWNICY(NAZWISKO, PENSJA, PREMIA, ETATY_NAZWA, GODZIN_TYGODNIOWO, DATA_ZATRUDNIENIA)"
@@ -393,22 +393,22 @@ public class PracownikFrame extends javax.swing.JFrame {
         } else {
             try {
                 up.ExecutePreparedQuery("UPDATE PRACOWNICY SET NAZWISKO = ? WHERE ID = " + Integer.toString(id));
-                ((PreparedStatement) up.getStatement()).setString(1, nazwiskoTextField.getText());
+                 up.getStatement().setString(1, nazwiskoTextField.getText());
                 up.firePreparedUpdate();
                 up.ExecutePreparedQuery("UPDATE PRACOWNICY SET PENSJA = ? WHERE ID = " + Integer.toString(id));
-                ((PreparedStatement) up.getStatement()).setFloat(1, Float.parseFloat(pensjaTextField.getText()));
+                 up.getStatement().setFloat(1, Float.parseFloat(pensjaTextField.getText()));
                 up.firePreparedUpdate();
                 up.ExecutePreparedQuery("UPDATE PRACOWNICY SET PREMIA = ? WHERE ID = " + Integer.toString(id));
-                ((PreparedStatement) up.getStatement()).setFloat(1, Float.parseFloat(premiaTextField.getText()));
+                 up.getStatement().setFloat(1, Float.parseFloat(premiaTextField.getText()));
                 up.firePreparedUpdate();
                 up.ExecutePreparedQuery("UPDATE PRACOWNICY SET ETATY_NAZWA = ? WHERE ID = " + Integer.toString(id));
-                ((PreparedStatement) up.getStatement()).setString(1, etatComboBox.getSelectedItem().toString());
+                 up.getStatement().setString(1, etatComboBox.getSelectedItem().toString());
                 up.firePreparedUpdate();
                 up.ExecutePreparedQuery("UPDATE PRACOWNICY SET GODZIN_TYGODNIOWO = ? WHERE ID = " + Integer.toString(id));
-                ((PreparedStatement) up.getStatement()).setInt(1, Integer.parseInt(godzinyTextField.getText()));
+                 up.getStatement().setInt(1, Integer.parseInt(godzinyTextField.getText()));
                 up.firePreparedUpdate();
                 up.ExecutePreparedQuery("UPDATE PRACOWNICY SET DATA_ZATRUDNIENIA = ? WHERE ID = " + Integer.toString(id));
-                ((PreparedStatement) up.getStatement()).setDate(1, java.sql.Date.valueOf(zatrudnionyTextField.getText()));
+                 up.getStatement().setDate(1, java.sql.Date.valueOf(zatrudnionyTextField.getText()));
                 up.firePreparedUpdate();
 
                 /*up.ExecuteUpdate("UPDATE PRACOWNICY SET NAZWISKO = '" + nazwiskoTextField.getText() + "' WHERE ID = " + Integer.toString(id));
@@ -464,13 +464,15 @@ public class PracownikFrame extends javax.swing.JFrame {
                 int selectedId = tableModel.getSelectedId(raportyTable.getSelectedRow());
                 RaportFrame raport = new RaportFrame(this);
                 raport.setLocation(Zoo.getShowPosition2(raport));
+                
+                raport.setLocation(Zoo.getShowPosition2(raport));
 
                 Execute q = new Execute();
                 q.ExecuteQuery("SELECT UWAGI FROM RAPORTY WHERE NUMER = " + Integer.toString(selectedId));
 
                 try {
                     q.getRs().next();
-                    raport.fill(q.getRs().getString(1));
+                    raport.fill(selectedId, q.getRs().getString(1));
                     raport.setVisible(true);
                 } catch (SQLException ex) {
                     Logger.getLogger(PracownikFrame.class.getName()).log(Level.SEVERE, null, ex);

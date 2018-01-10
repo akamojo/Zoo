@@ -84,7 +84,7 @@ public class OcenaFrame extends javax.swing.JFrame {
         });
         buttonPanel.add(addButton);
 
-        getContentPane().add(buttonPanel, java.awt.BorderLayout.PAGE_START);
+        getContentPane().add(buttonPanel, java.awt.BorderLayout.PAGE_END);
 
         mainPanel.setLayout(new java.awt.GridBagLayout());
 
@@ -180,7 +180,7 @@ public class OcenaFrame extends javax.swing.JFrame {
         });
         linkPanel.add(linkButton);
 
-        getContentPane().add(linkPanel, java.awt.BorderLayout.PAGE_END);
+        getContentPane().add(linkPanel, java.awt.BorderLayout.PAGE_START);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -190,10 +190,10 @@ public class OcenaFrame extends javax.swing.JFrame {
         if (questionComboBox.getSelectedIndex() == 0) {
             try {
                 up.ExecutePreparedQuery("INSERT INTO OCENY(LICZBA_GWIAZDEK, KOMENTARZ, NUMER_BILETU, ZWIERZETA_CHIP) VALUES(?, ?, ?, ?)");
-                ((PreparedStatement) up.getStatement()).setInt(1, Integer.parseInt(gwiazdkiSpinner.getValue().toString()));
-                ((PreparedStatement) up.getStatement()).setString(2, komentarzTextArea.getText());
-                ((PreparedStatement) up.getStatement()).setInt(3, this.numer);
-                ((PreparedStatement) up.getStatement()).setInt(4, Integer.parseInt(numerTextField.getText()));
+                 up.getStatement().setInt(1, Integer.parseInt(gwiazdkiSpinner.getValue().toString()));
+                 up.getStatement().setString(2, komentarzTextArea.getText());
+                 up.getStatement().setInt(3, this.numer);
+                 up.getStatement().setInt(4, Integer.parseInt(numerTextField.getText()));
                 up.firePreparedUpdate();
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
@@ -201,10 +201,10 @@ public class OcenaFrame extends javax.swing.JFrame {
         } else {
             try {
                 up.ExecutePreparedQuery("INSERT INTO OCENY(LICZBA_GWIAZDEK, KOMENTARZ, NUMER_BILETU, WYBIEGI_NR) VALUES(?, ?, ?, ?)");
-                ((PreparedStatement) up.getStatement()).setInt(1, Integer.parseInt(gwiazdkiSpinner.getValue().toString()));
-                ((PreparedStatement) up.getStatement()).setString(2, komentarzTextArea.getText());
-                ((PreparedStatement) up.getStatement()).setInt(3, this.numer);
-                ((PreparedStatement) up.getStatement()).setInt(4, Integer.parseInt(numerTextField.getText()));
+                 up.getStatement().setInt(1, Integer.parseInt(gwiazdkiSpinner.getValue().toString()));
+                 up.getStatement().setString(2, komentarzTextArea.getText());
+                 up.getStatement().setInt(3, this.numer);
+                 up.getStatement().setInt(4, Integer.parseInt(numerTextField.getText()));
                 up.firePreparedUpdate();
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
