@@ -1,2 +1,2 @@
-Zoo/build/
-Zoo/nbproject/Zoo/build/built-jar.properties Zoo/build/classes Zoo/build/empty Zoo/build/generated-sources
+Zoo/build/*
+Zoo/nbproject/*

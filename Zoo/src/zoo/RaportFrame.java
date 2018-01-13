@@ -7,7 +7,11 @@ package zoo;
 
 import java.awt.event.WindowEvent;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 import static zoo.Zoo.getShowPosition2;
 
@@ -41,10 +45,70 @@ public class RaportFrame extends javax.swing.JFrame {
         if (etat == 0) {
             zwierzePanel.setVisible(false);
             wybiegPanel.setVisible(true);
+            try {
+                updateNrWybiegu();
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
+            }
         } else {
             zwierzePanel.setVisible(true);
             wybiegPanel.setVisible(false);
+            try {
+                updateChipZwierzecia();
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
+            }
         }
+    }
+    
+    public void updateChipZwierzecia() throws SQLException {
+        chipZwierzeciaComboBox.setModel(this.loadChipZwierzecia());
+    }
+    
+    public DefaultComboBoxModel<String> loadChipZwierzecia() throws SQLException {
+        
+        Execute exec = new Execute();
+        exec.ExecuteQuery("SELECT COUNT(*) FROM ZWIERZETA");
+        ResultSet rs = exec.getRs();
+        
+        int count = 0;
+        if (rs.next())
+            count = rs.getInt(1);
+        String[] types = new String[count];
+        
+        exec.ExecuteQuery("SELECT CHIP FROM ZWIERZETA ORDER BY CHIP ASC");
+        rs = exec.getRs();
+        for (int i = 0; i < count; i++) {
+            rs.next();
+            types[i] = rs.getString(1);
+        }
+        return new javax.swing.DefaultComboBoxModel<String>(types);
+        
+    }
+    
+    public void updateNrWybiegu() throws SQLException {
+        nrWybieguComboBox.setModel(this.loadNrWybiegu());
+    }
+    
+    public DefaultComboBoxModel<String> loadNrWybiegu() throws SQLException {
+        
+        Execute exec = new Execute();
+        exec.ExecuteQuery("SELECT COUNT(*) FROM WYBIEGI");
+        ResultSet rs = exec.getRs();
+        
+        int count = 0;
+        if (rs.next())
+            count = rs.getInt(1);
+        String[] types = new String[count];
+        
+        exec.ExecuteQuery("SELECT NR FROM WYBIEGI ORDER BY NR ASC");
+        rs = exec.getRs();
+        for (int i = 0; i < count; i++) {
+            rs.next();
+            types[i] = rs.getString(1);
+        }
+        return new javax.swing.DefaultComboBoxModel<String>(types);
+        
     }
 
     public void fill(int nr, String uwagi) {
@@ -68,12 +132,12 @@ public class RaportFrame extends javax.swing.JFrame {
 
         linkPanel = new javax.swing.JPanel();
         linkButton = new javax.swing.JButton();
-        wybiegPanel = new javax.swing.JPanel();
-        wybiegLabel = new javax.swing.JLabel();
-        wybiegTextField = new javax.swing.JTextField();
         zwierzePanel = new javax.swing.JPanel();
         zwierzeLabel = new javax.swing.JLabel();
-        zwierzeTextField = new javax.swing.JTextField();
+        chipZwierzeciaComboBox = new javax.swing.JComboBox<>();
+        wybiegPanel = new javax.swing.JPanel();
+        wybiegLabel = new javax.swing.JLabel();
+        nrWybieguComboBox = new javax.swing.JComboBox<>();
         uwagiPanel = new javax.swing.JPanel();
         uwagiLabel = new javax.swing.JLabel();
         uwagiScrollPane = new javax.swing.JScrollPane();
@@ -96,29 +160,6 @@ public class RaportFrame extends javax.swing.JFrame {
 
         getContentPane().add(linkPanel, new java.awt.GridBagConstraints());
 
-        wybiegPanel.setLayout(new java.awt.GridBagLayout());
-
-        wybiegLabel.setText("Podaj numer wybiegu:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        wybiegPanel.add(wybiegLabel, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        wybiegPanel.add(wybiegTextField, gridBagConstraints);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 0.5;
-        gridBagConstraints.weighty = 0.5;
-        getContentPane().add(wybiegPanel, gridBagConstraints);
-
         zwierzePanel.setLayout(new java.awt.GridBagLayout());
 
         zwierzeLabel.setText("Podaj chip zwierzęcia:");
@@ -127,12 +168,13 @@ public class RaportFrame extends javax.swing.JFrame {
         gridBagConstraints.gridy = 0;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         zwierzePanel.add(zwierzeLabel, gridBagConstraints);
+
+        chipZwierzeciaComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "NO NUMBER" }));
         gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        zwierzePanel.add(zwierzeTextField, gridBagConstraints);
+        zwierzePanel.add(chipZwierzeciaComboBox, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -141,6 +183,30 @@ public class RaportFrame extends javax.swing.JFrame {
         gridBagConstraints.weightx = 0.5;
         gridBagConstraints.weighty = 0.5;
         getContentPane().add(zwierzePanel, gridBagConstraints);
+
+        wybiegPanel.setLayout(new java.awt.GridBagLayout());
+
+        wybiegLabel.setText("Podaj numer wybiegu:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        wybiegPanel.add(wybiegLabel, gridBagConstraints);
+
+        nrWybieguComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "NO NUMBER" }));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        wybiegPanel.add(nrWybieguComboBox, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 0.5;
+        gridBagConstraints.weighty = 0.5;
+        getContentPane().add(wybiegPanel, gridBagConstraints);
 
         uwagiPanel.setLayout(new java.awt.GridBagLayout());
 
@@ -206,7 +272,7 @@ public class RaportFrame extends javax.swing.JFrame {
                     up.ExecutePreparedQuery("INSERT INTO RAPORTY(PRACOWNICY_ID, UWAGI, ZWIERZETA_CHIP) VALUES(?, ?, ?)");
                     up.getStatement().setInt(1, id);
                     up.getStatement().setString(2, uwagiTextArea.getText());
-                    up.getStatement().setInt(3, Integer.parseInt(zwierzeTextField.getText()));
+                    up.getStatement().setInt(3, new Integer(chipZwierzeciaComboBox.getSelectedItem().toString()));
                     up.firePreparedUpdate();
                 } catch (SQLException ex) {
                     JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
@@ -216,7 +282,7 @@ public class RaportFrame extends javax.swing.JFrame {
                     up.ExecutePreparedQuery("INSERT INTO RAPORTY(PRACOWNICY_ID, UWAGI, WYBIEGI_NR) VALUES(?, ?, ?)");
                     up.getStatement().setInt(1, id);
                     up.getStatement().setString(2, uwagiTextArea.getText());
-                    up.getStatement().setInt(3, Integer.parseInt(wybiegTextField.getText()));
+                    up.getStatement().setInt(3, new Integer(nrWybieguComboBox.getSelectedItem().toString()));
                     up.firePreparedUpdate();
                 } catch (SQLException ex) {
                     JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
@@ -280,17 +346,17 @@ public class RaportFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JPanel buttonPanel;
     private javax.swing.JButton changeButton;
+    private javax.swing.JComboBox<String> chipZwierzeciaComboBox;
     private javax.swing.JButton linkButton;
     private javax.swing.JPanel linkPanel;
+    private javax.swing.JComboBox<String> nrWybieguComboBox;
     private javax.swing.JLabel uwagiLabel;
     private javax.swing.JPanel uwagiPanel;
     private javax.swing.JScrollPane uwagiScrollPane;
     private javax.swing.JTextArea uwagiTextArea;
     private javax.swing.JLabel wybiegLabel;
     private javax.swing.JPanel wybiegPanel;
-    private javax.swing.JTextField wybiegTextField;
     private javax.swing.JLabel zwierzeLabel;
     private javax.swing.JPanel zwierzePanel;
-    private javax.swing.JTextField zwierzeTextField;
     // End of variables declaration//GEN-END:variables
 }

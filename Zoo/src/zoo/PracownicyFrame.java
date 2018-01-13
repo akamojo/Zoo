@@ -143,9 +143,11 @@ public class PracownicyFrame extends javax.swing.JFrame {
             if (searchTextField.getText().isEmpty()) {
                 refresh();
             } else {
+                String[] where = new String[] {searchTextField.getText().toLowerCase(), searchTextField.getText().toLowerCase(), searchTextField.getText().toLowerCase(), searchTextField.getText().toLowerCase(), searchTextField.getText().toLowerCase(), searchTextField.getText().toLowerCase()};
                 String[] columns = new String[]{"Id", "Nazwisko", "Pensja", "Premia", "Etat", "Godziny", "Zatrudniony"};
                 CacheSqlTableModel model = new CacheSqlTableModel("select ID, NAZWISKO, PENSJA, PREMIA, ETATY_NAZWA, GODZIN_TYGODNIOWO, DATA_ZATRUDNIENIA "
-                        + "from pracownicy WHERE DATA_ZWOLNIENIA IS NULL AND LOWER(NAZWISKO) LIKE ? ", columns, "ORDER BY NAZWISKO", searchTextField.getText().toLowerCase());
+                        + "from pracownicy WHERE DATA_ZWOLNIENIA IS NULL AND (LOWER(NAZWISKO) LIKE ? OR TO_CHAR(PENSJA) LIKE ? OR TO_CHAR(PREMIA) LIKE ?"
+                        + " OR LOWER(ETATY_NAZWA) LIKE ? OR TO_CHAR(GODZIN_TYGODNIOWO) LIKE ? OR TO_CHAR(DATA_ZATRUDNIENIA, 'YYYY-MM-DD') LIKE ?)", columns, "ORDER BY NAZWISKO", where);
                 pracownicyTable.setModel(model);
                 pracownicyTable.removeColumn(pracownicyTable.getColumnModel().getColumn(0));
             }

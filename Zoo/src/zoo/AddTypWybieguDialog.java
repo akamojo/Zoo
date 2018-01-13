@@ -102,7 +102,7 @@ public class AddTypWybieguDialog extends javax.swing.JDialog {
             if (data.length() > 0) {
                 Execute exec = new Execute();
                 exec.ExecutePreparedQuery("INSERT INTO TYPY_WYBIEGU(NAZWA) VALUES(?)");
-                ((PreparedStatement) exec.getStatement()).setString(1, typTextField.getText());
+                 exec.getStatement().setString(1, typTextField.getText());
                 exec.firePreparedUpdate();
                 this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
 

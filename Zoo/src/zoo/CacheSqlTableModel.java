@@ -14,7 +14,7 @@ public class CacheSqlTableModel extends SqlTableModel {
     private ArrayList cache;
     private int columnCount;
     private Class[] columnClasses;
-    
+
     public CacheSqlTableModel(String query, String[] columnsNames, String orderBy) {
         super(query, columnsNames, orderBy);
         try {
@@ -39,7 +39,7 @@ public class CacheSqlTableModel extends SqlTableModel {
         }
     }
 
-    CacheSqlTableModel(String query, String[] columnsNames, String orderBy, String where) {
+    CacheSqlTableModel(String query, String[] columnsNames, String orderBy, String[] where) {
         super(query, columnsNames, orderBy, where);
         try {
             cache = new ArrayList();
@@ -62,7 +62,7 @@ public class CacheSqlTableModel extends SqlTableModel {
             Logger.getLogger(DBSupport.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     public void fillPreparedCacheSqlTableModel() {
         try {
             cache = new ArrayList();
@@ -134,7 +134,7 @@ public class CacheSqlTableModel extends SqlTableModel {
     public void appendRow(Object[] row) {
         appendRow(row, true);
     }
-    
+
     public void appendRow(int index, Object[] row) {
         appendRow(index, row, true);
     }
@@ -183,14 +183,16 @@ abstract class SqlTableModel extends AbstractTableModel {
             Logger.getLogger(DBSupport.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
-    public SqlTableModel(String query, String[] columnsNames, String orderBy, String where) {
+
+    public SqlTableModel(String query, String[] columnsNames, String orderBy, String[] where) {
         try {
             this.columnsNames = columnsNames;
             Connection dbConnection = DBSupport.getConn();
             this.pstmt = dbConnection.prepareStatement(query + " " + orderBy);
             this.orderBy = orderBy;
-            this.pstmt.setString(1, where + "%");
+            for (int i = 1; i <= where.length; i++) {
+                this.pstmt.setString(i, where[i - 1] + "%");
+            }
             this.rs = pstmt.executeQuery();
             this.rsmd = rs.getMetaData();
         } catch (SQLException ex) {

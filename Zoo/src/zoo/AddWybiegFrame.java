@@ -257,9 +257,9 @@ public class AddWybiegFrame extends javax.swing.JFrame {
         Execute exec = new Execute();
         try {
             exec.ExecutePreparedQuery("INSERT INTO WYBIEGI(POWIERZCHNIA, TYPY_WYBIEGU_NAZWA, OPIS_WYBIEGU) VALUES(?, ?, ?)");
-            ((PreparedStatement) exec.getStatement()).setInt(1, new Integer(powTextField.getText()));
-            ((PreparedStatement) exec.getStatement()).setString(2, typComboBox.getSelectedItem().toString());
-            ((PreparedStatement) exec.getStatement()).setString(3, opisTextArea.getText().toString());
+             exec.getStatement().setInt(1, new Integer(powTextField.getText()));
+             exec.getStatement().setString(2, typComboBox.getSelectedItem().toString());
+             exec.getStatement().setString(3, opisTextArea.getText().toString());
             exec.firePreparedUpdate();
             this.parent.refreshAll();
         } catch (SQLException ex) {

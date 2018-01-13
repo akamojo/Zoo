@@ -7,7 +7,11 @@ package zoo;
 
 import java.awt.event.WindowEvent;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 
 /**
@@ -38,6 +42,11 @@ public class OcenaFrame extends javax.swing.JFrame {
         this.parent = parent;
         initComponents();
         setIconImage(Zoo.getIcon());
+        try {
+            updateChipZwierzecia();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
+        }
     }
     
     public void fill(String komentarz) {
@@ -45,6 +54,58 @@ public class OcenaFrame extends javax.swing.JFrame {
         infoPanel.setVisible(false);
         komentarzTextArea.setText(komentarz);
         komentarzTextArea.setEditable(false);
+    }
+    
+    public void updateChipZwierzecia() throws SQLException {
+        numerLabel.setText("Podaj chip zwierzęcia:");
+        numerComboBox.setModel(this.loadChipZwierzecia());
+    }
+    
+    public DefaultComboBoxModel<String> loadChipZwierzecia() throws SQLException {
+        
+        Execute exec = new Execute();
+        exec.ExecuteQuery("SELECT COUNT(*) FROM ZWIERZETA");
+        ResultSet rs = exec.getRs();
+        
+        int count = 0;
+        if (rs.next())
+            count = rs.getInt(1);
+        String[] types = new String[count];
+        
+        exec.ExecuteQuery("SELECT CHIP FROM ZWIERZETA ORDER BY CHIP ASC");
+        rs = exec.getRs();
+        for (int i = 0; i < count; i++) {
+            rs.next();
+            types[i] = rs.getString(1);
+        }
+        return new javax.swing.DefaultComboBoxModel<String>(types);
+        
+    }
+    
+    public void updateNrWybiegu() throws SQLException {
+        numerLabel.setText("Podaj numer wybiegu:");
+        numerComboBox.setModel(this.loadNrWybiegu());
+    }
+    
+    public DefaultComboBoxModel<String> loadNrWybiegu() throws SQLException {
+        
+        Execute exec = new Execute();
+        exec.ExecuteQuery("SELECT COUNT(*) FROM WYBIEGI");
+        ResultSet rs = exec.getRs();
+        
+        int count = 0;
+        if (rs.next())
+            count = rs.getInt(1);
+        String[] types = new String[count];
+        
+        exec.ExecuteQuery("SELECT NR FROM WYBIEGI ORDER BY NR ASC");
+        rs = exec.getRs();
+        for (int i = 0; i < count; i++) {
+            rs.next();
+            types[i] = rs.getString(1);
+        }
+        return new javax.swing.DefaultComboBoxModel<String>(types);
+        
     }
 
     /**
@@ -65,8 +126,8 @@ public class OcenaFrame extends javax.swing.JFrame {
         questionComboBox = new javax.swing.JComboBox<>();
         gwiazdkiLabel = new javax.swing.JLabel();
         numerLabel = new javax.swing.JLabel();
-        numerTextField = new javax.swing.JTextField();
         gwiazdkiSpinner = new javax.swing.JSpinner();
+        numerComboBox = new javax.swing.JComboBox<>();
         komentarzLabel = new javax.swing.JLabel();
         komentarzScrollPane = new javax.swing.JScrollPane();
         komentarzTextArea = new javax.swing.JTextArea();
@@ -75,6 +136,8 @@ public class OcenaFrame extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Ocena");
+        setMinimumSize(new java.awt.Dimension(300, 300));
+        setPreferredSize(new java.awt.Dimension(350, 350));
 
         addButton.setText("Dodaj");
         addButton.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -98,6 +161,11 @@ public class OcenaFrame extends javax.swing.JFrame {
         infoPanel.add(questionLabel, gridBagConstraints);
 
         questionComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Zwierzę", "Wybieg" }));
+        questionComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                questionComboBoxActionPerformed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 0;
@@ -113,19 +181,12 @@ public class OcenaFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         infoPanel.add(gwiazdkiLabel, gridBagConstraints);
 
-        numerLabel.setText("Numer wybiegu lub chip zwierzęcia:");
+        numerLabel.setText("NULL");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 1;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         infoPanel.add(numerLabel, gridBagConstraints);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 0.5;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        infoPanel.add(numerTextField, gridBagConstraints);
 
         gwiazdkiSpinner.setModel(new javax.swing.SpinnerNumberModel(1, 1, 5, 1));
         gwiazdkiSpinner.setEditor(new javax.swing.JSpinner.NumberEditor(gwiazdkiSpinner, ""));
@@ -135,6 +196,14 @@ public class OcenaFrame extends javax.swing.JFrame {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         infoPanel.add(gwiazdkiSpinner, gridBagConstraints);
+
+        numerComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "NULL" }));
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        infoPanel.add(numerComboBox, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
@@ -193,7 +262,7 @@ public class OcenaFrame extends javax.swing.JFrame {
                  up.getStatement().setInt(1, Integer.parseInt(gwiazdkiSpinner.getValue().toString()));
                  up.getStatement().setString(2, komentarzTextArea.getText());
                  up.getStatement().setInt(3, this.numer);
-                 up.getStatement().setInt(4, Integer.parseInt(numerTextField.getText()));
+                 up.getStatement().setInt(4, new Integer(numerComboBox.getSelectedItem().toString()));
                 up.firePreparedUpdate();
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
@@ -204,7 +273,7 @@ public class OcenaFrame extends javax.swing.JFrame {
                  up.getStatement().setInt(1, Integer.parseInt(gwiazdkiSpinner.getValue().toString()));
                  up.getStatement().setString(2, komentarzTextArea.getText());
                  up.getStatement().setInt(3, this.numer);
-                 up.getStatement().setInt(4, Integer.parseInt(numerTextField.getText()));
+                 up.getStatement().setInt(4, new Integer(numerComboBox.getSelectedItem().toString()));
                 up.firePreparedUpdate();
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
@@ -219,6 +288,22 @@ public class OcenaFrame extends javax.swing.JFrame {
         w.setLocation(Zoo.getShowPosition2(w));
         w.setVisible(true);
     }//GEN-LAST:event_linkButtonMouseClicked
+
+    private void questionComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_questionComboBoxActionPerformed
+        if (questionComboBox.getSelectedIndex() == 0) {
+            try {
+                updateChipZwierzecia();
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
+            }
+        } else {
+            try {
+                updateNrWybiegu();
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
+            }
+        }
+    }//GEN-LAST:event_questionComboBoxActionPerformed
 
     /**
      * @param args the command line arguments
@@ -267,8 +352,8 @@ public class OcenaFrame extends javax.swing.JFrame {
     private javax.swing.JButton linkButton;
     private javax.swing.JPanel linkPanel;
     private javax.swing.JPanel mainPanel;
+    private javax.swing.JComboBox<String> numerComboBox;
     private javax.swing.JLabel numerLabel;
-    private javax.swing.JTextField numerTextField;
     private javax.swing.JComboBox<String> questionComboBox;
     private javax.swing.JLabel questionLabel;
     // End of variables declaration//GEN-END:variables

@@ -81,13 +81,15 @@ public class MainFrame extends javax.swing.JFrame {
         pracownicyButton = new javax.swing.JButton();
         wybiegiButton = new javax.swing.JButton();
         biletyButton = new javax.swing.JButton();
+        podsumowanieButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("Zoo");
-        setMinimumSize(new java.awt.Dimension(500, 600));
+        setMinimumSize(new java.awt.Dimension(500, 650));
         setName("Zoo"); // NOI18N
+        setPreferredSize(new java.awt.Dimension(500, 650));
         setResizable(false);
-        setSize(new java.awt.Dimension(500, 600));
+        setSize(new java.awt.Dimension(500, 650));
         addWindowListener(new java.awt.event.WindowAdapter() {
             public void windowClosing(java.awt.event.WindowEvent evt) {
                 formWindowClosing(evt);
@@ -142,6 +144,21 @@ public class MainFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         buttonsPanel.add(biletyButton, gridBagConstraints);
 
+        podsumowanieButton.setText("Podsumowanie");
+        podsumowanieButton.setMaximumSize(new java.awt.Dimension(300, 100));
+        podsumowanieButton.setMinimumSize(new java.awt.Dimension(300, 50));
+        podsumowanieButton.setPreferredSize(new java.awt.Dimension(300, 50));
+        podsumowanieButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                podsumowanieButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        buttonsPanel.add(podsumowanieButton, gridBagConstraints);
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -179,6 +196,12 @@ public class MainFrame extends javax.swing.JFrame {
         bilet.setLocation(getShowPosition2(bilet));
         bilet.setVisible(true);
     }//GEN-LAST:event_biletyButtonActionPerformed
+
+    private void podsumowanieButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_podsumowanieButtonActionPerformed
+        PodsumowanieFrame pods = new PodsumowanieFrame();
+        pods.setLocation(getShowPosition2(pods));
+        pods.setVisible(true);
+    }//GEN-LAST:event_podsumowanieButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -219,6 +242,7 @@ public class MainFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton biletyButton;
     private javax.swing.JPanel buttonsPanel;
+    private javax.swing.JButton podsumowanieButton;
     private javax.swing.JButton pracownicyButton;
     private javax.swing.JButton wybiegiButton;
     // End of variables declaration//GEN-END:variables

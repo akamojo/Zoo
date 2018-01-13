@@ -188,7 +188,7 @@ public class GatunekFrame extends javax.swing.JFrame {
             exec.ExecutePreparedQuery("select ilosc_pozywienia, rodzaj_pozywienia, potrzebna_przestrzen_m2,"
                     + "kategorie_nazwa, min_licznosc_stada, typ_wybiegu "
                     + "from gatunki where nazwa = ?");
-            ((PreparedStatement) exec.getStatement()).setString(1, nazwaGatunku);
+             exec.getStatement().setString(1, nazwaGatunku);
             exec.firePreparedQuery();
             exec.getRs().next();
             
@@ -480,18 +480,18 @@ public class GatunekFrame extends javax.swing.JFrame {
                 exec.ExecutePreparedQuery("INSERT INTO GATUNKI(NAZWA, ILOSC_POZYWIENIA, RODZAJ_POZYWIENIA,"
                         + "POTRZEBNA_PRZESTRZEN_M2, KATEGORIE_NAZWA, MIN_LICZNOSC_STADA, TYP_WYBIEGU) "
                         + "VALUES(?, ?, ?, ?, ?, ?, ?)");
-                ((PreparedStatement) exec.getStatement()).setString(1, nazwaGatunkuTxtField.getText().toString());
-                ((PreparedStatement) exec.getStatement()).setInt(2, new Integer(ilPozTextField.getText().toString()));
-                ((PreparedStatement) exec.getStatement()).setString(3, rodzPozTextField.getText().toString());
-                ((PreparedStatement) exec.getStatement()).setInt(4, new Integer(przestrzenTextField.getText().toString()));
-                ((PreparedStatement) exec.getStatement()).setString(5, kategoriaComboBox.getSelectedItem().toString());
+                 exec.getStatement().setString(1, nazwaGatunkuTxtField.getText().toString());
+                 exec.getStatement().setInt(2, new Integer(ilPozTextField.getText().toString()));
+                 exec.getStatement().setString(3, rodzPozTextField.getText().toString());
+                 exec.getStatement().setInt(4, new Integer(przestrzenTextField.getText().toString()));
+                 exec.getStatement().setString(5, kategoriaComboBox.getSelectedItem().toString());
 
                 if ("".equals(stadoTextField.getText().toString().trim()))
-                    ((PreparedStatement) exec.getStatement()).setNull(6, java.sql.Types.INTEGER);
+                     exec.getStatement().setNull(6, java.sql.Types.INTEGER);
                 else
-                    ((PreparedStatement) exec.getStatement()).setInt(6, new Integer(stadoTextField.getText().toString()));
+                     exec.getStatement().setInt(6, new Integer(stadoTextField.getText().toString()));
 
-                ((PreparedStatement) exec.getStatement()).setString(7, typWybieguComboBox.getSelectedItem().toString());
+                 exec.getStatement().setString(7, typWybieguComboBox.getSelectedItem().toString());
                 exec.firePreparedUpdate();
                 nazwaGatunkuTxtField.setEditable(false);
                 newGatunek = false;
@@ -502,20 +502,20 @@ public class GatunekFrame extends javax.swing.JFrame {
                 String nazwa = "'" + nazwaGatunkuTxtField.getText().toString() + "'";
                 
                 exec.ExecutePreparedQuery("UPDATE GATUNKI SET ILOSC_POZYWIENIA = ? WHERE NAZWA = " + nazwa);
-                ((PreparedStatement) exec.getStatement()).setInt(1, new Integer(ilPozTextField.getText().toString()));
+                 exec.getStatement().setInt(1, new Integer(ilPozTextField.getText().toString()));
                 exec.firePreparedUpdate();
                 
                 exec.ExecutePreparedQuery("UPDATE GATUNKI SET RODZAJ_POZYWIENIA = ? WHERE NAZWA = " + nazwa);
-                ((PreparedStatement) exec.getStatement()).setString(1, rodzPozTextField.getText().toString());
+                 exec.getStatement().setString(1, rodzPozTextField.getText().toString());
                 exec.firePreparedUpdate();
                 
                 exec.ExecutePreparedQuery("UPDATE GATUNKI SET POTRZEBNA_PRZESTRZEN_M2 = ? WHERE NAZWA = " + nazwa);
-                ((PreparedStatement) exec.getStatement()).setInt(1, new Integer(przestrzenTextField.getText().toString()));
+                 exec.getStatement().setInt(1, new Integer(przestrzenTextField.getText().toString()));
                 exec.firePreparedUpdate();
 
                 if (!"".equals(stadoTextField.getText().toString())) {
                     exec.ExecutePreparedQuery("UPDATE GATUNKI SET MIN_LICZNOSC_STADA = ? WHERE NAZWA = " + nazwa);
-                    ((PreparedStatement) exec.getStatement()).setInt(1, new Integer(stadoTextField.getText().toString()));
+                     exec.getStatement().setInt(1, new Integer(stadoTextField.getText().toString()));
                     exec.firePreparedUpdate();
                 }
 

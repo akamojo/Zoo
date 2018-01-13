@@ -320,7 +320,7 @@ public class WybiegiFrame extends javax.swing.JFrame {
             exec.ExecutePreparedQuery("DELETE FROM WYBIEGI WHERE NR = ?");
             int row = wybiegiTable.getSelectedRow();
             if (row != -1)
-                ((PreparedStatement) exec.getStatement()).setInt(1, new Integer(wybiegiTable.getValueAt(row, 0).toString()));
+                 exec.getStatement().setInt(1, new Integer(wybiegiTable.getValueAt(row, 0).toString()));
             int result = exec.firePreparedUpdate_getCount();
             if (result > 0) {
                 JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Wybieg usunięty!", "Sukces", JOptionPane.INFORMATION_MESSAGE);

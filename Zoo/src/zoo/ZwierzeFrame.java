@@ -23,7 +23,7 @@ import static zoo.Zoo.getShowPosition2;
 public class ZwierzeFrame extends javax.swing.JFrame {
 
     private WybiegiFrame parent;
-    
+
     /*
     PROBLEM:
     Jeśli
@@ -31,8 +31,7 @@ public class ZwierzeFrame extends javax.swing.JFrame {
     2. przypomniało się żeby dodać wybieg
     3. chcemy wybrać numer wybiegu
     ... to nie ma tego nowego numeru wybiegu, bo nie poszło info z WybiegiFrame :(
-    */
-    
+     */
     /**
      * Creates new form AddZwerzeFrame
      */
@@ -42,7 +41,7 @@ public class ZwierzeFrame extends javax.swing.JFrame {
         nrWybieguComboBox.setModel(this.loadNrWybiegu());
         setIconImage(Zoo.getIcon());
     }
-    
+
     public ZwierzeFrame(WybiegiFrame p) throws SQLException {
         this.parent = p;
         initComponents();
@@ -50,7 +49,7 @@ public class ZwierzeFrame extends javax.swing.JFrame {
         nrWybieguComboBox.setModel(this.loadNrWybiegu());
         setIconImage(Zoo.getIcon());
     }
-    
+
     public ZwierzeFrame(WybiegiFrame p, Integer chip) throws SQLException {
         this.parent = p;
         initComponents();
@@ -59,22 +58,23 @@ public class ZwierzeFrame extends javax.swing.JFrame {
         this.fill(chip);
         setIconImage(Zoo.getIcon());
     }
-    
+
     public void updateGatunki() throws SQLException {
         gatunekComboBox.setModel(this.loadGatunki());
     }
-    
+
     public DefaultComboBoxModel<String> loadGatunki() throws SQLException {
-        
+
         Execute exec = new Execute();
         exec.ExecuteQuery("SELECT COUNT(*) FROM GATUNKI ORDER BY NAZWA");
         ResultSet rs = exec.getRs();
-        
+
         int count = 0;
-        if (rs.next())
+        if (rs.next()) {
             count = rs.getInt(1);
+        }
         String[] types = new String[count];
-        
+
         exec.ExecuteQuery("SELECT NAZWA FROM GATUNKI ORDER BY NAZWA");
         rs = exec.getRs();
         for (int i = 0; i < count; i++) {
@@ -82,24 +82,25 @@ public class ZwierzeFrame extends javax.swing.JFrame {
             types[i] = rs.getString(1);
         }
         return new javax.swing.DefaultComboBoxModel<String>(types);
-        
+
     }
-    
+
     public void updateNrWybiegu() throws SQLException {
         nrWybieguComboBox.setModel(this.loadNrWybiegu());
     }
-    
+
     public DefaultComboBoxModel<String> loadNrWybiegu() throws SQLException {
-        
+
         Execute exec = new Execute();
         exec.ExecuteQuery("SELECT COUNT(*) FROM WYBIEGI");
         ResultSet rs = exec.getRs();
-        
+
         int count = 0;
-        if (rs.next())
+        if (rs.next()) {
             count = rs.getInt(1);
+        }
         String[] types = new String[count];
-        
+
         exec.ExecuteQuery("SELECT NR FROM WYBIEGI ORDER BY NR ASC");
         rs = exec.getRs();
         for (int i = 0; i < count; i++) {
@@ -107,49 +108,48 @@ public class ZwierzeFrame extends javax.swing.JFrame {
             types[i] = rs.getString(1);
         }
         return new javax.swing.DefaultComboBoxModel<String>(types);
-        
+
     }
-    
+
     public void fill(int chip) {
         try {
             Execute exec = new Execute();
             exec.ExecutePreparedQuery("select chip, waga, data_urodzin, data_przyjecia,"
                     + "gatunki_nazwa, wybiegi_nr, plec, data_opuszczenia_zoo from zwierzeta where chip = ?");
-            ((PreparedStatement) exec.getStatement()).setInt(1, chip);
+            exec.getStatement().setInt(1, chip);
             exec.firePreparedQuery();
             exec.getRs().next();
 
             chipTextField.setText(exec.getRs().getString(1));
             wagaTextField.setText(exec.getRs().getString(2));
-            
+
             String dataUr = exec.getRs().getString(3);
-            if (dataUr != null) 
+            if (dataUr != null) {
                 dataUrTextField.setText(exec.getRs().getDate(3).toString());
-            else
+            } else {
                 dataUrTextField.setText("");
-            
+            }
+
             String dataZoo = exec.getRs().getString(4);
-            if (dataZoo != null) 
+            if (dataZoo != null) {
                 dataZooTextField.setText(exec.getRs().getDate(4).toString());
-            else
+            } else {
                 dataZooTextField.setText("");
-            
+            }
+
             gatunekComboBox.setSelectedItem(exec.getRs().getString(5));
             nrWybieguComboBox.setSelectedItem(exec.getRs().getString(6));
             plecComboBox.setSelectedItem(exec.getRs().getString(7));
-            
+
             try {
                 leaveZooTextField.setText(exec.getRs().getDate(8).toString());
-            }
-            catch (NullPointerException ex) {
+            } catch (NullPointerException ex) {
                 leaveZooTextField.setText("");
             }
-            
+
             gatunekComboBox.setEnabled(false);
             leaveZooTextField.setEnabled(false);
-            
-            
-            
+
         } catch (SQLException ex) {
             Logger.getLogger(PracownikFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -409,23 +409,24 @@ public class ZwierzeFrame extends javax.swing.JFrame {
             try {
                 exec.ExecutePreparedQuery("INSERT INTO ZWIERZETA(WAGA, DATA_URODZIN, DATA_PRZYJECIA, GATUNKI_NAZWA, WYBIEGI_NR, PLEC) "
                         + "VALUES(?, ?, ?, ?, ?, ?)");
-                ((PreparedStatement) exec.getStatement()).setFloat(1, Float.parseFloat(wagaTextField.getText()));
-                
-                if ("".equals(dataUrTextField.getText().toString().trim()))
-                    ((PreparedStatement) exec.getStatement()).setNull(2, java.sql.Types.DATE);
-                else
-                    ((PreparedStatement) exec.getStatement()).setDate(2, java.sql.Date.valueOf(dataUrTextField.getText()));
-                
-                if ("".equals(dataZooTextField.getText().toString().trim()))
-                    ((PreparedStatement) exec.getStatement()).setNull(3, java.sql.Types.DATE);
-                else
-                    ((PreparedStatement) exec.getStatement()).setDate(3, java.sql.Date.valueOf(dataZooTextField.getText()));
+                exec.getStatement().setFloat(1, Float.parseFloat(wagaTextField.getText()));
 
-              
-                // ((PreparedStatement) exec.getStatement()).setDate(3, java.sql.Date.valueOf(dataZooTextField.getText()));
-                ((PreparedStatement) exec.getStatement()).setString(4, gatunekComboBox.getSelectedItem().toString());
-                ((PreparedStatement) exec.getStatement()).setInt(5, Integer.parseInt(nrWybieguComboBox.getSelectedItem().toString()));
-                ((PreparedStatement) exec.getStatement()).setString(6, plecComboBox.getSelectedItem().toString());
+                if ("".equals(dataUrTextField.getText().toString().trim())) {
+                    exec.getStatement().setNull(2, java.sql.Types.DATE);
+                } else {
+                    exec.getStatement().setDate(2, java.sql.Date.valueOf(dataUrTextField.getText()));
+                }
+
+                if ("".equals(dataZooTextField.getText().toString().trim())) {
+                    exec.getStatement().setNull(3, java.sql.Types.DATE);
+                } else {
+                    exec.getStatement().setDate(3, java.sql.Date.valueOf(dataZooTextField.getText()));
+                }
+
+                //  exec.getStatement().setDate(3, java.sql.Date.valueOf(dataZooTextField.getText()));
+                exec.getStatement().setString(4, gatunekComboBox.getSelectedItem().toString());
+                exec.getStatement().setInt(5, Integer.parseInt(nrWybieguComboBox.getSelectedItem().toString()));
+                exec.getStatement().setString(6, plecComboBox.getSelectedItem().toString());
                 exec.firePreparedUpdate();
 
                 exec.ExecuteQuery("SELECT CHIP FROM ZWIERZETA ORDER BY CHIP DESC FETCH FIRST 1 ROW ONLY");
@@ -438,38 +439,37 @@ public class ZwierzeFrame extends javax.swing.JFrame {
                 //Logger.getLogger(PracownikFrame.class.getName()).log(Level.SEVERE, null, ex);
             }
 
-        }
-        else {
+        } else {
             try {
                 String chip = chipTextField.getText().toString();
                 exec.ExecutePreparedQuery("UPDATE ZWIERZETA SET PLEC = ? WHERE CHIP = " + chip);
-                ((PreparedStatement) exec.getStatement()).setString(1, plecComboBox.getSelectedItem().toString());
+                exec.getStatement().setString(1, plecComboBox.getSelectedItem().toString());
                 exec.firePreparedUpdate();
-                
+
                 exec.ExecutePreparedQuery("UPDATE ZWIERZETA SET WAGA = ? WHERE CHIP = " + chip);
-                ((PreparedStatement) exec.getStatement()).setFloat(1, Float.parseFloat(wagaTextField.getText().toString()));
+                exec.getStatement().setFloat(1, Float.parseFloat(wagaTextField.getText().toString()));
                 exec.firePreparedUpdate();
-                
+
                 exec.ExecutePreparedQuery("UPDATE ZWIERZETA SET WYBIEGI_NR = ? WHERE CHIP = " + chip);
-                ((PreparedStatement) exec.getStatement()).setInt(1, new Integer(nrWybieguComboBox.getSelectedItem().toString()));
+                exec.getStatement().setInt(1, new Integer(nrWybieguComboBox.getSelectedItem().toString()));
                 exec.firePreparedUpdate();
-                
+
                 if (!"".equals(dataUrTextField.getText().toString())) {
                     exec.ExecutePreparedQuery("UPDATE ZWIERZETA SET DATA_URODZIN = ? WHERE CHIP = " + chip);
-                    ((PreparedStatement) exec.getStatement()).setDate(1, java.sql.Date.valueOf(dataUrTextField.getText().toString()));
+                    exec.getStatement().setDate(1, java.sql.Date.valueOf(dataUrTextField.getText().toString()));
                     exec.firePreparedUpdate();
                 }
-                
+
                 if (!"".equals(dataZooTextField.getText().toString())) {
                     exec.ExecutePreparedQuery("UPDATE ZWIERZETA SET DATA_PRZYJECIA = ? WHERE CHIP = " + chip);
-                    ((PreparedStatement) exec.getStatement()).setDate(1, java.sql.Date.valueOf(dataZooTextField.getText().toString()));
+                    exec.getStatement().setDate(1, java.sql.Date.valueOf(dataZooTextField.getText().toString()));
                     exec.firePreparedUpdate();
                 }
-                
+
             } catch (Exception ex) {
                 JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error from changeButtonActionPerformed", JOptionPane.ERROR_MESSAGE);
             }
-         
+
         }
         JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Zmiany wprowadzone! :)", "Zatwierdź - sukces", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_changeButtonActionPerformed
@@ -480,7 +480,7 @@ public class ZwierzeFrame extends javax.swing.JFrame {
         String chip = chipTextField.getText();
         int result = exec.ExecuteUpdate_getChanges("UPDATE ZWIERZETA SET DATA_OPUSZCZENIA_ZOO = DATE '" + date.toString() + "' WHERE CHIP = " + chip);
         if (result > 0) {
-            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Zwierzę zostało usunięte z ZOO; nadal istnieje w raportach i ocenach.", 
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Zwierzę zostało usunięte z ZOO; nadal istnieje w raportach i ocenach.",
                     "Sukces", JOptionPane.INFORMATION_MESSAGE);
             this.fill(new Integer(chip));
         }
