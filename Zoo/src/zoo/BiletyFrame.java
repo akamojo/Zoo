@@ -8,6 +8,7 @@ package zoo;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -45,6 +46,7 @@ public class BiletyFrame extends javax.swing.JFrame {
 
         buttonPanel = new javax.swing.JPanel();
         kupBiletButton = new javax.swing.JButton();
+        delButton = new javax.swing.JButton();
         biletyPanel = new javax.swing.JPanel();
         biletyScrollPane = new javax.swing.JScrollPane();
         biletyTable = new javax.swing.JTable();
@@ -59,6 +61,14 @@ public class BiletyFrame extends javax.swing.JFrame {
             }
         });
         buttonPanel.add(kupBiletButton);
+
+        delButton.setText("Usuń bilet");
+        delButton.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyTyped(java.awt.event.KeyEvent evt) {
+                delButtonKeyTyped(evt);
+            }
+        });
+        buttonPanel.add(delButton);
 
         getContentPane().add(buttonPanel, java.awt.BorderLayout.PAGE_START);
 
@@ -110,6 +120,24 @@ public class BiletyFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_biletyTableMouseClicked
 
+    private void delButtonKeyTyped(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_delButtonKeyTyped
+        int selectionIndex = biletyTable.getSelectionModel().getMinSelectionIndex();
+        if (selectionIndex >= 0) {
+            CacheSqlTableModel tableModel = (CacheSqlTableModel) biletyTable.getModel();
+            int selectedId = tableModel.getSelectedId(biletyTable.getSelectedRow());
+
+            int n = JOptionPane.showOptionDialog(JOptionPane.getRootFrame(), "Jesteś pewnien, że chcesz usunąć bilet?\n"
+                    + "Razem z nim zostaną usuniente również wszystkie przypisane do niego oceny!", "Usuń raport",
+                    JOptionPane.YES_NO_OPTION, JOptionPane.WARNING_MESSAGE, null, null, null);
+
+            if (n == 0) {
+                Execute up = new Execute();
+                up.ExecuteUpdate("DELETE FROM BILETY WHERE NR = " + Integer.toString(selectedId));
+                refresh();
+            }
+        }
+    }//GEN-LAST:event_delButtonKeyTyped
+
     /**
      * @param args the command line arguments
      */
@@ -150,6 +178,7 @@ public class BiletyFrame extends javax.swing.JFrame {
     private javax.swing.JScrollPane biletyScrollPane;
     private javax.swing.JTable biletyTable;
     private javax.swing.JPanel buttonPanel;
+    private javax.swing.JButton delButton;
     private javax.swing.JButton kupBiletButton;
     // End of variables declaration//GEN-END:variables
 }
