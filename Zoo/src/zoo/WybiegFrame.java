@@ -25,13 +25,16 @@ public class WybiegFrame extends javax.swing.JFrame {
 
     private int etat;
     private int nr = -1;
+    private WybiegiFrame parent;
+
 
     /**
      * Creates new form RaportFrame
      */
-    public WybiegFrame(int nr) throws SQLException {
+    public WybiegFrame(WybiegiFrame parent, int nr) throws SQLException {
         initComponents();
         this.nr = nr;
+        this.parent = parent;
         this.fill(nr);
     }
     
@@ -94,6 +97,11 @@ public class WybiegFrame extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Raport");
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                tellParent(evt);
+            }
+        });
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
         linkPanel.setLayout(new java.awt.GridBagLayout());
@@ -252,6 +260,12 @@ public class WybiegFrame extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
         }
     }//GEN-LAST:event_controlButtonActionPerformed
+
+    private void tellParent(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_tellParent
+        if (this.parent != null) {
+            this.parent.addRemoveAbility(true);
+        }
+    }//GEN-LAST:event_tellParent
 
     /**
      * @param args the command line arguments

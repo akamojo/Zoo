@@ -65,8 +65,14 @@ public class WybiegiFrame extends javax.swing.JFrame {
                 }
             }
         });
-        
            
+    }
+    
+    public void addRemoveAbility(boolean b) {
+        addWybiegButton.setEnabled(b);
+        addZwierzeButton.setEnabled(b);
+        removeWybiegButton.setEnabled(b);
+        removeZwierzeButton.setEnabled(b);
     }
     
     public void refreshRaportyAndOceny(String id, String choice) {
@@ -101,13 +107,7 @@ public class WybiegiFrame extends javax.swing.JFrame {
                 
         model = new CacheSqlTableModel("select gatunki_nazwa, plec, chip from zwierzeta", columnsZwierzeta, "ORDER BY CHIP");
         zwierzetaTable.setModel(model);
-        
-        /*model = new CacheSqlTableModel("select numer, czas_wystawienia, pracownicy_id, uwagi from raporty", columnsRaporty, "ORDER BY czas_wystawienia");
-        raportyTable.setModel(model);
                 
-        model = new CacheSqlTableModel("select gatunki_nazwa, plec, chip from zwierzeta", columnsZwierzeta, "ORDER BY CHIP");
-        zwierzetaTable.setModel(model);*/
-        
     }
     
     public void refreshZwierzeta(String numerWybiegu) {
@@ -401,7 +401,8 @@ public class WybiegiFrame extends javax.swing.JFrame {
             int row = wybiegiTable.getSelectedRow();
             if (row != -1) {
                 try {
-                    WybiegFrame w = new WybiegFrame(new Integer(wybiegiTable.getValueAt(row, 0).toString()));
+                    WybiegFrame w = new WybiegFrame(this, new Integer(wybiegiTable.getValueAt(row, 0).toString()));
+                    this.addRemoveAbility(false);
                     w.setLocation(getShowPosition2(w));
                     w.setVisible(true);
                 } catch (SQLException ex) {
@@ -421,6 +422,7 @@ public class WybiegiFrame extends javax.swing.JFrame {
             if (row != -1) {
                 try {
                     ZwierzeFrame z = new ZwierzeFrame(this, new Integer(zwierzetaTable.getValueAt(row, 2).toString()));
+                    this.addRemoveAbility(false);
                     z.setLocation(getShowPosition2(z));
                     z.setVisible(true);
                 } catch (SQLException ex) {
@@ -433,6 +435,7 @@ public class WybiegiFrame extends javax.swing.JFrame {
     private void addWybiegButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addWybiegButtonActionPerformed
         try {
             AddWybiegFrame w = new AddWybiegFrame(this);
+            this.addRemoveAbility(false);
             w.setLocation(getShowPosition2(w));
             w.setVisible(true);
         } catch (SQLException ex) {
@@ -445,15 +448,13 @@ public class WybiegiFrame extends javax.swing.JFrame {
             Execute exec = new Execute();
             exec.ExecutePreparedQuery("DELETE FROM WYBIEGI WHERE NR = ?");
             int row = wybiegiTable.getSelectedRow();
-            if (row != -1)
-                 exec.getStatement().setInt(1, new Integer(wybiegiTable.getValueAt(row, 0).toString()));
-            int result = exec.firePreparedUpdate_getCount();
-            if (result > 0) {
-                JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Wybieg usunięty!", "Sukces", JOptionPane.INFORMATION_MESSAGE);
-                this.refreshAll();
-            }
-            else {
-                // err...
+            if (row != -1) {
+                exec.getStatement().setInt(1, new Integer(wybiegiTable.getValueAt(row, 0).toString()));
+                int result = exec.firePreparedUpdate_getCount();
+                if (result > 0) {
+                    JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Wybieg usunięty!", "Sukces", JOptionPane.INFORMATION_MESSAGE);
+                    this.refreshAll();
+                }
             }
             
         } catch (SQLException ex) {
@@ -464,6 +465,7 @@ public class WybiegiFrame extends javax.swing.JFrame {
     private void addZwierzeButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addZwierzeButtonActionPerformed
         try {
             ZwierzeFrame z = new ZwierzeFrame(this);
+            this.addRemoveAbility(false);
             z.setLocation(getShowPosition2(z));
             z.setVisible(true);
         } catch (SQLException ex) {

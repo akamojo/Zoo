@@ -189,6 +189,11 @@ public class ZwierzeFrame extends javax.swing.JFrame {
         plecComboBox = new javax.swing.JComboBox<>();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                tellParent(evt);
+            }
+        });
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
         buttonsPanel.setLayout(new java.awt.GridBagLayout());
@@ -538,6 +543,12 @@ public class ZwierzeFrame extends javax.swing.JFrame {
             Logger.getLogger(ZwierzeFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
     }//GEN-LAST:event_newGatunekButtonActionPerformed
+
+    private void tellParent(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_tellParent
+        if (this.parent != null) {
+            this.parent.addRemoveAbility(true);
+        }
+    }//GEN-LAST:event_tellParent
 
     /**
      * @param args the command line arguments

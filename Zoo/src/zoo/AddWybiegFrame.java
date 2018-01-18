@@ -88,6 +88,12 @@ public class AddWybiegFrame extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setMinimumSize(new java.awt.Dimension(311, 284));
+        setPreferredSize(new java.awt.Dimension(350, 350));
+        addWindowListener(new java.awt.event.WindowAdapter() {
+            public void windowClosed(java.awt.event.WindowEvent evt) {
+                tellParent(evt);
+            }
+        });
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
         typWybieguPanel.setLayout(new java.awt.GridBagLayout());
@@ -281,6 +287,12 @@ public class AddWybiegFrame extends javax.swing.JFrame {
     private void powTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_powTextFieldActionPerformed
         // TODO add your handling code here:
     }//GEN-LAST:event_powTextFieldActionPerformed
+
+    private void tellParent(java.awt.event.WindowEvent evt) {//GEN-FIRST:event_tellParent
+        if (this.parent != null) {
+            this.parent.addRemoveAbility(true);
+        }
+    }//GEN-LAST:event_tellParent
 
     /**
      * @param args the command line arguments
