@@ -7,6 +7,7 @@ package zoo;
 
 import com.sun.org.apache.xml.internal.serializer.utils.Messages;
 import java.awt.Image;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -143,18 +144,20 @@ public class PracownikFrame extends javax.swing.JFrame {
         zatrudnionyLabel = new javax.swing.JLabel();
         zatrudnionyTextField = new javax.swing.JTextField();
         etatComboBox = new javax.swing.JComboBox<>();
-        biletyPanel = new javax.swing.JPanel();
-        buttonBiletyPanel = new javax.swing.JPanel();
-        addBiletButton = new javax.swing.JButton();
-        delBiletButton = new javax.swing.JButton();
-        biletyScrollPane = new javax.swing.JScrollPane();
-        biletyTable = new javax.swing.JTable();
         raportyPanel = new javax.swing.JPanel();
         raportyScrollPane = new javax.swing.JScrollPane();
         raportyTable = new javax.swing.JTable();
         buttonRaportyPanel = new javax.swing.JPanel();
+        searchRaportTextField = new javax.swing.JTextField();
         addRaportButton = new javax.swing.JButton();
         delButton = new javax.swing.JButton();
+        biletyPanel = new javax.swing.JPanel();
+        buttonBiletyPanel = new javax.swing.JPanel();
+        searchBiletTextField = new javax.swing.JTextField();
+        addBiletButton = new javax.swing.JButton();
+        delBiletButton = new javax.swing.JButton();
+        biletyScrollPane = new javax.swing.JScrollPane();
+        biletyTable = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Zoo Pracownik");
@@ -168,7 +171,7 @@ public class PracownikFrame extends javax.swing.JFrame {
         });
         buttonsPanel.add(changeButton);
 
-        deleteButton.setText("Usuń");
+        deleteButton.setText("Zwolnij");
         deleteButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 deleteButtonActionPerformed(evt);
@@ -281,8 +284,72 @@ public class PracownikFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         mainPanel.add(etatComboBox, gridBagConstraints);
 
+        raportyPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Raporty"));
+        raportyPanel.setLayout(new java.awt.BorderLayout());
+
+        raportyTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+
+            }
+        ));
+        raportyTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                raportyTableMouseClicked(evt);
+            }
+        });
+        raportyScrollPane.setViewportView(raportyTable);
+
+        raportyPanel.add(raportyScrollPane, java.awt.BorderLayout.CENTER);
+
+        searchRaportTextField.setPreferredSize(new java.awt.Dimension(100, 20));
+        searchRaportTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                searchRaportTextFieldKeyPressed(evt);
+            }
+        });
+        buttonRaportyPanel.add(searchRaportTextField);
+
+        addRaportButton.setText("Dodaj raport");
+        addRaportButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                addRaportButtonMouseClicked(evt);
+            }
+        });
+        buttonRaportyPanel.add(addRaportButton);
+
+        delButton.setText("Usuń raport");
+        delButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                delButtonMouseClicked(evt);
+            }
+        });
+        buttonRaportyPanel.add(delButton);
+
+        raportyPanel.add(buttonRaportyPanel, java.awt.BorderLayout.PAGE_START);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 8;
+        gridBagConstraints.gridwidth = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 0.7;
+        gridBagConstraints.weighty = 0.7;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        mainPanel.add(raportyPanel, gridBagConstraints);
+
         biletyPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Bilety"));
         biletyPanel.setLayout(new java.awt.BorderLayout());
+
+        searchBiletTextField.setPreferredSize(new java.awt.Dimension(100, 20));
+        searchBiletTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                searchBiletTextFieldKeyPressed(evt);
+            }
+        });
+        buttonBiletyPanel.add(searchBiletTextField);
 
         addBiletButton.setText("Sprzedaj bilet");
         addBiletButton.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -328,54 +395,6 @@ public class PracownikFrame extends javax.swing.JFrame {
         gridBagConstraints.weighty = 0.7;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         mainPanel.add(biletyPanel, gridBagConstraints);
-
-        raportyPanel.setBorder(javax.swing.BorderFactory.createTitledBorder("Raporty"));
-        raportyPanel.setLayout(new java.awt.BorderLayout());
-
-        raportyTable.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][] {
-
-            },
-            new String [] {
-
-            }
-        ));
-        raportyTable.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                raportyTableMouseClicked(evt);
-            }
-        });
-        raportyScrollPane.setViewportView(raportyTable);
-
-        raportyPanel.add(raportyScrollPane, java.awt.BorderLayout.CENTER);
-
-        addRaportButton.setText("Dodaj raport");
-        addRaportButton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                addRaportButtonMouseClicked(evt);
-            }
-        });
-        buttonRaportyPanel.add(addRaportButton);
-
-        delButton.setText("Usuń raport");
-        delButton.addMouseListener(new java.awt.event.MouseAdapter() {
-            public void mouseClicked(java.awt.event.MouseEvent evt) {
-                delButtonMouseClicked(evt);
-            }
-        });
-        buttonRaportyPanel.add(delButton);
-
-        raportyPanel.add(buttonRaportyPanel, java.awt.BorderLayout.PAGE_START);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 8;
-        gridBagConstraints.gridwidth = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 0.7;
-        gridBagConstraints.weighty = 0.7;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        mainPanel.add(raportyPanel, gridBagConstraints);
 
         getContentPane().add(mainPanel, java.awt.BorderLayout.CENTER);
 
@@ -561,6 +580,34 @@ public class PracownikFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_biletyTableMouseClicked
 
+    private void searchBiletTextFieldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchBiletTextFieldKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            if (searchBiletTextField.getText().isEmpty()) {
+                refreshBilety();
+            } else {
+                String[] where = new String[]{searchBiletTextField.getText().toLowerCase()};
+                String[] columns = new String[]{"Numer", "Wiek klienta", "Czas sprzedaży", "Id sprzedawcy", "Typ biletu"};
+                CacheSqlTableModel model = new CacheSqlTableModel("select * from BILETY where pracownicy_id = " + Integer.toString(this.id) + " AND TO_CHAR(CZAS_SPRZEDAZY, 'YYYY-MM-DD') LIKE ?", columns, "ORDER BY NR", where);
+                biletyTable.setModel(model);
+                biletyTable.removeColumn(biletyTable.getColumnModel().getColumn(0));
+            }
+        }
+    }//GEN-LAST:event_searchBiletTextFieldKeyPressed
+
+    private void searchRaportTextFieldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchRaportTextFieldKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            if (searchRaportTextField.getText().isEmpty()) {
+                refreshRaporty();
+            } else {
+                String[] where = new String[]{searchRaportTextField.getText().toLowerCase()};
+                String[] columns = new String[]{"Numer", "Czas wystawienia", "Id pracownika", "Uwagi", "Chip zwierzęcia", "Numer wybiegu"};
+                CacheSqlTableModel model = new CacheSqlTableModel("select * from RAPORTY where pracownicy_id = " + Integer.toString(this.id) + " AND TO_CHAR(CZAS_WYSTAWIENIA, 'YYYY-MM-DD') LIKE ?", columns, "ORDER BY NUMER", where);
+                raportyTable.setModel(model);
+                raportyTable.removeColumn(raportyTable.getColumnModel().getColumn(0));
+            }
+        }
+    }//GEN-LAST:event_searchRaportTextFieldKeyPressed
+
     /**
      * @param args the command line arguments
      */
@@ -625,6 +672,8 @@ public class PracownikFrame extends javax.swing.JFrame {
     private javax.swing.JPanel raportyPanel;
     private javax.swing.JScrollPane raportyScrollPane;
     private javax.swing.JTable raportyTable;
+    private javax.swing.JTextField searchBiletTextField;
+    private javax.swing.JTextField searchRaportTextField;
     private javax.swing.JLabel zatrudnionyLabel;
     private javax.swing.JTextField zatrudnionyTextField;
     // End of variables declaration//GEN-END:variables

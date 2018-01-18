@@ -6,6 +6,7 @@
 package zoo;
 
 import java.sql.CallableStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
 import java.util.logging.Level;
@@ -24,6 +25,12 @@ public class PodsumowanieFrame extends javax.swing.JFrame {
         initComponents();
         setIconImage(Zoo.getIcon());
         pracownikMiesiaca();
+        liczZwierzeta();
+        liczWybiegi();
+        liczPrac();
+        liczBilety();
+        liczOceny();
+        sredniWiek();
     }
 
     public void pracownikMiesiaca() {
@@ -33,6 +40,90 @@ public class PodsumowanieFrame extends javax.swing.JFrame {
             cstmt.execute();
             String wynik = cstmt.getString(1);
             resPracMiesiacaLabel.setText(wynik);
+        } catch (SQLException ex) {
+            Logger.getLogger(PodsumowanieFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    void liczZwierzeta() {
+        try {
+            Execute q = new Execute();
+            q.ExecuteQuery("SELECT COUNT(*) FROM ZWIERZETA");
+            ResultSet rs = q.getRs();
+            int count = 0;
+            if (rs.next())
+                count = rs.getInt(1);
+            resLiczZwierzLabel.setText(Integer.toString(count));
+        } catch (SQLException ex) {
+            Logger.getLogger(PodsumowanieFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    void liczWybiegi() {
+        try {
+            Execute q = new Execute();
+            q.ExecuteQuery("SELECT COUNT(*) FROM WYBIEGI");
+            ResultSet rs = q.getRs();
+            int count = 0;
+            if (rs.next())
+                count = rs.getInt(1);
+            resLiczWybiegLabel.setText(Integer.toString(count));
+        } catch (SQLException ex) {
+            Logger.getLogger(PodsumowanieFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    void liczPrac() {
+        try {
+            Execute q = new Execute();
+            q.ExecuteQuery("SELECT COUNT(*) FROM PRACOWNICY WHERE DATA_ZWOLNIENIA IS NULL");
+            ResultSet rs = q.getRs();
+            int count = 0;
+            if (rs.next())
+                count = rs.getInt(1);
+            resLiczPracLabel.setText(Integer.toString(count));
+        } catch (SQLException ex) {
+            Logger.getLogger(PodsumowanieFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    void liczBilety() {
+        try {
+            Execute q = new Execute();
+            q.ExecuteQuery("SELECT COUNT(*) FROM BILETY");
+            ResultSet rs = q.getRs();
+            int count = 0;
+            if (rs.next())
+                count = rs.getInt(1);
+            resLiczBiletyLabel.setText(Integer.toString(count));
+        } catch (SQLException ex) {
+            Logger.getLogger(PodsumowanieFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    void liczOceny() {
+        try {
+            Execute q = new Execute();
+            q.ExecuteQuery("SELECT COUNT(*) FROM OCENY");
+            ResultSet rs = q.getRs();
+            int count = 0;
+            if (rs.next())
+                count = rs.getInt(1);
+            resLiczOcenyLabel.setText(Integer.toString(count));
+        } catch (SQLException ex) {
+            Logger.getLogger(PodsumowanieFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    void sredniWiek() {
+        try {
+            Execute q = new Execute();
+            q.ExecuteQuery("SELECT AVG(WIEK_KLIENTA) FROM BILETY");
+            ResultSet rs = q.getRs();
+            int count = 0;
+            if (rs.next())
+                count = rs.getInt(1);
+            resSredWiekLabel.setText(Integer.toString(count));
         } catch (SQLException ex) {
             Logger.getLogger(PodsumowanieFrame.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -51,6 +142,18 @@ public class PodsumowanieFrame extends javax.swing.JFrame {
         mainPanel = new javax.swing.JPanel();
         pracMiesiacaLabel = new javax.swing.JLabel();
         resPracMiesiacaLabel = new javax.swing.JLabel();
+        liczZwierzLabel = new javax.swing.JLabel();
+        resLiczZwierzLabel = new javax.swing.JLabel();
+        liczWybiegLabel = new javax.swing.JLabel();
+        resLiczWybiegLabel = new javax.swing.JLabel();
+        liczPracLabel = new javax.swing.JLabel();
+        resLiczPracLabel = new javax.swing.JLabel();
+        liczBiletyLabel = new javax.swing.JLabel();
+        liczOcenyLabel = new javax.swing.JLabel();
+        sredWiekLabel = new javax.swing.JLabel();
+        resLiczBiletyLabel = new javax.swing.JLabel();
+        resLiczOcenyLabel = new javax.swing.JLabel();
+        resSredWiekLabel = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Podsumowanie");
@@ -72,6 +175,77 @@ public class PodsumowanieFrame extends javax.swing.JFrame {
         gridBagConstraints.gridy = 0;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         mainPanel.add(resPracMiesiacaLabel, gridBagConstraints);
+
+        liczZwierzLabel.setText("Liczba zwierząt w naszym zoo:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        mainPanel.add(liczZwierzLabel, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        mainPanel.add(resLiczZwierzLabel, gridBagConstraints);
+
+        liczWybiegLabel.setText("Liczba wybiegów:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        mainPanel.add(liczWybiegLabel, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        mainPanel.add(resLiczWybiegLabel, gridBagConstraints);
+
+        liczPracLabel.setText("Liczba pracowników:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        mainPanel.add(liczPracLabel, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        mainPanel.add(resLiczPracLabel, gridBagConstraints);
+
+        liczBiletyLabel.setText("Liczba sprzedanych biletów:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        mainPanel.add(liczBiletyLabel, gridBagConstraints);
+
+        liczOcenyLabel.setText("Liczba wystawionych przez klientów ocen:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        mainPanel.add(liczOcenyLabel, gridBagConstraints);
+
+        sredWiekLabel.setText("Średni wiek klienta:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 6;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        mainPanel.add(sredWiekLabel, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 4;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        mainPanel.add(resLiczBiletyLabel, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        mainPanel.add(resLiczOcenyLabel, gridBagConstraints);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 6;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        mainPanel.add(resSredWiekLabel, gridBagConstraints);
 
         getContentPane().add(mainPanel, java.awt.BorderLayout.CENTER);
 
@@ -114,8 +288,20 @@ public class PodsumowanieFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JLabel liczBiletyLabel;
+    private javax.swing.JLabel liczOcenyLabel;
+    private javax.swing.JLabel liczPracLabel;
+    private javax.swing.JLabel liczWybiegLabel;
+    private javax.swing.JLabel liczZwierzLabel;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JLabel pracMiesiacaLabel;
+    private javax.swing.JLabel resLiczBiletyLabel;
+    private javax.swing.JLabel resLiczOcenyLabel;
+    private javax.swing.JLabel resLiczPracLabel;
+    private javax.swing.JLabel resLiczWybiegLabel;
+    private javax.swing.JLabel resLiczZwierzLabel;
     private javax.swing.JLabel resPracMiesiacaLabel;
+    private javax.swing.JLabel resSredWiekLabel;
+    private javax.swing.JLabel sredWiekLabel;
     // End of variables declaration//GEN-END:variables
 }
