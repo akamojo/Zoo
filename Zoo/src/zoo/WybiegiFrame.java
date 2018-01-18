@@ -31,23 +31,68 @@ import static zoo.Zoo.getShowPosition2;
  */
 public class WybiegiFrame extends javax.swing.JFrame {
 
-    public String[] columnsWybiegi = {"Numer wybiegu", "Typ wybiegu", "Powierzchnia (m2)"};
-    public String[] columnsZwierzeta = {"Gatunek", "Plec", "Chip"};
+    private String[] columnsWybiegi = {"Numer wybiegu", "Typ wybiegu", "Powierzchnia (m2)"};
+    private String[] columnsZwierzeta = {"Gatunek", "Plec", "Chip"};
+    
+    private String[] columnsRaporty = {"Numer", "Czas wystawienia", "Pracownik", "Uwagi"};
+    private String[] columnsOceny = {"Numer", "Czas wystawienia", "Liczba gwiazdek", "Komentarz"}; 
     
     public WybiegiFrame() {
         initComponents();
         setIconImage(Zoo.getIcon());
+        raportyOcenyPanel.setVisible(false);
         
         this.refreshAll();
         wybiegiTable.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 int row = wybiegiTable.getSelectedRow();
-                if (row != -1) 
-                    refreshZwierzeta(wybiegiTable.getValueAt(row, 0).toString());
+                if (row != -1) {
+                    String numerWybiegu = wybiegiTable.getValueAt(row, 0).toString();
+                    refreshZwierzeta(numerWybiegu);
+                    refreshRaportyAndOceny(numerWybiegu, "w");
+                }
             }
         });
+        
+        zwierzetaTable.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
+            @Override
+            public void valueChanged(ListSelectionEvent e) {
+                int row = zwierzetaTable.getSelectedRow();
+                if (row != -1) {
+                    String chip = zwierzetaTable.getValueAt(row, 2).toString();
+                    refreshRaportyAndOceny(chip, "z");
+                }
+            }
+        });
+        
+           
     }
+    
+    public void refreshRaportyAndOceny(String id, String choice) {
+        if (raportyOcenyPanel.isVisible()) {
+            int intId = new Integer(id);
+            
+            String rQuery = "Select numer, czas_wystawienia, nazwisko, uwagi from raporty "
+                    + "join pracownicy on pracownicy_id = id where ";
+            String oQuery = "Select numer_oceny, czas_wystawienia, liczba_gwiazdek, komentarz from oceny where ";
+            if (choice.equals("w")) {
+                rQuery += "wybiegi_nr = " + id;
+                oQuery += "wybiegi_nr = " + id;
+            }
+            else if (choice.equals("z")) {
+                rQuery += "zwierzeta_chip = " + id;
+                oQuery += "zwierzeta_chip = " + id;
+            }
+            
+            CacheSqlTableModel model = new CacheSqlTableModel(rQuery, columnsRaporty, "ORDER BY czas_wystawienia");
+            raportyTable.setModel(model);
+            model = new CacheSqlTableModel(oQuery, columnsOceny, "ORDER BY czas_wystawienia");
+            ocenyTable.setModel(model);
+            
+        }
+    }
+
     
     public void refreshAll() {
         //((CacheSqlTableModel) pracownicyTable.getModel()).fireTableDataChanged();
@@ -56,6 +101,13 @@ public class WybiegiFrame extends javax.swing.JFrame {
                 
         model = new CacheSqlTableModel("select gatunki_nazwa, plec, chip from zwierzeta", columnsZwierzeta, "ORDER BY CHIP");
         zwierzetaTable.setModel(model);
+        
+        /*model = new CacheSqlTableModel("select numer, czas_wystawienia, pracownicy_id, uwagi from raporty", columnsRaporty, "ORDER BY czas_wystawienia");
+        raportyTable.setModel(model);
+                
+        model = new CacheSqlTableModel("select gatunki_nazwa, plec, chip from zwierzeta", columnsZwierzeta, "ORDER BY CHIP");
+        zwierzetaTable.setModel(model);*/
+        
     }
     
     public void refreshZwierzeta(String numerWybiegu) {
@@ -87,10 +139,18 @@ public class WybiegiFrame extends javax.swing.JFrame {
         zwierzetaTable = new javax.swing.JTable();
         moreButtonsPanel = new javax.swing.JPanel();
         showGatunkiButton = new javax.swing.JButton();
+        showRaportyOcenyButton = new javax.swing.JButton();
+        raportyOcenyPanel = new javax.swing.JPanel();
+        raportyOcenyPane = new javax.swing.JTabbedPane();
+        raportyScrollPane = new javax.swing.JScrollPane();
+        raportyTable = new javax.swing.JTable();
+        ocenyScrollPane = new javax.swing.JScrollPane();
+        ocenyTable = new javax.swing.JTable();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Zoo Wybiegi i zwierzęta");
         setMinimumSize(new java.awt.Dimension(250, 250));
+        setPreferredSize(new java.awt.Dimension(700, 650));
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
         buttonPanel.setLayout(new java.awt.GridBagLayout());
@@ -231,6 +291,7 @@ public class WybiegiFrame extends javax.swing.JFrame {
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 5.0;
         gridBagConstraints.weighty = 5.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         getContentPane().add(tablePanel, gridBagConstraints);
 
         moreButtonsPanel.setLayout(new java.awt.GridBagLayout());
@@ -244,11 +305,26 @@ public class WybiegiFrame extends javax.swing.JFrame {
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.gridheight = java.awt.GridBagConstraints.REMAINDER;
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weighty = 2.0;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         moreButtonsPanel.add(showGatunkiButton, gridBagConstraints);
+
+        showRaportyOcenyButton.setText("Pokaż/ukryj raporty i oceny");
+        showRaportyOcenyButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                showRaportyOcenyButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.RELATIVE;
+        gridBagConstraints.gridheight = java.awt.GridBagConstraints.RELATIVE;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        moreButtonsPanel.add(showRaportyOcenyButton, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -257,6 +333,65 @@ public class WybiegiFrame extends javax.swing.JFrame {
         gridBagConstraints.weightx = 0.5;
         gridBagConstraints.weighty = 0.5;
         getContentPane().add(moreButtonsPanel, gridBagConstraints);
+
+        raportyOcenyPanel.setLayout(new java.awt.GridBagLayout());
+
+        raportyOcenyPane.setTabLayoutPolicy(javax.swing.JTabbedPane.SCROLL_TAB_LAYOUT);
+        raportyOcenyPane.setMinimumSize(new java.awt.Dimension(140, 120));
+
+        raportyTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+
+            }
+        ));
+        raportyTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                raportyTableMouseClicked(evt);
+            }
+        });
+        raportyScrollPane.setViewportView(raportyTable);
+
+        raportyOcenyPane.addTab("Raporty", raportyScrollPane);
+
+        ocenyTable.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+
+            }
+        ));
+        ocenyTable.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                ocenyTableMouseClicked(evt);
+            }
+        });
+        ocenyScrollPane.setViewportView(ocenyTable);
+
+        raportyOcenyPane.addTab("Oceny", ocenyScrollPane);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.RELATIVE;
+        gridBagConstraints.gridheight = java.awt.GridBagConstraints.RELATIVE;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 0.5;
+        gridBagConstraints.weighty = 0.5;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        raportyOcenyPanel.add(raportyOcenyPane, gridBagConstraints);
+        raportyOcenyPane.getAccessibleContext().setAccessibleName("Raporty i oceny");
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 3;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 0.5;
+        gridBagConstraints.weighty = 0.5;
+        getContentPane().add(raportyOcenyPanel, gridBagConstraints);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
@@ -371,6 +506,23 @@ public class WybiegiFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_showGatunkiButtonActionPerformed
 
+    private void raportyTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_raportyTableMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_raportyTableMouseClicked
+
+    private void ocenyTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ocenyTableMouseClicked
+        // TODO add your handling code here:
+    }//GEN-LAST:event_ocenyTableMouseClicked
+
+    private void showRaportyOcenyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showRaportyOcenyButtonActionPerformed
+        if (raportyOcenyPanel.isVisible()) {
+            raportyOcenyPanel.setVisible(false);
+        }
+        else {
+            raportyOcenyPanel.setVisible(true);
+        }
+    }//GEN-LAST:event_showRaportyOcenyButtonActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -411,10 +563,17 @@ public class WybiegiFrame extends javax.swing.JFrame {
     private javax.swing.JButton addZwierzeButton;
     private javax.swing.JPanel buttonPanel;
     private javax.swing.JPanel moreButtonsPanel;
+    private javax.swing.JScrollPane ocenyScrollPane;
+    private javax.swing.JTable ocenyTable;
+    private javax.swing.JTabbedPane raportyOcenyPane;
+    private javax.swing.JPanel raportyOcenyPanel;
+    private javax.swing.JScrollPane raportyScrollPane;
+    private javax.swing.JTable raportyTable;
     private javax.swing.JButton removeWybiegButton;
     private javax.swing.JButton removeZwierzeButton;
     private javax.swing.JButton showAllButton;
     private javax.swing.JButton showGatunkiButton;
+    private javax.swing.JButton showRaportyOcenyButton;
     private javax.swing.JPanel tablePanel;
     private javax.swing.JScrollPane tableScrollPaneWybiegi;
     private javax.swing.JScrollPane tableScrollPaneZwierzeta;
