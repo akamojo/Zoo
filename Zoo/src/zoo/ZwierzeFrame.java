@@ -101,7 +101,7 @@ public class ZwierzeFrame extends javax.swing.JFrame {
         }
         String[] types = new String[count];
 
-        exec.ExecuteQuery("SELECT NR FROM WYBIEGI ORDER BY NR ASC");
+        exec.ExecuteQuery("SELECT TO_CHAR(NR) || ' (' || TYPY_WYBIEGU_NAZWA || ')' FROM WYBIEGI ORDER BY NR ASC");
         rs = exec.getRs();
         for (int i = 0; i < count; i++) {
             rs.next();
@@ -115,8 +115,9 @@ public class ZwierzeFrame extends javax.swing.JFrame {
         try {
             Execute exec = new Execute();
             exec.ExecutePreparedQuery("select chip, waga, data_urodzin, data_przyjecia,"
-                    + "gatunki_nazwa, wybiegi_nr, plec, data_opuszczenia_zoo from zwierzeta where chip = ?");
-            exec.getStatement().setInt(1, chip);
+                    + "gatunki_nazwa, TO_CHAR(wybiegi.NR) || ' (' || wybiegi.TYPY_WYBIEGU_NAZWA || ')', plec, data_opuszczenia_zoo "
+                    + "from zwierzeta join wybiegi on wybiegi_nr = nr where chip = ?");
+            ((PreparedStatement) exec.getStatement()).setInt(1, chip);
             exec.firePreparedQuery();
             exec.getRs().next();
 
@@ -425,7 +426,7 @@ public class ZwierzeFrame extends javax.swing.JFrame {
 
                 //  exec.getStatement().setDate(3, java.sql.Date.valueOf(dataZooTextField.getText()));
                 exec.getStatement().setString(4, gatunekComboBox.getSelectedItem().toString());
-                exec.getStatement().setInt(5, Integer.parseInt(nrWybieguComboBox.getSelectedItem().toString()));
+                exec.getStatement().setInt(5, Integer.parseInt(nrWybieguComboBox.getSelectedItem().toString().split(" ")[0]));
                 exec.getStatement().setString(6, plecComboBox.getSelectedItem().toString());
                 exec.firePreparedUpdate();
 
@@ -440,38 +441,60 @@ public class ZwierzeFrame extends javax.swing.JFrame {
             }
 
         } else {
-            try {
-                String chip = chipTextField.getText().toString();
+            //try {
+                String chip = chipTextField.getText();
                 exec.ExecutePreparedQuery("UPDATE ZWIERZETA SET PLEC = ? WHERE CHIP = " + chip);
-                exec.getStatement().setString(1, plecComboBox.getSelectedItem().toString());
-                exec.firePreparedUpdate();
+                try {
+                    exec.getStatement().setString(1, plecComboBox.getSelectedItem().toString());
+                    exec.firePreparedUpdate();
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error from changeButtonActionPerformed", JOptionPane.ERROR_MESSAGE);
+                }
 
                 exec.ExecutePreparedQuery("UPDATE ZWIERZETA SET WAGA = ? WHERE CHIP = " + chip);
-                exec.getStatement().setFloat(1, Float.parseFloat(wagaTextField.getText().toString()));
-                exec.firePreparedUpdate();
+                try {
+                    exec.getStatement().setFloat(1, Float.parseFloat(wagaTextField.getText()));
+                    exec.firePreparedUpdate();
+                } catch (NumberFormatException | SQLException ex) {
+                    JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error from changeButtonActionPerformed", JOptionPane.ERROR_MESSAGE);
+                }
 
                 exec.ExecutePreparedQuery("UPDATE ZWIERZETA SET WYBIEGI_NR = ? WHERE CHIP = " + chip);
-                exec.getStatement().setInt(1, new Integer(nrWybieguComboBox.getSelectedItem().toString()));
-                exec.firePreparedUpdate();
+                try {
+                    exec.getStatement().setInt(1, new Integer(nrWybieguComboBox.getSelectedItem().toString().split(" ")[0]));
+                    exec.firePreparedUpdate();
+                } catch (NumberFormatException | SQLException ex) {
+                    JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error from changeButtonActionPerformed", JOptionPane.ERROR_MESSAGE);
+                }
 
-                if (!"".equals(dataUrTextField.getText().toString())) {
+                if (!"".equals(dataUrTextField.getText())) {
                     exec.ExecutePreparedQuery("UPDATE ZWIERZETA SET DATA_URODZIN = ? WHERE CHIP = " + chip);
-                    exec.getStatement().setDate(1, java.sql.Date.valueOf(dataUrTextField.getText().toString()));
+                    try {
+                    exec.getStatement().setDate(1, java.sql.Date.valueOf(dataUrTextField.getText()));
                     exec.firePreparedUpdate();
+                    } catch (SQLException ex) {
+                        JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error from changeButtonActionPerformed", JOptionPane.ERROR_MESSAGE);
+                    }
                 }
 
-                if (!"".equals(dataZooTextField.getText().toString())) {
+                if (!"".equals(dataZooTextField.getText())) {
                     exec.ExecutePreparedQuery("UPDATE ZWIERZETA SET DATA_PRZYJECIA = ? WHERE CHIP = " + chip);
-                    exec.getStatement().setDate(1, java.sql.Date.valueOf(dataZooTextField.getText().toString()));
-                    exec.firePreparedUpdate();
+                    try {
+                        exec.getStatement().setDate(1, java.sql.Date.valueOf(dataZooTextField.getText()));
+                        exec.firePreparedUpdate();
+                    } catch (SQLException ex) {
+                        JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error from changeButtonActionPerformed", JOptionPane.ERROR_MESSAGE);
+                    }
                 }
+                
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Zmiany wprowadzone! :)", "Zatwierdź - rezultat", JOptionPane.INFORMATION_MESSAGE);
 
-            } catch (Exception ex) {
+            /*} catch (Exception ex) {
                 JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error from changeButtonActionPerformed", JOptionPane.ERROR_MESSAGE);
-            }
-
+                // JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Nie udało się wprowadzić wszystkich zmian.", "Zatwierdź - ...", JOptionPane.INFORMATION_MESSAGE);
+            }*/
+            this.fill(new Integer(chipTextField.getText()));
         }
-        JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Zmiany wprowadzone! :)", "Zatwierdź - sukces", JOptionPane.INFORMATION_MESSAGE);
     }//GEN-LAST:event_changeButtonActionPerformed
 
     private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed

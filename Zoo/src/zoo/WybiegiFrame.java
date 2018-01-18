@@ -266,23 +266,14 @@ public class WybiegiFrame extends javax.swing.JFrame {
             int row = wybiegiTable.getSelectedRow();
             if (row != -1) {
                 try {
-                    Execute q = new Execute();
-                    String wNr = wybiegiTable.getValueAt(row, 0).toString();
-                    q.ExecuteQuery("SELECT OPIS_WYBIEGU FROM WYBIEGI WHERE NR = " + wNr);
-                    
-                    q.getRs().next();
-                    String description = q.getRs().getString(1);;
-                    if (q.getRs().wasNull()) {
-                        description = new String("Brak opisu");
-                    }
-                    
-                    JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), description, "Opis wybiegu numer " + wNr, JOptionPane.PLAIN_MESSAGE);
-				
+                    WybiegFrame w = new WybiegFrame(new Integer(wybiegiTable.getValueAt(row, 0).toString()));
+                    w.setLocation(getShowPosition2(w));
+                    w.setVisible(true);
                 } catch (SQLException ex) {
                     JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
                 }
-			}
-		}
+            }
+        }
     }//GEN-LAST:event_wybiegiTableMouseClicked
 
     private void showAllButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showAllButtonActionPerformed
