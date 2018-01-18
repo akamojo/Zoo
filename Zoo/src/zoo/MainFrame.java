@@ -35,6 +35,7 @@ public class MainFrame extends javax.swing.JFrame {
         this.biletyButton.setEnabled(false);
         this.pracownicyButton.setEnabled(false);
         this.wybiegiButton.setEnabled(false);
+        this.podsumowanieButton.setEnabled(false);
     }
     
     public void setCuteImageInBackground() {

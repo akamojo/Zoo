@@ -138,12 +138,12 @@ public class RaportFrame extends javax.swing.JFrame {
         wybiegPanel = new javax.swing.JPanel();
         wybiegLabel = new javax.swing.JLabel();
         nrWybieguComboBox = new javax.swing.JComboBox<>();
+        buttonPanel = new javax.swing.JPanel();
+        changeButton = new javax.swing.JButton();
         uwagiPanel = new javax.swing.JPanel();
         uwagiLabel = new javax.swing.JLabel();
         uwagiScrollPane = new javax.swing.JScrollPane();
         uwagiTextArea = new javax.swing.JTextArea();
-        buttonPanel = new javax.swing.JPanel();
-        changeButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Raport");
@@ -208,43 +208,6 @@ public class RaportFrame extends javax.swing.JFrame {
         gridBagConstraints.weighty = 0.5;
         getContentPane().add(wybiegPanel, gridBagConstraints);
 
-        uwagiPanel.setLayout(new java.awt.GridBagLayout());
-
-        uwagiLabel.setText("Uwagi:");
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        uwagiPanel.add(uwagiLabel, gridBagConstraints);
-
-        uwagiScrollPane.setMaximumSize(new java.awt.Dimension(37261, 32767));
-        uwagiScrollPane.setPreferredSize(new java.awt.Dimension(250, 100));
-
-        uwagiTextArea.setColumns(20);
-        uwagiTextArea.setFont(new java.awt.Font("Consolas", 2, 14)); // NOI18N
-        uwagiTextArea.setRows(5);
-        uwagiTextArea.setMaximumSize(new java.awt.Dimension(1237878917, 2147483647));
-        uwagiTextArea.setMinimumSize(new java.awt.Dimension(250, 20));
-        uwagiTextArea.setName(""); // NOI18N
-        uwagiTextArea.setPreferredSize(new java.awt.Dimension(250, 89));
-        uwagiScrollPane.setViewportView(uwagiTextArea);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 1;
-        gridBagConstraints.weightx = 0.5;
-        gridBagConstraints.weighty = 0.5;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        uwagiPanel.add(uwagiScrollPane, gridBagConstraints);
-
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 2;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 0.5;
-        gridBagConstraints.weighty = 0.5;
-        getContentPane().add(uwagiPanel, gridBagConstraints);
-
         changeButton.setText("Zatwierdź");
         changeButton.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -260,6 +223,45 @@ public class RaportFrame extends javax.swing.JFrame {
         gridBagConstraints.weightx = 0.1;
         gridBagConstraints.weighty = 0.1;
         getContentPane().add(buttonPanel, gridBagConstraints);
+
+        uwagiPanel.setLayout(new java.awt.GridBagLayout());
+
+        uwagiLabel.setText("Uwagi:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        uwagiPanel.add(uwagiLabel, gridBagConstraints);
+
+        uwagiScrollPane.setMaximumSize(new java.awt.Dimension(37261, 32767));
+        uwagiScrollPane.setPreferredSize(new java.awt.Dimension(250, 100));
+
+        uwagiTextArea.setColumns(20);
+        uwagiTextArea.setFont(new java.awt.Font("Consolas", 2, 14)); // NOI18N
+        uwagiTextArea.setLineWrap(true);
+        uwagiTextArea.setRows(3);
+        uwagiTextArea.setFocusTraversalPolicyProvider(true);
+        uwagiTextArea.setMaximumSize(new java.awt.Dimension(1237878917, 2147483647));
+        uwagiTextArea.setMinimumSize(new java.awt.Dimension(250, 20));
+        uwagiTextArea.setName(""); // NOI18N
+        uwagiScrollPane.setViewportView(uwagiTextArea);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 0.5;
+        gridBagConstraints.weighty = 0.5;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        uwagiPanel.add(uwagiScrollPane, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 0.5;
+        gridBagConstraints.weighty = 0.5;
+        getContentPane().add(uwagiPanel, gridBagConstraints);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents

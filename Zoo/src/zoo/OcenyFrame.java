@@ -5,9 +5,11 @@
  */
 package zoo;
 
+import java.awt.event.KeyEvent;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 import static zoo.Zoo.getShowPosition2;
 
 /**
@@ -41,6 +43,11 @@ public class OcenyFrame extends javax.swing.JFrame {
         ocenyTable.removeColumn(ocenyTable.getColumnModel().getColumn(0));
     }
 
+    public void hide() {
+        buttonPanel.setVisible(false);
+        linkPanel.setVisible(false);
+    }
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -49,9 +56,14 @@ public class OcenyFrame extends javax.swing.JFrame {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
 
+        jPanel1 = new javax.swing.JPanel();
         buttonPanel = new javax.swing.JPanel();
+        searchTextField = new javax.swing.JTextField();
         addOcenaButton = new javax.swing.JButton();
+        delButton = new javax.swing.JButton();
+        searchLabel = new javax.swing.JLabel();
         ocenyPanel = new javax.swing.JPanel();
         ocenyScrollPane = new javax.swing.JScrollPane();
         ocenyTable = new javax.swing.JTable();
@@ -59,7 +71,22 @@ public class OcenyFrame extends javax.swing.JFrame {
         linkButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
-        setTitle("Twoje oceny");
+        setTitle("Oceny przypisane do biletu");
+
+        buttonPanel.setLayout(new java.awt.GridBagLayout());
+
+        searchTextField.setMinimumSize(new java.awt.Dimension(50, 20));
+        searchTextField.setPreferredSize(new java.awt.Dimension(100, 20));
+        searchTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                searchTextFieldKeyPressed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        buttonPanel.add(searchTextField, gridBagConstraints);
 
         addOcenaButton.setText("Dodaj ocenę");
         addOcenaButton.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -67,7 +94,30 @@ public class OcenyFrame extends javax.swing.JFrame {
                 addOcenaButtonMouseClicked(evt);
             }
         });
-        buttonPanel.add(addOcenaButton);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        buttonPanel.add(addOcenaButton, gridBagConstraints);
+
+        delButton.setText("Usuń ocenę");
+        delButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                delButtonMouseClicked(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        buttonPanel.add(delButton, gridBagConstraints);
+
+        searchLabel.setText("Wyszukaj ocenę po dacie wystawienia:");
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        buttonPanel.add(searchLabel, gridBagConstraints);
 
         getContentPane().add(buttonPanel, java.awt.BorderLayout.PAGE_START);
 
@@ -130,7 +180,7 @@ public class OcenyFrame extends javax.swing.JFrame {
                 OcenaFrame o = new OcenaFrame(this);
                 o.setLocation(Zoo.getShowPosition2(o));
                 o.setNumer(this.numer);
-                
+
                 Execute q = new Execute();
                 q.ExecuteQuery("SELECT KOMENTARZ FROM OCENY WHERE NUMER_OCENY = " + Integer.toString(selectedId));
 
@@ -144,6 +194,37 @@ public class OcenyFrame extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_ocenyTableMouseClicked
+
+    private void delButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_delButtonMouseClicked
+        int selectionIndex = ocenyTable.getSelectionModel().getMinSelectionIndex();
+        if (selectionIndex >= 0) {
+            CacheSqlTableModel tableModel = (CacheSqlTableModel) ocenyTable.getModel();
+            int selectedId = tableModel.getSelectedId(ocenyTable.getSelectedRow());
+
+            int n = JOptionPane.showOptionDialog(JOptionPane.getRootFrame(), "Jesteś pewnien, że chcesz usunąć ocenę?", "Usuń ocenę",
+                    JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, null, null);
+
+            if (n == 0) {
+                Execute up = new Execute();
+                up.ExecuteUpdate("DELETE FROM OCENY WHERE NUMER_OCENY = " + Integer.toString(selectedId));
+                refresh();
+            }
+        }
+    }//GEN-LAST:event_delButtonMouseClicked
+
+    private void searchTextFieldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchTextFieldKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            if (searchTextField.getText().isEmpty()) {
+                refresh();
+            } else {
+                String[] where = new String[]{searchTextField.getText().toLowerCase()};
+                String[] columns = new String[]{"Numer", "Gwiazdki", "Czas wystawienia", "Komentarz", "Numer Biletu", "Numer Wybiegu", "Chip zwierzęcia"};
+                CacheSqlTableModel model = new CacheSqlTableModel("select * from oceny where numer_biletu = " + Integer.toString(this.numer) + " AND TO_CHAR(CZAS_WYSTAWIENIA, 'YYYY-MM-DD') LIKE ?", columns, "ORDER BY NUMER_OCENY", where);
+                ocenyTable.setModel(model);
+                ocenyTable.removeColumn(ocenyTable.getColumnModel().getColumn(0));
+            }
+        }
+    }//GEN-LAST:event_searchTextFieldKeyPressed
 
     /**
      * @param args the command line arguments
@@ -183,10 +264,14 @@ public class OcenyFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addOcenaButton;
     private javax.swing.JPanel buttonPanel;
+    private javax.swing.JButton delButton;
+    private javax.swing.JPanel jPanel1;
     private javax.swing.JButton linkButton;
     private javax.swing.JPanel linkPanel;
     private javax.swing.JPanel ocenyPanel;
     private javax.swing.JScrollPane ocenyScrollPane;
     private javax.swing.JTable ocenyTable;
+    private javax.swing.JLabel searchLabel;
+    private javax.swing.JTextField searchTextField;
     // End of variables declaration//GEN-END:variables
 }
