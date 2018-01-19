@@ -6,11 +6,8 @@
 package zoo;
 
 import java.awt.event.WindowEvent;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
 
@@ -21,12 +18,13 @@ import javax.swing.JOptionPane;
 public class AddWybiegFrame extends javax.swing.JFrame {
 
     private WybiegiFrame parent;
-    
+
     public AddWybiegFrame() throws SQLException {
         initComponents();
         typComboBox.setModel(this.loadWybiegiTypes());
         Zoo.setIconAndCursor(this);
     }
+
     /**
      * Creates new form AddWybiegFrame
      */
@@ -36,22 +34,23 @@ public class AddWybiegFrame extends javax.swing.JFrame {
         typComboBox.setModel(this.loadWybiegiTypes());
         Zoo.setIconAndCursor(this);
     }
-    
+
     public void updateWybiegiTypes() throws SQLException {
-         typComboBox.setModel(this.loadWybiegiTypes());
+        typComboBox.setModel(this.loadWybiegiTypes());
     }
-    
+
     public DefaultComboBoxModel<String> loadWybiegiTypes() throws SQLException {
-        
+
         Execute exec = new Execute();
         exec.ExecuteQuery("SELECT COUNT(*) FROM TYPY_WYBIEGU ORDER BY NAZWA");
         ResultSet rs = exec.getRs();
-        
+
         int count = 0;
-        if (rs.next())
+        if (rs.next()) {
             count = rs.getInt(1);
+        }
         String[] types = new String[count];
-        
+
         exec.ExecuteQuery("SELECT NAZWA FROM TYPY_WYBIEGU ORDER BY NAZWA");
         rs = exec.getRs();
         for (int i = 0; i < count; i++) {
@@ -59,7 +58,7 @@ public class AddWybiegFrame extends javax.swing.JFrame {
             types[i] = rs.getString(1);
         }
         return new javax.swing.DefaultComboBoxModel<String>(types);
-        
+
     }
 
     /**
@@ -263,9 +262,9 @@ public class AddWybiegFrame extends javax.swing.JFrame {
         Execute exec = new Execute();
         try {
             exec.ExecutePreparedQuery("INSERT INTO WYBIEGI(POWIERZCHNIA, TYPY_WYBIEGU_NAZWA, OPIS_WYBIEGU) VALUES(?, ?, ?)");
-             exec.getStatement().setInt(1, new Integer(powTextField.getText()));
-             exec.getStatement().setString(2, typComboBox.getSelectedItem().toString());
-             exec.getStatement().setString(3, opisTextArea.getText().toString());
+            exec.getStatement().setInt(1, new Integer(powTextField.getText()));
+            exec.getStatement().setString(2, typComboBox.getSelectedItem().toString());
+            exec.getStatement().setString(3, opisTextArea.getText().toString());
             exec.firePreparedUpdate();
             this.parent.refreshAll();
         } catch (Exception ex) {
@@ -329,7 +328,7 @@ public class AddWybiegFrame extends javax.swing.JFrame {
                     new AddWybiegFrame().setVisible(true);
                 } catch (SQLException ex) {
                     JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Nie udało się pobrać danych o wybiegach z bazy danych.", "SQL error :c", JOptionPane.ERROR_MESSAGE);
-                    // Logger.getLogger(AddWybiegFrame.class.getName()).log(Level.SEVERE, null, ex);
+                    // JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         });

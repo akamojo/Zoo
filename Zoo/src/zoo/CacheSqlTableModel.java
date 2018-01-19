@@ -1,7 +1,6 @@
 package zoo;
 
 import java.math.BigDecimal;
-import java.math.BigInteger;
 import java.sql.*;
 import java.util.*;
 import java.util.logging.Level;

@@ -6,7 +6,6 @@
 package zoo;
 
 import java.awt.event.WindowEvent;
-import java.sql.PreparedStatement;
 import javax.swing.JOptionPane;
 
 /**
@@ -98,11 +97,11 @@ public class AddTypWybieguDialog extends javax.swing.JDialog {
     private void okButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_okButtonMouseClicked
         try {
             String data = typTextField.getText();
-            
+
             if (data.length() > 0) {
                 Execute exec = new Execute();
                 exec.ExecutePreparedQuery("INSERT INTO TYPY_WYBIEGU(NAZWA) VALUES(?)");
-                 exec.getStatement().setString(1, typTextField.getText());
+                exec.getStatement().setString(1, typTextField.getText());
                 exec.firePreparedUpdate();
                 this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));
 

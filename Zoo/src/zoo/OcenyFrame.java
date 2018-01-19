@@ -190,19 +190,19 @@ public class OcenyFrame extends javax.swing.JFrame {
             } else {
                 try {
                     String[] columns = new String[]{"Numer", "Gwiazdki", "Czas wystawienia", "Komentarz", "Numer Biletu", "Numer Wybiegu", "Chip zwierzęcia"};
-                    
+
                     CallableStatement cstmt = DBSupport.getConn().prepareCall("{? = call GET_SEARCH_QUERY(PATTERN => ?, IN_TABLE_NAME => 'OCENY')}");
                     cstmt.registerOutParameter(1, Types.VARCHAR);
-                    cstmt.setString(2, searchTextField.getText());
+                    cstmt.setString(2, searchTextField.getText().replaceAll("'", "''"));
                     cstmt.execute();
                     String wynik = cstmt.getString(1);
-                    
+
                     CacheSqlTableModel model = new CacheSqlTableModel(wynik + " AND NUMER_BILETU = " + Integer.toString(this.numer), columns, "ORDER BY NUMER_OCENY");
                     ocenyTable.setModel(model);
                     ocenyTable.removeColumn(ocenyTable.getColumnModel().getColumn(0));
-                    
+
                 } catch (SQLException ex) {
-                    Logger.getLogger(OcenyFrame.class.getName()).log(Level.SEVERE, null, ex);
+                    JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         }

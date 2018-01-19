@@ -37,7 +37,7 @@ public class Zoo {
         URL url = Zoo.class.getResource("Elephant.ani");
         //cursorPath = url.getFile().replaceAll("%20", " ");
     }
-    
+
     public static Image getIcon() {
         return icon;
     }
@@ -45,7 +45,7 @@ public class Zoo {
     public static void setIcon(Image icon) {
         Zoo.icon = icon;
     }
-    
+
     public static void setIconAndCursor(javax.swing.JFrame j) {
         try {
             j.setIconImage(Zoo.getIcon());
@@ -54,7 +54,7 @@ public class Zoo {
             String cursorPath = url.getPath().replaceAll("%20", " ");
             AniCursor kursorek = new AniCursor(cursorPath, j);
             kursorek.start();
-            
+
         } catch (BadAniException | IOException ex) {
             Logger.getLogger(Zoo.class.getName()).log(Level.SEVERE, null, ex);
         }
@@ -68,11 +68,11 @@ public class Zoo {
         java.awt.EventQueue.invokeLater(new Runnable() {
             @Override
             public void run() {
-                
+
                 URL url = Zoo.class.getResource("zoo.png");
                 Toolkit kit = Toolkit.getDefaultToolkit();
                 Zoo.icon = kit.createImage(url);
-                
+
                 MainFrame zoo = new MainFrame();
                 zoo.setLocation(getShowPosition1(zoo));
                 zoo.setVisible(true);
@@ -83,7 +83,7 @@ public class Zoo {
                     zoo.disableButtons();
                     JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Nie udało się połączyć z bazą danych.", "Fatal error :c", JOptionPane.ERROR_MESSAGE);
                 }
-                
+
                 try {
                     UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
                 } catch (ClassNotFoundException ex) {
@@ -100,39 +100,39 @@ public class Zoo {
         });
 
     }
-    
+
     public static Point getShowPosition1(JFrame frame) {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         Dimension frameSize = frame.getSize();
         if (frameSize.height > screenSize.height) {
-          frameSize.height = screenSize.height;
+            frameSize.height = screenSize.height;
         }
         if (frameSize.width > screenSize.width) {
-          frameSize.width = screenSize.width;
+            frameSize.width = screenSize.width;
         }
         return new Point((screenSize.width - frameSize.width) / 2, (screenSize.height - frameSize.height) / 2);
     }
-    
+
     public static Point getShowPosition2(JFrame frame) {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         Dimension frameSize = frame.getSize();
         if (frameSize.height > screenSize.height) {
-          frameSize.height = screenSize.height;
+            frameSize.height = screenSize.height;
         }
         if (frameSize.width > screenSize.width) {
-          frameSize.width = screenSize.width;
+            frameSize.width = screenSize.width;
         }
         return new Point((screenSize.width - frameSize.width) / 2, (screenSize.height - frameSize.height) / 2);
     }
-    
+
     public static Point getShowPosition2D(JDialog frame) {
         Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
         Dimension frameSize = frame.getSize();
         if (frameSize.height > screenSize.height) {
-          frameSize.height = screenSize.height;
+            frameSize.height = screenSize.height;
         }
         if (frameSize.width > screenSize.width) {
-          frameSize.width = screenSize.width;
+            frameSize.width = screenSize.width;
         }
         return new Point((screenSize.width - frameSize.width) / 2, (screenSize.height - frameSize.height) / 2);
     }

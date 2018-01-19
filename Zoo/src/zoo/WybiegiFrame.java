@@ -5,27 +5,15 @@
  */
 package zoo;
 
-import java.awt.Image;
-import java.awt.Point;
 import java.awt.event.KeyEvent;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
-import java.awt.event.WindowEvent;
 import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Types;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
-import javax.swing.JTable;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
-import javax.swing.table.AbstractTableModel;
 import static zoo.Zoo.getShowPosition2;
 
 /**
@@ -36,18 +24,18 @@ public class WybiegiFrame extends javax.swing.JFrame {
 
     private String[] columnsWybiegi = {"Numer wybiegu", "Typ wybiegu", "Powierzchnia (m2)"};
     private String[] columnsZwierzeta = {"Gatunek", "Plec", "Chip"};
-    
+
     private String[] columnsRaporty = {"Numer", "Czas wystawienia", "Pracownik", "Uwagi"};
-    private String[] columnsOceny = {"Numer", "Czas wystawienia", "Liczba gwiazdek", "Komentarz"}; 
-    
+    private String[] columnsOceny = {"Numer", "Czas wystawienia", "Liczba gwiazdek", "Komentarz"};
+
     public WybiegiFrame() {
         initComponents();
         // setIconImage(Zoo.getIcon());
         Zoo.setIconAndCursor(this);
         raportyOcenyPanel.setVisible(false);
-        
+
         this.refreshAll();
-        wybiegiTable.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
+        wybiegiTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 int row = wybiegiTable.getSelectedRow();
@@ -58,8 +46,8 @@ public class WybiegiFrame extends javax.swing.JFrame {
                 }
             }
         });
-        
-        zwierzetaTable.getSelectionModel().addListSelectionListener(new ListSelectionListener(){
+
+        zwierzetaTable.getSelectionModel().addListSelectionListener(new ListSelectionListener() {
             @Override
             public void valueChanged(ListSelectionEvent e) {
                 int row = zwierzetaTable.getSelectedRow();
@@ -69,51 +57,49 @@ public class WybiegiFrame extends javax.swing.JFrame {
                 }
             }
         });
-           
+
     }
-    
+
     public void addRemoveAbility(boolean b) {
         addWybiegButton.setEnabled(b);
         addZwierzeButton.setEnabled(b);
         removeWybiegButton.setEnabled(b);
         removeZwierzeButton.setEnabled(b);
     }
-    
+
     public void refreshRaportyAndOceny(String id, String choice) {
         if (raportyOcenyPanel.isVisible()) {
             int intId = new Integer(id);
-            
+
             String rQuery = "Select numer, czas_wystawienia, nazwisko, uwagi from raporty "
                     + "join pracownicy on pracownicy_id = id where ";
             String oQuery = "Select numer_oceny, czas_wystawienia, liczba_gwiazdek, komentarz from oceny where ";
             if (choice.equals("w")) {
                 rQuery += "wybiegi_nr = " + id;
                 oQuery += "wybiegi_nr = " + id;
-            }
-            else if (choice.equals("z")) {
+            } else if (choice.equals("z")) {
                 rQuery += "zwierzeta_chip = " + id;
                 oQuery += "zwierzeta_chip = " + id;
             }
-            
+
             CacheSqlTableModel model = new CacheSqlTableModel(rQuery, columnsRaporty, "ORDER BY czas_wystawienia");
             raportyTable.setModel(model);
             model = new CacheSqlTableModel(oQuery, columnsOceny, "ORDER BY czas_wystawienia");
             ocenyTable.setModel(model);
-            
+
         }
     }
 
-    
     public void refreshAll() {
         //((CacheSqlTableModel) pracownicyTable.getModel()).fireTableDataChanged();
         CacheSqlTableModel model = new CacheSqlTableModel("select nr, typy_wybiegu_nazwa, powierzchnia from wybiegi", columnsWybiegi, "ORDER BY NR");
         wybiegiTable.setModel(model);
-                
+
         model = new CacheSqlTableModel("select gatunki_nazwa, plec, chip from zwierzeta", columnsZwierzeta, "ORDER BY CHIP");
         zwierzetaTable.setModel(model);
-                
+
     }
-    
+
     public void refreshZwierzeta(String numerWybiegu) {
         CacheSqlTableModel model = new CacheSqlTableModel("select gatunki_nazwa, plec, chip from zwierzeta"
                 + " where wybiegi_nr = " + numerWybiegu, columnsZwierzeta, "ORDER BY CHIP");
@@ -459,7 +445,7 @@ public class WybiegiFrame extends javax.swing.JFrame {
                     JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
-        }        
+        }
     }//GEN-LAST:event_zwierzetaTableMouseClicked
 
     private void addWybiegButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_addWybiegButtonActionPerformed
@@ -486,7 +472,7 @@ public class WybiegiFrame extends javax.swing.JFrame {
                     this.refreshAll();
                 }
             }
-            
+
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -542,11 +528,11 @@ public class WybiegiFrame extends javax.swing.JFrame {
         if (evt.getClickCount() == 2) {
             int selectionIndex = raportyTable.getSelectionModel().getMinSelectionIndex();
             if (selectionIndex != -1) {
-                
+
                 CacheSqlTableModel tableModel = (CacheSqlTableModel) raportyTable.getModel();
                 int selectedId = tableModel.getSelectedId(raportyTable.getSelectedRow());
-                
-                RaportFrame raport = new RaportFrame();                
+
+                RaportFrame raport = new RaportFrame();
                 raport.setLocation(Zoo.getShowPosition2(raport));
 
                 raport.fill(selectedId);
@@ -563,8 +549,7 @@ public class WybiegiFrame extends javax.swing.JFrame {
     private void showRaportyOcenyButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_showRaportyOcenyButtonActionPerformed
         if (raportyOcenyPanel.isVisible()) {
             raportyOcenyPanel.setVisible(false);
-        }
-        else {
+        } else {
             raportyOcenyPanel.setVisible(true);
         }
     }//GEN-LAST:event_showRaportyOcenyButtonActionPerformed
@@ -576,18 +561,18 @@ public class WybiegiFrame extends javax.swing.JFrame {
             } else {
                 try {
                     String[] columns = new String[]{"Numer wybiegu", "Typ wybiegu", "Powierzchnia (m2)"};
-                    
+
                     CallableStatement cstmt = DBSupport.getConn().prepareCall("{? = call GET_SEARCH_QUERY(PATTERN => ?, IN_TABLE_NAME => 'WYBIEGI')}");
                     cstmt.registerOutParameter(1, Types.VARCHAR);
-                    cstmt.setString(2, searchWybiegTextField.getText());
+                    cstmt.setString(2, searchWybiegTextField.getText().replaceAll("'", "''"));
                     cstmt.execute();
                     String wynik = cstmt.getString(1).replace("*", "nr, typy_wybiegu_nazwa, powierzchnia");
-                    
+
                     CacheSqlTableModel model = new CacheSqlTableModel(wynik, columns, "ORDER BY NR");
                     wybiegiTable.setModel(model);
-                    
+
                 } catch (SQLException ex) {
-                    Logger.getLogger(OcenyFrame.class.getName()).log(Level.SEVERE, null, ex);
+                    JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         }
@@ -600,18 +585,18 @@ public class WybiegiFrame extends javax.swing.JFrame {
             } else {
                 try {
                     String[] columns = new String[]{"Gatunek", "Plec", "Chip"};
-                    
+
                     CallableStatement cstmt = DBSupport.getConn().prepareCall("{? = call GET_SEARCH_QUERY(PATTERN => ?, IN_TABLE_NAME => 'ZWIERZETA')}");
                     cstmt.registerOutParameter(1, Types.VARCHAR);
-                    cstmt.setString(2, searchZwierzTextField.getText());
+                    cstmt.setString(2, searchZwierzTextField.getText().replaceAll("'", "''"));
                     cstmt.execute();
                     String wynik = cstmt.getString(1).replace("*", "gatunki_nazwa, plec, chip");
-                    
+
                     CacheSqlTableModel model = new CacheSqlTableModel(wynik, columns, "ORDER BY CHIP");
                     zwierzetaTable.setModel(model);
-                    
+
                 } catch (SQLException ex) {
-                    Logger.getLogger(OcenyFrame.class.getName()).log(Level.SEVERE, null, ex);
+                    JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         }

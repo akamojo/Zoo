@@ -6,7 +6,6 @@
 package zoo;
 
 import java.awt.event.WindowEvent;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -50,11 +49,11 @@ public class OcenaFrame extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
+
     public void fillen() {
         this.linkButton.setVisible(false);
     }
-    
+
     public void notFillen() {
         this.linkSpecialButton.setVisible(false);
     }
@@ -64,7 +63,7 @@ public class OcenaFrame extends javax.swing.JFrame {
             buttonPanel.setVisible(false);
             infoPanel.setVisible(false);
             komentarzTextArea.setEditable(false);
-            
+
             Execute q = new Execute();
             q.ExecuteQuery("SELECT NVL(ZWIERZETA_CHIP, -1), NVL(WYBIEGI_NR, -1), KOMENTARZ FROM OCENY WHERE NUMER_OCENY = " + Integer.toString(numer_oceny));
             q.getRs().next();
@@ -72,8 +71,8 @@ public class OcenaFrame extends javax.swing.JFrame {
             int nr = q.getRs().getInt(2);
             String komentarz = q.getRs().getString(3);
             komentarzTextArea.setText(komentarz);
-            
-            if(chip != -1) {
+
+            if (chip != -1) {
                 this.numer = chip;
                 this.czyZwierze = true;
                 this.linkSpecialButton.setText("Wyświetl zwierzę");
@@ -82,9 +81,9 @@ public class OcenaFrame extends javax.swing.JFrame {
                 this.czyZwierze = false;
                 this.linkSpecialButton.setText("Wyświetl wybieg");
             }
-            
+
         } catch (SQLException ex) {
-            Logger.getLogger(OcenaFrame.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 

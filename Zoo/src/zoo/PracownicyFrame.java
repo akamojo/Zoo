@@ -5,21 +5,15 @@
  */
 package zoo;
 
-import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
 import java.sql.Types;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
-import javax.swing.table.AbstractTableModel;
 import static zoo.Zoo.getShowPosition2;
 
 /**
@@ -45,29 +39,30 @@ public class PracownicyFrame extends javax.swing.JFrame {
             JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
+
     public void setColumns() throws SQLException {
         columnComboBox.setModel(this.loadColumns());
         columnComboBox.setSelectedItem("WSZYSTKIE");
     }
-    
+
     public DefaultComboBoxModel<String> loadColumns() throws SQLException {
         Execute exec = new Execute();
         exec.ExecuteQuery("SELECT COUNT(*) FROM USER_TAB_COLUMNS WHERE TABLE_NAME = 'PRACOWNICY'"
                 + " AND COLUMN_NAME != 'DATA_ZWOLNIENIA'");
         ResultSet rs = exec.getRs();
-        
+
         int count = 0;
-        if (rs.next())
+        if (rs.next()) {
             count = rs.getInt(1);
+        }
         count += 1;
         String[] types = new String[count];
-        
+
         exec.ExecuteQuery("SELECT COLUMN_NAME FROM USER_TAB_COLUMNS WHERE TABLE_NAME = 'PRACOWNICY'"
                 + " AND COLUMN_NAME != 'DATA_ZWOLNIENIA'");
         rs = exec.getRs();
         int i;
-        for (i = 0; i < count-1; i++) {
+        for (i = 0; i < count - 1; i++) {
             rs.next();
             types[i] = rs.getString(1);
         }
@@ -209,8 +204,8 @@ public class PracownicyFrame extends javax.swing.JFrame {
                 try {
                     String[] columns = new String[]{"Id", "Nazwisko", "Pensja", "Premia", "Etat", "Godziny", "Zatrudniony", "Zwolniony"};
                     if (columnComboBox.getSelectedItem().toString().equals("WSZYSTKIE")) {
-                        
-                        CallableStatement cstmt = DBSupport.getConn().prepareCall("{? = call GET_SEARCH_QUERY(PATTERN => ?, IN_TABLE_NAME => 'PRACOWNICY')}");                
+
+                        CallableStatement cstmt = DBSupport.getConn().prepareCall("{? = call GET_SEARCH_QUERY(PATTERN => ?, IN_TABLE_NAME => 'PRACOWNICY')}");
                         cstmt.registerOutParameter(1, Types.VARCHAR);
                         cstmt.setString(2, searchTextField.getText().replaceAll("'", "''"));
                         cstmt.execute();
@@ -221,23 +216,21 @@ public class PracownicyFrame extends javax.swing.JFrame {
                         pracownicyTable.setModel(model);
                         pracownicyTable.removeColumn(pracownicyTable.getColumnModel().getColumn(0));
                         pracownicyTable.removeColumn(pracownicyTable.getColumnModel().getColumn(6));
-                    }
-                    else {
+                    } else {
                         String kolumna = columnComboBox.getSelectedItem().toString();
                         Execute q = new Execute();
-                        
+
                         if (kolumna.equals("DATA_ZATRUDNIENIA")) {
                             String query = "SELECT * FROM PRACOWNICY WHERE DATA_ZWOLNIENIA IS NULL AND TO_CHAR(" + kolumna + ", 'YYYY-MM-DD') LIKE ?";
-                            
+
                             String myTable[] = {searchTextField.getText().trim()};
                             CacheSqlTableModel model = new CacheSqlTableModel(query, columns, "ORDER BY NAZWISKO", myTable);
                             pracownicyTable.setModel(model);
                             pracownicyTable.removeColumn(pracownicyTable.getColumnModel().getColumn(0));
                             pracownicyTable.removeColumn(pracownicyTable.getColumnModel().getColumn(6));
-                        }
-                        else {
+                        } else {
                             String query = "SELECT * FROM PRACOWNICY WHERE DATA_ZWOLNIENIA IS NULL AND LOWER(TO_CHAR(" + kolumna + ")) LIKE ?";
-                            
+
                             String myTable[] = {searchTextField.getText().trim().toLowerCase()};
                             CacheSqlTableModel model = new CacheSqlTableModel(query, columns, "ORDER BY NAZWISKO", myTable);
                             pracownicyTable.setModel(model);
@@ -245,19 +238,18 @@ public class PracownicyFrame extends javax.swing.JFrame {
                             pracownicyTable.removeColumn(pracownicyTable.getColumnModel().getColumn(6));
                         }
                         //SELECT * FROM PRACOWNICY WHERE TO_CHAR(DATA_ZWOLNIENIA, 'YYYY-MM-DD') LIKE '%wet%' OR LOWER(TO_CHAR(ID)) LIKE '%wet%' OR LOWER(TO_CHAR(NAZWISKO)) LIKE '%wet%' OR LOWER(TO_CHAR(PENSJA)) LIKE '%wet%' OR LOWER(TO_CHAR(PREMIA)) LIKE '%wet%' OR LOWER(TO_CHAR(ETATY_NAZWA)) LIKE '%wet%' OR LOWER(TO_CHAR(GODZIN_TYGODNIOWO)) LIKE '%wet%' OR TO_CHAR(DATA_ZATRUDNIENIA, 'YYYY-MM-DD') LIKE '%wet%'
-                        
+
                     }
-                    
-                    
-                } catch (SQLException ex1) {
-                    Logger.getLogger(PracownicyFrame.class.getName()).log(Level.SEVERE, null, ex1);
+
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         }
     }//GEN-LAST:event_searchTextFieldKeyPressed
 
     private void columnComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_columnComboBoxActionPerformed
-        
+
     }//GEN-LAST:event_columnComboBoxActionPerformed
 
     /**

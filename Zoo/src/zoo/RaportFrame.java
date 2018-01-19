@@ -6,7 +6,6 @@
 package zoo;
 
 import java.awt.event.WindowEvent;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.logging.Level;
@@ -35,7 +34,7 @@ public class RaportFrame extends javax.swing.JFrame {
         initComponents();
         setIconImage(Zoo.getIcon());
     }
-    
+
     public void simpleMode() {
         zwierzePanel.setVisible(false);
         linkPanel.setVisible(false);
@@ -122,11 +121,11 @@ public class RaportFrame extends javax.swing.JFrame {
         return new javax.swing.DefaultComboBoxModel<String>(types);
 
     }
-    
+
     public void fillen() {
         this.linkButton.setVisible(false);
     }
-    
+
     public void notFillen() {
         this.linkSpecialButton.setVisible(false);
     }
@@ -158,7 +157,7 @@ public class RaportFrame extends javax.swing.JFrame {
             }
 
         } catch (SQLException ex) {
-            Logger.getLogger(OcenaFrame.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 

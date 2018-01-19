@@ -5,11 +5,8 @@
  */
 package zoo;
 
-import java.sql.Date;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.SQLType;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
@@ -58,7 +55,7 @@ public class ZwierzeFrame extends javax.swing.JFrame {
         this.fill(chip);
         Zoo.setIconAndCursor(this);
     }
-    
+
     public ZwierzeFrame(Integer chip) throws SQLException {
         this.parent = null;
         initComponents();
@@ -161,7 +158,7 @@ public class ZwierzeFrame extends javax.swing.JFrame {
             leaveZooTextField.setEnabled(false);
 
         } catch (SQLException ex) {
-            Logger.getLogger(PracownikFrame.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -456,51 +453,51 @@ public class ZwierzeFrame extends javax.swing.JFrame {
 
         } else {
             //try {
-                String chip = chipTextField.getText();
-                exec.ExecutePreparedQuery("UPDATE ZWIERZETA SET PLEC = ? WHERE CHIP = " + chip);
+            String chip = chipTextField.getText();
+            exec.ExecutePreparedQuery("UPDATE ZWIERZETA SET PLEC = ? WHERE CHIP = " + chip);
+            try {
+                exec.getStatement().setString(1, plecComboBox.getSelectedItem().toString());
+                exec.firePreparedUpdate();
+            } catch (SQLException ex) {
+                JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error from changeButtonActionPerformed", JOptionPane.ERROR_MESSAGE);
+            }
+
+            exec.ExecutePreparedQuery("UPDATE ZWIERZETA SET WAGA = ? WHERE CHIP = " + chip);
+            try {
+                exec.getStatement().setFloat(1, Float.parseFloat(wagaTextField.getText()));
+                exec.firePreparedUpdate();
+            } catch (NumberFormatException | SQLException ex) {
+                JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error from changeButtonActionPerformed", JOptionPane.ERROR_MESSAGE);
+            }
+
+            exec.ExecutePreparedQuery("UPDATE ZWIERZETA SET WYBIEGI_NR = ? WHERE CHIP = " + chip);
+            try {
+                exec.getStatement().setInt(1, new Integer(nrWybieguComboBox.getSelectedItem().toString().split(" ")[0]));
+                exec.firePreparedUpdate();
+            } catch (NumberFormatException | SQLException ex) {
+                JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error from changeButtonActionPerformed", JOptionPane.ERROR_MESSAGE);
+            }
+
+            if (!"".equals(dataUrTextField.getText())) {
+                exec.ExecutePreparedQuery("UPDATE ZWIERZETA SET DATA_URODZIN = ? WHERE CHIP = " + chip);
                 try {
-                    exec.getStatement().setString(1, plecComboBox.getSelectedItem().toString());
+                    exec.getStatement().setDate(1, java.sql.Date.valueOf(dataUrTextField.getText()));
                     exec.firePreparedUpdate();
                 } catch (SQLException ex) {
                     JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error from changeButtonActionPerformed", JOptionPane.ERROR_MESSAGE);
                 }
+            }
 
-                exec.ExecutePreparedQuery("UPDATE ZWIERZETA SET WAGA = ? WHERE CHIP = " + chip);
+            if (!"".equals(dataZooTextField.getText())) {
+                exec.ExecutePreparedQuery("UPDATE ZWIERZETA SET DATA_PRZYJECIA = ? WHERE CHIP = " + chip);
                 try {
-                    exec.getStatement().setFloat(1, Float.parseFloat(wagaTextField.getText()));
+                    exec.getStatement().setDate(1, java.sql.Date.valueOf(dataZooTextField.getText()));
                     exec.firePreparedUpdate();
-                } catch (NumberFormatException | SQLException ex) {
+                } catch (SQLException ex) {
                     JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error from changeButtonActionPerformed", JOptionPane.ERROR_MESSAGE);
                 }
+            }
 
-                exec.ExecutePreparedQuery("UPDATE ZWIERZETA SET WYBIEGI_NR = ? WHERE CHIP = " + chip);
-                try {
-                    exec.getStatement().setInt(1, new Integer(nrWybieguComboBox.getSelectedItem().toString().split(" ")[0]));
-                    exec.firePreparedUpdate();
-                } catch (NumberFormatException | SQLException ex) {
-                    JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error from changeButtonActionPerformed", JOptionPane.ERROR_MESSAGE);
-                }
-
-                if (!"".equals(dataUrTextField.getText())) {
-                    exec.ExecutePreparedQuery("UPDATE ZWIERZETA SET DATA_URODZIN = ? WHERE CHIP = " + chip);
-                    try {
-                    exec.getStatement().setDate(1, java.sql.Date.valueOf(dataUrTextField.getText()));
-                    exec.firePreparedUpdate();
-                    } catch (SQLException ex) {
-                        JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error from changeButtonActionPerformed", JOptionPane.ERROR_MESSAGE);
-                    }
-                }
-
-                if (!"".equals(dataZooTextField.getText())) {
-                    exec.ExecutePreparedQuery("UPDATE ZWIERZETA SET DATA_PRZYJECIA = ? WHERE CHIP = " + chip);
-                    try {
-                        exec.getStatement().setDate(1, java.sql.Date.valueOf(dataZooTextField.getText()));
-                        exec.firePreparedUpdate();
-                    } catch (SQLException ex) {
-                        JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error from changeButtonActionPerformed", JOptionPane.ERROR_MESSAGE);
-                    }
-                }
-                
             JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Zmiany wprowadzone! :)", "Zatwierdź - rezultat", JOptionPane.INFORMATION_MESSAGE);
 
             /*} catch (Exception ex) {

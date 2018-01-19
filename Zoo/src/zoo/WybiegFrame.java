@@ -5,17 +5,12 @@
  */
 package zoo;
 
-import java.awt.event.WindowEvent;
 import java.sql.CallableStatement;
-import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JOptionPane;
-import static zoo.Zoo.getShowPosition2;
 
 /**
  *
@@ -27,7 +22,6 @@ public class WybiegFrame extends javax.swing.JFrame {
     private int nr = -1;
     private WybiegiFrame parent;
 
-
     /**
      * Creates new form RaportFrame
      */
@@ -38,7 +32,7 @@ public class WybiegFrame extends javax.swing.JFrame {
         this.parent = parent;
         this.fill(nr);
     }
-    
+
     public WybiegFrame(int nr) throws SQLException {
         initComponents();
         Zoo.setIconAndCursor(this);
@@ -46,34 +40,34 @@ public class WybiegFrame extends javax.swing.JFrame {
         this.parent = null;
         this.fill(nr);
     }
-    
-    
+
     public void fill(int nr) throws SQLException {
-        
+
         this.nr = nr;
-        
+
         Execute exec = new Execute();
         exec.ExecuteQuery("SELECT OPIS_WYBIEGU FROM WYBIEGI WHERE NR = " + Integer.toString(nr));
         ResultSet rs = exec.getRs();
-        
+
         if (rs.next()) {
             this.setTitle("Wybieg numer " + Integer.toString(nr));
             this.descrTextArea.setText(rs.getString(1));
         }
-        
+
     }
-    
+
     public DefaultComboBoxModel<String> loadNrWybiegu() throws SQLException {
-        
+
         Execute exec = new Execute();
         exec.ExecuteQuery("SELECT COUNT(*) FROM WYBIEGI");
         ResultSet rs = exec.getRs();
-        
+
         int count = 0;
-        if (rs.next())
+        if (rs.next()) {
             count = rs.getInt(1);
+        }
         String[] types = new String[count];
-        
+
         exec.ExecuteQuery("SELECT NR FROM WYBIEGI ORDER BY NR ASC");
         rs = exec.getRs();
         for (int i = 0; i < count; i++) {
@@ -81,7 +75,7 @@ public class WybiegFrame extends javax.swing.JFrame {
             types[i] = rs.getString(1);
         }
         return new javax.swing.DefaultComboBoxModel<String>(types);
-        
+
     }
 
     /**
@@ -234,15 +228,15 @@ public class WybiegFrame extends javax.swing.JFrame {
 
     private void editButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_editButtonActionPerformed
         try {
-            
+
             Execute up = new Execute();
             up.ExecutePreparedQuery("UPDATE WYBIEGI SET OPIS_WYBIEGU = ? WHERE NR = " + Integer.toString(this.nr));
             up.getStatement().setString(1, descrTextArea.getText());
             up.firePreparedUpdate();
-            
+
             JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Opis został zmieniony.", "Aktualizacja opisu", JOptionPane.INFORMATION_MESSAGE);
             this.fill(nr);
-            
+
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -259,16 +253,15 @@ public class WybiegFrame extends javax.swing.JFrame {
             cstmt.registerOutParameter(1, Types.INTEGER);
             cstmt.execute();
             Integer wynik = cstmt.getInt(1);
-            
+
             if (wynik == 1) {
                 JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Ten wybieg ma wystarczająco"
                         + " dużo miejsca dla zwierząt, które go zamieszkują.", "Kontrola zajętości wybiegu:", JOptionPane.INFORMATION_MESSAGE);
-            }
-            else {
+            } else {
                 JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Ten wybieg ma za mało miejsca "
                         + "dla zwierząt, które go zamieszkują. :( (spróbuj je przenieść do innych wybiegów) ", "Kontrola zajętości wybiegu:", JOptionPane.ERROR_MESSAGE);
             }
-           
+
             // resPracMiesiacaLabel.setText(wynik);
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
@@ -288,17 +281,16 @@ public class WybiegFrame extends javax.swing.JFrame {
             cstmt.registerOutParameter(1, Types.INTEGER);
             cstmt.execute();
             Integer wynik = cstmt.getInt(1);
-            
+
             if (wynik > 0) {
                 JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Wybieg wolny! " + Integer.toString(wynik) + " zwierząt "
                         + "trafiło na inne wybiegi.", "Zwalnianie wybiegu:", JOptionPane.INFORMATION_MESSAGE);
-            }
-            else {
+            } else {
                 JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Nie udało się opróżnić wybiegu. (jest pusty lub nie ma dokąd"
                         + " przenieść zwierząt...)", "Zwalnianie wybiegu:", JOptionPane.ERROR_MESSAGE);
             }
             this.parent.refreshZwierzeta(Integer.toString(this.nr));
-           
+
             // resPracMiesiacaLabel.setText(wynik);
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);

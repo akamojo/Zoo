@@ -6,20 +6,13 @@
 package zoo;
 
 //import com.sun.org.apache.xml.internal.serializer.utils.Messages;
-import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.sql.CallableStatement;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.ArrayList;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
-import javax.swing.event.ListDataListener;
-import static zoo.Zoo.getShowPosition2;
 
 /**
  *
@@ -67,7 +60,7 @@ public class PracownikFrame extends javax.swing.JFrame {
         try {
             Execute q = new Execute();
             q.ExecutePreparedQuery("select id, nazwisko, pensja, nvl(premia, 0), etaty_nazwa, godzin_tygodniowo, data_zatrudnienia from pracownicy where id = ?");
-            ((PreparedStatement) q.getStatement()).setInt(1, id);
+            q.getStatement().setInt(1, id);
             q.firePreparedQuery();
             q.getRs().next();
 
@@ -100,7 +93,7 @@ public class PracownikFrame extends javax.swing.JFrame {
             addRaportButton.setVisible(true);
 
         } catch (SQLException ex) {
-            Logger.getLogger(PracownikFrame.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -581,19 +574,19 @@ public class PracownikFrame extends javax.swing.JFrame {
             } else {
                 try {
                     String[] columns = new String[]{"Numer", "Wiek klienta", "Czas sprzedaży", "Id sprzedawcy", "Typ biletu"};
-                    
+
                     CallableStatement cstmt = DBSupport.getConn().prepareCall("{? = call GET_SEARCH_QUERY(PATTERN => ?, IN_TABLE_NAME => 'BILETY')}");
                     cstmt.registerOutParameter(1, Types.VARCHAR);
-                    cstmt.setString(2, searchBiletTextField.getText());
+                    cstmt.setString(2, searchBiletTextField.getText().replaceAll("'", "''"));
                     cstmt.execute();
                     String wynik = cstmt.getString(1);
-                    
+
                     CacheSqlTableModel model = new CacheSqlTableModel(wynik + " AND PRACOWNICY_ID = " + Integer.toString(this.id), columns, "ORDER BY NR");
                     biletyTable.setModel(model);
                     biletyTable.removeColumn(biletyTable.getColumnModel().getColumn(0));
-                    
+
                 } catch (SQLException ex) {
-                    Logger.getLogger(OcenyFrame.class.getName()).log(Level.SEVERE, null, ex);
+                    JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         }
@@ -606,19 +599,19 @@ public class PracownikFrame extends javax.swing.JFrame {
             } else {
                 try {
                     String[] columns = new String[]{"Numer", "Czas wystawienia", "Id pracownika", "Uwagi", "Chip zwierzęcia", "Numer wybiegu"};
-                    
+
                     CallableStatement cstmt = DBSupport.getConn().prepareCall("{? = call GET_SEARCH_QUERY(PATTERN => ?, IN_TABLE_NAME => 'RAPORTY')}");
                     cstmt.registerOutParameter(1, Types.VARCHAR);
-                    cstmt.setString(2, searchRaportTextField.getText());
+                    cstmt.setString(2, searchRaportTextField.getText().replaceAll("'", "''"));
                     cstmt.execute();
                     String wynik = cstmt.getString(1);
-                    
+
                     CacheSqlTableModel model = new CacheSqlTableModel(wynik + " AND PRACOWNICY_ID = " + Integer.toString(this.id), columns, "ORDER BY NUMER");
                     raportyTable.setModel(model);
                     raportyTable.removeColumn(raportyTable.getColumnModel().getColumn(0));
-                    
+
                 } catch (SQLException ex) {
-                    Logger.getLogger(OcenyFrame.class.getName()).log(Level.SEVERE, null, ex);
+                    JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         }

@@ -5,20 +5,10 @@
  */
 package zoo;
 
-import java.awt.Component;
-import java.awt.Image;
-import java.sql.Connection;
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import javax.swing.JButton;
 import javax.swing.JLabel;
-import static zoo.Zoo.getShowPosition1;
 import static zoo.Zoo.getShowPosition2;
 
 import ca.mb.javajeff.anicursor.*;
-import java.io.IOException;
-import java.net.URL;
 
 /**
  *
@@ -27,6 +17,7 @@ import java.net.URL;
 public class MainFrame extends javax.swing.JFrame {
 
     AniCursor kursorek;
+
     /**
      * Creates new form MainJFrame
      */
@@ -35,16 +26,16 @@ public class MainFrame extends javax.swing.JFrame {
         Zoo.setIconAndCursor(this);
         // setIconImage(Zoo.getIcon());
         setCuteImageInBackground();
-        
+
     }
-    
+
     public void disableButtons() {
         this.biletyButton.setEnabled(false);
         this.pracownicyButton.setEnabled(false);
         this.wybiegiButton.setEnabled(false);
         this.podsumowanieButton.setEnabled(false);
     }
-    
+
     public void setCuteImageInBackground() {
         java.awt.GridBagConstraints gridBagConstraints;
         ImagePanel cute = new ImagePanel();
@@ -52,11 +43,11 @@ public class MainFrame extends javax.swing.JFrame {
         cute.setPreferredSize(new java.awt.Dimension(500, 300));
         cute.setLayout(new java.awt.GridBagLayout());
         JLabel CuteLabel = new javax.swing.JLabel();
-        
+
         CuteLabel.setFont(new java.awt.Font("Consolas", 1, 48)); // NOI18N
         CuteLabel.setHorizontalAlignment(javax.swing.SwingConstants.CENTER);
         CuteLabel.setText("Zoo");
-        
+
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;

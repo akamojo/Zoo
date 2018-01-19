@@ -9,8 +9,6 @@ import java.awt.event.KeyEvent;
 import java.sql.CallableStatement;
 import java.sql.SQLException;
 import java.sql.Types;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
@@ -37,7 +35,7 @@ public class BiletyFrame extends javax.swing.JFrame {
         biletyTable.setModel(model);
         biletyTable.removeColumn(biletyTable.getColumnModel().getColumn(0));
     }
-    
+
     /**
      * This method is called from within the constructor to initialize the form.
      * WARNING: Do NOT modify this code. The content of this method is always
@@ -157,19 +155,19 @@ public class BiletyFrame extends javax.swing.JFrame {
             } else {
                 try {
                     String[] columns = new String[]{"Numer", "Wiek klienta", "Czas sprzedaży", "Id sprzedawcy", "Typ biletu"};
-                    
+
                     CallableStatement cstmt = DBSupport.getConn().prepareCall("{? = call GET_SEARCH_QUERY(PATTERN => ?, IN_TABLE_NAME => 'BILETY')}");
                     cstmt.registerOutParameter(1, Types.VARCHAR);
-                    cstmt.setString(2, searchTextField.getText());
+                    cstmt.setString(2, searchTextField.getText().replaceAll("'", "''"));
                     cstmt.execute();
                     String wynik = cstmt.getString(1);
-                    
+
                     CacheSqlTableModel model = new CacheSqlTableModel(wynik, columns, "ORDER BY NR");
                     biletyTable.setModel(model);
                     biletyTable.removeColumn(biletyTable.getColumnModel().getColumn(0));
-                    
+
                 } catch (SQLException ex) {
-                    Logger.getLogger(OcenyFrame.class.getName()).log(Level.SEVERE, null, ex);
+                    JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
         }

@@ -61,7 +61,7 @@ public class Execute {
             cstmt.execute();
             cstmt.close();
         } catch (SQLException ex) {
-            Logger.getLogger(Execute.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -87,7 +87,7 @@ public class Execute {
             //Logger.getLogger(DBSupport.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
-    
+
     public int ExecuteUpdate_getChanges(String query) {
         this.query = query;
         Connection dbConnection = DBSupport.getConn();
@@ -116,7 +116,7 @@ public class Execute {
     public void firePreparedUpdate() throws SQLException {
         pstmt.executeUpdate();
     }
-    
+
     public int firePreparedUpdate_getCount() throws SQLException {
         int result = pstmt.executeUpdate();
         return result;

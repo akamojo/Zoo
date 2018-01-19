@@ -5,9 +5,6 @@
  */
 package zoo;
 
-import java.sql.SQLException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.swing.JOptionPane;
 
 /**
@@ -82,13 +79,6 @@ public class BiletDialog extends javax.swing.JDialog {
     private void okButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_okButtonMouseClicked
         try {
             Execute c = new Execute();
-            /*
-            SEVERE: null
-            java.sql.SQLException: ORA-01403: nie znaleziono danych
-            ORA-06512: przy "INF127216.SPRZEDAZ_BILETU", linia 12
-            ORA-06512: przy linia 1
-            */
-            //c.ExecuteCall("sprzedaz_biletu(" + wiekTextField.getText() + ", " + parent.getId() + ")");
             if (parent instanceof PracownikFrame) {
                 c.ExecuteCall("sprzedaz_biletu(?, ?)");
                 c.getCstmt().setInt(1, Integer.parseInt(wiekTextField.getText()));

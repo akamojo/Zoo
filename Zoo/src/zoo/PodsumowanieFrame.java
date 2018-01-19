@@ -11,6 +11,7 @@ import java.sql.SQLException;
 import java.sql.Types;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.JOptionPane;
 
 /**
  *
@@ -31,9 +32,9 @@ public class PodsumowanieFrame extends javax.swing.JFrame {
         liczBilety();
         liczOceny();
         sredniWiek();
-        
+
         tablePanel.setVisible(false);
-        
+
     }
 
     public void pracownikMiesiaca() {
@@ -44,91 +45,97 @@ public class PodsumowanieFrame extends javax.swing.JFrame {
             String wynik = cstmt.getString(1);
             resPracMiesiacaLabel.setText(wynik);
         } catch (SQLException ex) {
-            Logger.getLogger(PodsumowanieFrame.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
+
     void liczZwierzeta() {
         try {
             Execute q = new Execute();
             q.ExecuteQuery("SELECT COUNT(*) FROM ZWIERZETA");
             ResultSet rs = q.getRs();
             int count = 0;
-            if (rs.next())
+            if (rs.next()) {
                 count = rs.getInt(1);
+            }
             resLiczZwierzLabel.setText(Integer.toString(count));
         } catch (SQLException ex) {
-            Logger.getLogger(PodsumowanieFrame.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
+
     void liczWybiegi() {
         try {
             Execute q = new Execute();
             q.ExecuteQuery("SELECT COUNT(*) FROM WYBIEGI");
             ResultSet rs = q.getRs();
             int count = 0;
-            if (rs.next())
+            if (rs.next()) {
                 count = rs.getInt(1);
+            }
             resLiczWybiegLabel.setText(Integer.toString(count));
         } catch (SQLException ex) {
-            Logger.getLogger(PodsumowanieFrame.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
+
     void liczPrac() {
         try {
             Execute q = new Execute();
             q.ExecuteQuery("SELECT COUNT(*) FROM PRACOWNICY WHERE DATA_ZWOLNIENIA IS NULL");
             ResultSet rs = q.getRs();
             int count = 0;
-            if (rs.next())
+            if (rs.next()) {
                 count = rs.getInt(1);
+            }
             resLiczPracLabel.setText(Integer.toString(count));
         } catch (SQLException ex) {
-            Logger.getLogger(PodsumowanieFrame.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
+
     void liczBilety() {
         try {
             Execute q = new Execute();
             q.ExecuteQuery("SELECT COUNT(*) FROM BILETY");
             ResultSet rs = q.getRs();
             int count = 0;
-            if (rs.next())
+            if (rs.next()) {
                 count = rs.getInt(1);
+            }
             resLiczBiletyLabel.setText(Integer.toString(count));
         } catch (SQLException ex) {
-            Logger.getLogger(PodsumowanieFrame.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
+
     void liczOceny() {
         try {
             Execute q = new Execute();
             q.ExecuteQuery("SELECT COUNT(*) FROM OCENY");
             ResultSet rs = q.getRs();
             int count = 0;
-            if (rs.next())
+            if (rs.next()) {
                 count = rs.getInt(1);
+            }
             resLiczOcenyLabel.setText(Integer.toString(count));
         } catch (SQLException ex) {
-            Logger.getLogger(PodsumowanieFrame.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
         }
     }
-    
+
     void sredniWiek() {
         try {
             Execute q = new Execute();
             q.ExecuteQuery("SELECT AVG(WIEK_KLIENTA) FROM BILETY");
             ResultSet rs = q.getRs();
             int count = 0;
-            if (rs.next())
+            if (rs.next()) {
                 count = rs.getInt(1);
+            }
             resSredWiekLabel.setText(Integer.toString(count));
         } catch (SQLException ex) {
-            Logger.getLogger(PodsumowanieFrame.class.getName()).log(Level.SEVERE, null, ex);
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -359,23 +366,23 @@ public class PodsumowanieFrame extends javax.swing.JFrame {
 
     private void avgAnimalsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_avgAnimalsButtonActionPerformed
         tablePanel.setVisible(true);
-        
+
         String[] columns = new String[]{"Chip", "Gatunek", "Płeć", "Numer wybiegu", "Średnia ocena"};
-        CacheSqlTableModel model = new CacheSqlTableModel("select " +
-            "chip, gatunki_nazwa, plec, zwierzeta.wybiegi_nr, avg(liczba_gwiazdek) as sr " +
-            "from zwierzeta join oceny on chip = zwierzeta_chip group by chip, gatunki_nazwa, plec, zwierzeta.wybiegi_nr", 
+        CacheSqlTableModel model = new CacheSqlTableModel("select "
+                + "chip, gatunki_nazwa, plec, zwierzeta.wybiegi_nr, avg(liczba_gwiazdek) as sr "
+                + "from zwierzeta join oceny on chip = zwierzeta_chip group by chip, gatunki_nazwa, plec, zwierzeta.wybiegi_nr",
                 columns, "ORDER BY sr DESC");
         table.setModel(model);
-        
+
     }//GEN-LAST:event_avgAnimalsButtonActionPerformed
 
     private void avgWybiegiButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_avgWybiegiButtonActionPerformed
         tablePanel.setVisible(true);
-        
+
         String[] columns = new String[]{"Numer", "Typ wybiegu", "Powierzchnia", "Średnia ocena"};
-        CacheSqlTableModel model = new CacheSqlTableModel("select " +
-            "nr, typy_wybiegu_nazwa, powierzchnia, avg(liczba_gwiazdek) as sr " +
-            "from wybiegi join oceny on nr = wybiegi_nr group by nr, typy_wybiegu_nazwa, powierzchnia", 
+        CacheSqlTableModel model = new CacheSqlTableModel("select "
+                + "nr, typy_wybiegu_nazwa, powierzchnia, avg(liczba_gwiazdek) as sr "
+                + "from wybiegi join oceny on nr = wybiegi_nr group by nr, typy_wybiegu_nazwa, powierzchnia",
                 columns, "ORDER BY sr DESC");
         table.setModel(model);
     }//GEN-LAST:event_avgWybiegiButtonActionPerformed
