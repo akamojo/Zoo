@@ -69,7 +69,7 @@ public class PracownicyFrame extends javax.swing.JFrame {
         setMinimumSize(new java.awt.Dimension(250, 250));
         setPreferredSize(new java.awt.Dimension(600, 500));
 
-        searchLabel.setText("Wyszukaj pracownika po nazwisku:");
+        searchLabel.setText("Wyszukaj pracownika:");
         searchPanel.add(searchLabel);
 
         searchTextField.setPreferredSize(new java.awt.Dimension(100, 20));

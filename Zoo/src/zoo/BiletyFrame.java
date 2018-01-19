@@ -5,6 +5,7 @@
  */
 package zoo;
 
+import java.awt.event.KeyEvent;
 import java.sql.SQLException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -45,6 +46,7 @@ public class BiletyFrame extends javax.swing.JFrame {
     private void initComponents() {
 
         buttonPanel = new javax.swing.JPanel();
+        searchTextField = new javax.swing.JTextField();
         kupBiletButton = new javax.swing.JButton();
         delButton = new javax.swing.JButton();
         biletyPanel = new javax.swing.JPanel();
@@ -53,6 +55,14 @@ public class BiletyFrame extends javax.swing.JFrame {
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Zoo Bilety");
+
+        searchTextField.setPreferredSize(new java.awt.Dimension(100, 20));
+        searchTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                searchTextFieldKeyPressed(evt);
+            }
+        });
+        buttonPanel.add(searchTextField);
 
         kupBiletButton.setText("Kup bilet");
         kupBiletButton.addMouseListener(new java.awt.event.MouseAdapter() {
@@ -138,6 +148,20 @@ public class BiletyFrame extends javax.swing.JFrame {
         }
     }//GEN-LAST:event_delButtonKeyTyped
 
+    private void searchTextFieldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchTextFieldKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            if (searchTextField.getText().isEmpty()) {
+                refresh();
+            } else {
+                String[] where = new String[]{searchTextField.getText().toLowerCase()};
+                String[] columns = new String[]{"Numer", "Wiek klienta", "Czas sprzedaży", "Id sprzedawcy", "Typ biletu"};
+                CacheSqlTableModel model = new CacheSqlTableModel("select * from BILETY where TO_CHAR(CZAS_SPRZEDAZY, 'YYYY-MM-DD') LIKE ?", columns, "ORDER BY NR", where);
+                biletyTable.setModel(model);
+                biletyTable.removeColumn(biletyTable.getColumnModel().getColumn(0));
+            }
+        }
+    }//GEN-LAST:event_searchTextFieldKeyPressed
+
     /**
      * @param args the command line arguments
      */
@@ -180,5 +204,6 @@ public class BiletyFrame extends javax.swing.JFrame {
     private javax.swing.JPanel buttonPanel;
     private javax.swing.JButton delButton;
     private javax.swing.JButton kupBiletButton;
+    private javax.swing.JTextField searchTextField;
     // End of variables declaration//GEN-END:variables
 }

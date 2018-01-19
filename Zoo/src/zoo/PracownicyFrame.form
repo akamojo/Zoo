@@ -41,7 +41,7 @@
       <SubComponents>
         <Component class="javax.swing.JLabel" name="searchLabel">
           <Properties>
-            <Property name="text" type="java.lang.String" value="Wyszukaj pracownika po nazwisku:"/>
+            <Property name="text" type="java.lang.String" value="Wyszukaj pracownika:"/>
           </Properties>
         </Component>
         <Component class="javax.swing.JTextField" name="searchTextField">
