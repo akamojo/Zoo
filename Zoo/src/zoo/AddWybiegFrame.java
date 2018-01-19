@@ -25,7 +25,7 @@ public class AddWybiegFrame extends javax.swing.JFrame {
     public AddWybiegFrame() throws SQLException {
         initComponents();
         typComboBox.setModel(this.loadWybiegiTypes());
-        setIconImage(Zoo.getIcon());
+        Zoo.setIconAndCursor(this);
     }
     /**
      * Creates new form AddWybiegFrame
@@ -34,7 +34,7 @@ public class AddWybiegFrame extends javax.swing.JFrame {
         this.parent = p;
         initComponents();
         typComboBox.setModel(this.loadWybiegiTypes());
-        setIconImage(Zoo.getIcon());
+        Zoo.setIconAndCursor(this);
     }
     
     public void updateWybiegiTypes() throws SQLException {

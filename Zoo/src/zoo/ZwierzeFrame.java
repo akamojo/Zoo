@@ -39,7 +39,7 @@ public class ZwierzeFrame extends javax.swing.JFrame {
         initComponents();
         gatunekComboBox.setModel(this.loadGatunki());
         nrWybieguComboBox.setModel(this.loadNrWybiegu());
-        setIconImage(Zoo.getIcon());
+        Zoo.setIconAndCursor(this);
     }
 
     public ZwierzeFrame(WybiegiFrame p) throws SQLException {
@@ -47,7 +47,7 @@ public class ZwierzeFrame extends javax.swing.JFrame {
         initComponents();
         gatunekComboBox.setModel(this.loadGatunki());
         nrWybieguComboBox.setModel(this.loadNrWybiegu());
-        setIconImage(Zoo.getIcon());
+        Zoo.setIconAndCursor(this);
     }
 
     public ZwierzeFrame(WybiegiFrame p, Integer chip) throws SQLException {
@@ -56,7 +56,16 @@ public class ZwierzeFrame extends javax.swing.JFrame {
         gatunekComboBox.setModel(this.loadGatunki());
         nrWybieguComboBox.setModel(this.loadNrWybiegu());
         this.fill(chip);
-        setIconImage(Zoo.getIcon());
+        Zoo.setIconAndCursor(this);
+    }
+    
+    public ZwierzeFrame(Integer chip) throws SQLException {
+        this.parent = null;
+        initComponents();
+        gatunekComboBox.setModel(this.loadGatunki());
+        nrWybieguComboBox.setModel(this.loadNrWybiegu());
+        this.fill(chip);
+        Zoo.setIconAndCursor(this);
     }
 
     public void updateGatunki() throws SQLException {
@@ -117,7 +126,7 @@ public class ZwierzeFrame extends javax.swing.JFrame {
             exec.ExecutePreparedQuery("select chip, waga, data_urodzin, data_przyjecia,"
                     + "gatunki_nazwa, TO_CHAR(wybiegi.NR) || ' (' || wybiegi.TYPY_WYBIEGU_NAZWA || ')', plec, data_opuszczenia_zoo "
                     + "from zwierzeta join wybiegi on wybiegi_nr = nr where chip = ?");
-            ((PreparedStatement) exec.getStatement()).setInt(1, chip);
+            exec.getStatement().setInt(1, chip);
             exec.firePreparedQuery();
             exec.getRs().next();
 

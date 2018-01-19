@@ -9,9 +9,11 @@ package zoo;
 import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -41,13 +43,13 @@ public class PracownikFrame extends javax.swing.JFrame {
      */
     public PracownikFrame() {
         initComponents();
-        setIconImage(Zoo.getIcon());
+        Zoo.setIconAndCursor(this);
     }
 
     public PracownikFrame(PracownicyFrame parent) {
         this.parent = parent;
         initComponents();
-        setIconImage(Zoo.getIcon());
+        Zoo.setIconAndCursor(this);
     }
 
     public void visibleButton(boolean czy) {
@@ -585,11 +587,22 @@ public class PracownikFrame extends javax.swing.JFrame {
             if (searchBiletTextField.getText().isEmpty()) {
                 refreshBilety();
             } else {
-                String[] where = new String[]{searchBiletTextField.getText().toLowerCase()};
-                String[] columns = new String[]{"Numer", "Wiek klienta", "Czas sprzedaży", "Id sprzedawcy", "Typ biletu"};
-                CacheSqlTableModel model = new CacheSqlTableModel("select * from BILETY where pracownicy_id = " + Integer.toString(this.id) + " AND TO_CHAR(CZAS_SPRZEDAZY, 'YYYY-MM-DD') LIKE ?", columns, "ORDER BY NR", where);
-                biletyTable.setModel(model);
-                biletyTable.removeColumn(biletyTable.getColumnModel().getColumn(0));
+                try {
+                    String[] columns = new String[]{"Numer", "Wiek klienta", "Czas sprzedaży", "Id sprzedawcy", "Typ biletu"};
+                    
+                    CallableStatement cstmt = DBSupport.getConn().prepareCall("{? = call GET_SEARCH_QUERY(PATTERN => ?, IN_TABLE_NAME => 'BILETY')}");
+                    cstmt.registerOutParameter(1, Types.VARCHAR);
+                    cstmt.setString(2, searchBiletTextField.getText());
+                    cstmt.execute();
+                    String wynik = cstmt.getString(1);
+                    
+                    CacheSqlTableModel model = new CacheSqlTableModel(wynik + " AND PRACOWNICY_ID = " + Integer.toString(this.id), columns, "ORDER BY NR");
+                    biletyTable.setModel(model);
+                    biletyTable.removeColumn(biletyTable.getColumnModel().getColumn(0));
+                    
+                } catch (SQLException ex) {
+                    Logger.getLogger(OcenyFrame.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
     }//GEN-LAST:event_searchBiletTextFieldKeyPressed
@@ -599,11 +612,22 @@ public class PracownikFrame extends javax.swing.JFrame {
             if (searchRaportTextField.getText().isEmpty()) {
                 refreshRaporty();
             } else {
-                String[] where = new String[]{searchRaportTextField.getText().toLowerCase()};
-                String[] columns = new String[]{"Numer", "Czas wystawienia", "Id pracownika", "Uwagi", "Chip zwierzęcia", "Numer wybiegu"};
-                CacheSqlTableModel model = new CacheSqlTableModel("select * from RAPORTY where pracownicy_id = " + Integer.toString(this.id) + " AND TO_CHAR(CZAS_WYSTAWIENIA, 'YYYY-MM-DD') LIKE ?", columns, "ORDER BY NUMER", where);
-                raportyTable.setModel(model);
-                raportyTable.removeColumn(raportyTable.getColumnModel().getColumn(0));
+                try {
+                    String[] columns = new String[]{"Numer", "Czas wystawienia", "Id pracownika", "Uwagi", "Chip zwierzęcia", "Numer wybiegu"};
+                    
+                    CallableStatement cstmt = DBSupport.getConn().prepareCall("{? = call GET_SEARCH_QUERY(PATTERN => ?, IN_TABLE_NAME => 'RAPORTY')}");
+                    cstmt.registerOutParameter(1, Types.VARCHAR);
+                    cstmt.setString(2, searchRaportTextField.getText());
+                    cstmt.execute();
+                    String wynik = cstmt.getString(1);
+                    
+                    CacheSqlTableModel model = new CacheSqlTableModel(wynik + " AND PRACOWNICY_ID = " + Integer.toString(this.id), columns, "ORDER BY NUMER");
+                    raportyTable.setModel(model);
+                    raportyTable.removeColumn(raportyTable.getColumnModel().getColumn(0));
+                    
+                } catch (SQLException ex) {
+                    Logger.getLogger(OcenyFrame.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
     }//GEN-LAST:event_searchRaportTextFieldKeyPressed

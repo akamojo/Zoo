@@ -23,7 +23,7 @@ public class PodsumowanieFrame extends javax.swing.JFrame {
      */
     public PodsumowanieFrame() {
         initComponents();
-        setIconImage(Zoo.getIcon());
+        Zoo.setIconAndCursor(this);
         pracownikMiesiaca();
         liczZwierzeta();
         liczWybiegi();

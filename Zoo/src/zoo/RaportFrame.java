@@ -43,7 +43,7 @@ public class RaportFrame extends javax.swing.JFrame {
 
     public RaportFrame(PracownikFrame parent) {
         this.parent = parent;
-        setIconImage(Zoo.getIcon());
+        Zoo.setIconAndCursor(this);
         initComponents();
     }
 
@@ -84,7 +84,7 @@ public class RaportFrame extends javax.swing.JFrame {
             count = rs.getInt(1);
         String[] types = new String[count];
         
-        exec.ExecuteQuery("SELECT CHIP FROM ZWIERZETA ORDER BY CHIP ASC");
+        exec.ExecuteQuery("SELECT TO_CHAR(CHIP) || ' (' || GATUNKI_NAZWA || ')' FROM ZWIERZETA ORDER BY CHIP ASC");
         rs = exec.getRs();
         for (int i = 0; i < count; i++) {
             rs.next();
@@ -109,7 +109,7 @@ public class RaportFrame extends javax.swing.JFrame {
             count = rs.getInt(1);
         String[] types = new String[count];
         
-        exec.ExecuteQuery("SELECT NR FROM WYBIEGI ORDER BY NR ASC");
+        exec.ExecuteQuery("SELECT TO_CHAR(NR) || ' (' || TYPY_WYBIEGU_NAZWA || ')' FROM WYBIEGI ORDER BY NR ASC");
         rs = exec.getRs();
         for (int i = 0; i < count; i++) {
             rs.next();
@@ -282,7 +282,7 @@ public class RaportFrame extends javax.swing.JFrame {
                     up.ExecutePreparedQuery("INSERT INTO RAPORTY(PRACOWNICY_ID, UWAGI, ZWIERZETA_CHIP) VALUES(?, ?, ?)");
                     up.getStatement().setInt(1, id);
                     up.getStatement().setString(2, uwagiTextArea.getText());
-                    up.getStatement().setInt(3, new Integer(chipZwierzeciaComboBox.getSelectedItem().toString()));
+                    up.getStatement().setInt(3, new Integer(chipZwierzeciaComboBox.getSelectedItem().toString().split(" ")[0]));
                     up.firePreparedUpdate();
                 } catch (SQLException ex) {
                     JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
@@ -292,7 +292,7 @@ public class RaportFrame extends javax.swing.JFrame {
                     up.ExecutePreparedQuery("INSERT INTO RAPORTY(PRACOWNICY_ID, UWAGI, WYBIEGI_NR) VALUES(?, ?, ?)");
                     up.getStatement().setInt(1, id);
                     up.getStatement().setString(2, uwagiTextArea.getText());
-                    up.getStatement().setInt(3, new Integer(nrWybieguComboBox.getSelectedItem().toString()));
+                    up.getStatement().setInt(3, new Integer(nrWybieguComboBox.getSelectedItem().toString().split(" ")[0]));
                     up.firePreparedUpdate();
                 } catch (SQLException ex) {
                     JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);

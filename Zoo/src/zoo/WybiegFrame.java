@@ -33,8 +33,17 @@ public class WybiegFrame extends javax.swing.JFrame {
      */
     public WybiegFrame(WybiegiFrame parent, int nr) throws SQLException {
         initComponents();
+        Zoo.setIconAndCursor(this);
         this.nr = nr;
         this.parent = parent;
+        this.fill(nr);
+    }
+    
+    public WybiegFrame(int nr) throws SQLException {
+        initComponents();
+        Zoo.setIconAndCursor(this);
+        this.nr = nr;
+        this.parent = null;
         this.fill(nr);
     }
     
