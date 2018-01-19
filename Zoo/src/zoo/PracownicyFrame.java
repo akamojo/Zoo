@@ -7,14 +7,18 @@ package zoo;
 
 import java.awt.Image;
 import java.awt.event.KeyEvent;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.DefaultComboBoxModel;
+import javax.swing.JOptionPane;
 import javax.swing.table.AbstractTableModel;
 import static zoo.Zoo.getShowPosition2;
 
@@ -35,6 +39,40 @@ public class PracownicyFrame extends javax.swing.JFrame {
                 + " from pracownicy WHERE DATA_ZWOLNIENIA IS NULL", columns, "ORDER BY NAZWISKO");
         pracownicyTable.setModel(model);
         pracownicyTable.removeColumn(pracownicyTable.getColumnModel().getColumn(0));
+        try {
+            this.setColumns();
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+    
+    public void setColumns() throws SQLException {
+        columnComboBox.setModel(this.loadColumns());
+        columnComboBox.setSelectedItem("WSZYSTKIE");
+    }
+    
+    public DefaultComboBoxModel<String> loadColumns() throws SQLException {
+        Execute exec = new Execute();
+        exec.ExecuteQuery("SELECT COUNT(*) FROM USER_TAB_COLUMNS WHERE TABLE_NAME = 'PRACOWNICY'"
+                + " AND COLUMN_NAME != 'DATA_ZWOLNIENIA'");
+        ResultSet rs = exec.getRs();
+        
+        int count = 0;
+        if (rs.next())
+            count = rs.getInt(1);
+        count += 1;
+        String[] types = new String[count];
+        
+        exec.ExecuteQuery("SELECT COLUMN_NAME FROM USER_TAB_COLUMNS WHERE TABLE_NAME = 'PRACOWNICY'"
+                + " AND COLUMN_NAME != 'DATA_ZWOLNIENIA'");
+        rs = exec.getRs();
+        int i;
+        for (i = 0; i < count-1; i++) {
+            rs.next();
+            types[i] = rs.getString(1);
+        }
+        types[i] = new String("WSZYSTKIE");
+        return new javax.swing.DefaultComboBoxModel<String>(types);
     }
 
     public void refresh() {
@@ -54,10 +92,12 @@ public class PracownicyFrame extends javax.swing.JFrame {
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {
+        java.awt.GridBagConstraints gridBagConstraints;
 
         searchPanel = new javax.swing.JPanel();
         searchLabel = new javax.swing.JLabel();
         searchTextField = new javax.swing.JTextField();
+        columnComboBox = new javax.swing.JComboBox<>();
         buttonPanel = new javax.swing.JPanel();
         addButton = new javax.swing.JButton();
         tablePanel = new javax.swing.JPanel();
@@ -67,10 +107,17 @@ public class PracownicyFrame extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Zoo Pracownicy");
         setMinimumSize(new java.awt.Dimension(250, 250));
-        setPreferredSize(new java.awt.Dimension(600, 500));
+        setPreferredSize(new java.awt.Dimension(750, 500));
+
+        searchPanel.setLayout(new java.awt.GridBagLayout());
 
         searchLabel.setText("Wyszukaj pracownika:");
-        searchPanel.add(searchLabel);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        searchPanel.add(searchLabel, gridBagConstraints);
 
         searchTextField.setPreferredSize(new java.awt.Dimension(100, 20));
         searchTextField.addKeyListener(new java.awt.event.KeyAdapter() {
@@ -78,7 +125,23 @@ public class PracownicyFrame extends javax.swing.JFrame {
                 searchTextFieldKeyPressed(evt);
             }
         });
-        searchPanel.add(searchTextField);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        searchPanel.add(searchTextField, gridBagConstraints);
+
+        columnComboBox.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Item 1", "Item 2", "Item 3", "Item 4" }));
+        columnComboBox.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                columnComboBoxActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        searchPanel.add(columnComboBox, gridBagConstraints);
 
         getContentPane().add(searchPanel, java.awt.BorderLayout.PAGE_START);
 
@@ -143,16 +206,61 @@ public class PracownicyFrame extends javax.swing.JFrame {
             if (searchTextField.getText().isEmpty()) {
                 refresh();
             } else {
-                String[] where = new String[] {searchTextField.getText().toLowerCase(), searchTextField.getText().toLowerCase(), searchTextField.getText().toLowerCase(), searchTextField.getText().toLowerCase(), searchTextField.getText().toLowerCase(), searchTextField.getText().toLowerCase()};
-                String[] columns = new String[]{"Id", "Nazwisko", "Pensja", "Premia", "Etat", "Godziny", "Zatrudniony"};
-                CacheSqlTableModel model = new CacheSqlTableModel("select ID, NAZWISKO, PENSJA, PREMIA, ETATY_NAZWA, GODZIN_TYGODNIOWO, DATA_ZATRUDNIENIA "
-                        + "from pracownicy WHERE DATA_ZWOLNIENIA IS NULL AND (LOWER(NAZWISKO) LIKE ? OR TO_CHAR(PENSJA) LIKE ? OR TO_CHAR(PREMIA) LIKE ?"
-                        + " OR LOWER(ETATY_NAZWA) LIKE ? OR TO_CHAR(GODZIN_TYGODNIOWO) LIKE ? OR TO_CHAR(DATA_ZATRUDNIENIA, 'YYYY-MM-DD') LIKE ?)", columns, "ORDER BY NAZWISKO", where);
-                pracownicyTable.setModel(model);
-                pracownicyTable.removeColumn(pracownicyTable.getColumnModel().getColumn(0));
+                try {
+                    String[] columns = new String[]{"Id", "Nazwisko", "Pensja", "Premia", "Etat", "Godziny", "Zatrudniony", "Zwolniony"};
+                    if (columnComboBox.getSelectedItem().toString().equals("WSZYSTKIE")) {
+                        Execute ex = new Execute();
+
+                        CallableStatement cstmt = DBSupport.getConn().prepareCall("{? = call GET_SEARCH_QUERY(PATTERN => ?, IN_TABLE_NAME => 'PRACOWNICY')}");                
+                        cstmt.registerOutParameter(1, Types.VARCHAR);
+                        cstmt.setString(2, searchTextField.getText());
+                        cstmt.execute();
+                        String wynik = cstmt.getString(1);
+
+                        // resPracMiesiacaLabel.setText(wynik);
+
+                        CacheSqlTableModel model = new CacheSqlTableModel(wynik, columns, "ORDER BY NAZWISKO");
+                        pracownicyTable.setModel(model);
+                        pracownicyTable.removeColumn(pracownicyTable.getColumnModel().getColumn(0));
+                        pracownicyTable.removeColumn(pracownicyTable.getColumnModel().getColumn(6));
+                    }
+                    else {
+                        String kolumna = columnComboBox.getSelectedItem().toString();
+                        Execute q = new Execute();
+                        
+                        if (kolumna.equals("DATA_ZATRUDNIENIA")) {
+                            String query = "SELECT * FROM PRACOWNICY WHERE TO_CHAR(" + kolumna + ", 'YYYY-MM-DD') LIKE ?";
+                            
+                            String myTable[] = {searchTextField.getText().trim()};
+                            CacheSqlTableModel model = new CacheSqlTableModel(query, columns, "ORDER BY NAZWISKO", myTable);
+                            pracownicyTable.setModel(model);
+                            pracownicyTable.removeColumn(pracownicyTable.getColumnModel().getColumn(0));
+                            pracownicyTable.removeColumn(pracownicyTable.getColumnModel().getColumn(6));
+                        }
+                        else {
+                            String query = "SELECT * FROM PRACOWNICY WHERE LOWER(TO_CHAR(" + kolumna + ")) LIKE ?";
+                            
+                            String myTable[] = {searchTextField.getText().trim().toLowerCase()};
+                            CacheSqlTableModel model = new CacheSqlTableModel(query, columns, "ORDER BY NAZWISKO", myTable);
+                            pracownicyTable.setModel(model);
+                            pracownicyTable.removeColumn(pracownicyTable.getColumnModel().getColumn(0));
+                            pracownicyTable.removeColumn(pracownicyTable.getColumnModel().getColumn(6));
+                        }
+                        //SELECT * FROM PRACOWNICY WHERE TO_CHAR(DATA_ZWOLNIENIA, 'YYYY-MM-DD') LIKE '%wet%' OR LOWER(TO_CHAR(ID)) LIKE '%wet%' OR LOWER(TO_CHAR(NAZWISKO)) LIKE '%wet%' OR LOWER(TO_CHAR(PENSJA)) LIKE '%wet%' OR LOWER(TO_CHAR(PREMIA)) LIKE '%wet%' OR LOWER(TO_CHAR(ETATY_NAZWA)) LIKE '%wet%' OR LOWER(TO_CHAR(GODZIN_TYGODNIOWO)) LIKE '%wet%' OR TO_CHAR(DATA_ZATRUDNIENIA, 'YYYY-MM-DD') LIKE '%wet%'
+                        
+                    }
+                    
+                    
+                } catch (SQLException ex1) {
+                    Logger.getLogger(PracownicyFrame.class.getName()).log(Level.SEVERE, null, ex1);
+                }
             }
         }
     }//GEN-LAST:event_searchTextFieldKeyPressed
+
+    private void columnComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_columnComboBoxActionPerformed
+        
+    }//GEN-LAST:event_columnComboBoxActionPerformed
 
     /**
      * @param args the command line arguments
@@ -192,6 +300,7 @@ public class PracownicyFrame extends javax.swing.JFrame {
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton addButton;
     private javax.swing.JPanel buttonPanel;
+    private javax.swing.JComboBox<String> columnComboBox;
     private javax.swing.JTable pracownicyTable;
     private javax.swing.JLabel searchLabel;
     private javax.swing.JPanel searchPanel;

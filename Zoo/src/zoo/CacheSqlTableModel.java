@@ -191,7 +191,7 @@ abstract class SqlTableModel extends AbstractTableModel {
             this.pstmt = dbConnection.prepareStatement(query + " " + orderBy);
             this.orderBy = orderBy;
             for (int i = 1; i <= where.length; i++) {
-                this.pstmt.setString(i, where[i - 1] + "%");
+                this.pstmt.setString(i, "%" + where[i - 1] + "%");
             }
             this.rs = pstmt.executeQuery();
             this.rsmd = rs.getMetaData();

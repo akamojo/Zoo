@@ -192,6 +192,11 @@ public class WybiegFrame extends javax.swing.JFrame {
                 clearButtonMouseClicked(evt);
             }
         });
+        clearButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                clearButtonActionPerformed(evt);
+            }
+        });
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 1;
@@ -252,7 +257,7 @@ public class WybiegFrame extends javax.swing.JFrame {
             }
             else {
                 JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Ten wybieg ma za mało miejsca "
-                        + "dla zwierząt, które go zamieszkują. :( (spróbuj je przenieść do innych wybiegów) ", "Kontrola zajętości wybiegu:", JOptionPane.INFORMATION_MESSAGE);
+                        + "dla zwierząt, które go zamieszkują. :( (spróbuj je przenieść do innych wybiegów) ", "Kontrola zajętości wybiegu:", JOptionPane.ERROR_MESSAGE);
             }
            
             // resPracMiesiacaLabel.setText(wynik);
@@ -266,6 +271,30 @@ public class WybiegFrame extends javax.swing.JFrame {
             this.parent.addRemoveAbility(true);
         }
     }//GEN-LAST:event_tellParent
+
+    private void clearButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_clearButtonActionPerformed
+        try {
+            // sql: CHECK_SPACE, in nr_wybiegu number
+            CallableStatement cstmt = DBSupport.getConn().prepareCall("{call FREE_WYBIEG(" + Integer.toString(this.nr) + ", ?)}");
+            cstmt.registerOutParameter(1, Types.INTEGER);
+            cstmt.execute();
+            Integer wynik = cstmt.getInt(1);
+            
+            if (wynik > 0) {
+                JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Wybieg wolny! " + Integer.toString(wynik) + " zwierząt "
+                        + "trafiło na inne wybiegi.", "Zwalnianie wybiegu:", JOptionPane.INFORMATION_MESSAGE);
+            }
+            else {
+                JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Nie udało się opróżnić wybiegu. (jest pusty lub nie ma dokąd"
+                        + " przenieść zwierząt...)", "Zwalnianie wybiegu:", JOptionPane.ERROR_MESSAGE);
+            }
+            this.parent.refreshZwierzeta(Integer.toString(this.nr));
+           
+            // resPracMiesiacaLabel.setText(wynik);
+        } catch (SQLException ex) {
+            JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }//GEN-LAST:event_clearButtonActionPerformed
 
     /**
      * @param args the command line arguments
