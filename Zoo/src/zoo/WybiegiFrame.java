@@ -510,7 +510,30 @@ public class WybiegiFrame extends javax.swing.JFrame {
     }//GEN-LAST:event_showGatunkiButtonActionPerformed
 
     private void raportyTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_raportyTableMouseClicked
-        // TODO add your handling code here:
+        if (evt.getClickCount() == 2) {
+            int selectionIndex = raportyTable.getSelectionModel().getMinSelectionIndex();
+            if (selectionIndex != -1) {
+                
+                CacheSqlTableModel tableModel = (CacheSqlTableModel) raportyTable.getModel();
+                int selectedId = tableModel.getSelectedId(raportyTable.getSelectedRow());
+                
+                RaportFrame raport = new RaportFrame();                
+                raport.setLocation(Zoo.getShowPosition2(raport));
+
+                Execute q = new Execute();
+                q.ExecuteQuery("SELECT UWAGI FROM RAPORTY WHERE NUMER = " + Integer.toString(selectedId));
+
+                try {
+                    q.getRs().next();
+                    raport.fill(selectedId, q.getRs().getString(1));
+                    raport.setVisible(true);
+                    raport.simpleMode();
+
+                } catch (SQLException ex) {
+                    JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
+                }
+            }
+        }
     }//GEN-LAST:event_raportyTableMouseClicked
 
     private void ocenyTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_ocenyTableMouseClicked

@@ -31,6 +31,14 @@ public class RaportFrame extends javax.swing.JFrame {
      */
     public RaportFrame() {
         initComponents();
+        setIconImage(Zoo.getIcon());
+    }
+    
+    public void simpleMode() {
+        zwierzePanel.setVisible(false);
+        linkPanel.setVisible(false);
+        buttonPanel.setVisible(false);
+        uwagiTextArea.setEditable(false);
     }
 
     public RaportFrame(PracownikFrame parent) {
