@@ -162,6 +162,7 @@ public class PodsumowanieFrame extends javax.swing.JFrame {
         table = new javax.swing.JTable();
         buttonsPanel = new javax.swing.JPanel();
         avgAnimalsButton = new javax.swing.JButton();
+        avgWybiegiButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Podsumowanie");
@@ -300,7 +301,7 @@ public class PodsumowanieFrame extends javax.swing.JFrame {
 
         buttonsPanel.setLayout(new java.awt.GridBagLayout());
 
-        avgAnimalsButton.setText("Pokaż średnie oceny zwierząt");
+        avgAnimalsButton.setText("Średnie oceny zwierząt");
         avgAnimalsButton.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 avgAnimalsButtonActionPerformed(evt);
@@ -312,8 +313,23 @@ public class PodsumowanieFrame extends javax.swing.JFrame {
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 1.0;
         gridBagConstraints.weighty = 1.0;
-        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         buttonsPanel.add(avgAnimalsButton, gridBagConstraints);
+
+        avgWybiegiButton.setText("Średnie oceny wybiegów");
+        avgWybiegiButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                avgWybiegiButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        buttonsPanel.add(avgWybiegiButton, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -353,6 +369,17 @@ public class PodsumowanieFrame extends javax.swing.JFrame {
         
     }//GEN-LAST:event_avgAnimalsButtonActionPerformed
 
+    private void avgWybiegiButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_avgWybiegiButtonActionPerformed
+        tablePanel.setVisible(true);
+        
+        String[] columns = new String[]{"Numer", "Typ wybiegu", "Powierzchnia", "Średnia ocena"};
+        CacheSqlTableModel model = new CacheSqlTableModel("select " +
+            "nr, typy_wybiegu_nazwa, powierzchnia, avg(liczba_gwiazdek) as sr " +
+            "from wybiegi join oceny on nr = wybiegi_nr group by nr, typy_wybiegu_nazwa, powierzchnia", 
+                columns, "ORDER BY sr DESC");
+        table.setModel(model);
+    }//GEN-LAST:event_avgWybiegiButtonActionPerformed
+
     /**
      * @param args the command line arguments
      */
@@ -390,6 +417,7 @@ public class PodsumowanieFrame extends javax.swing.JFrame {
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton avgAnimalsButton;
+    private javax.swing.JButton avgWybiegiButton;
     private javax.swing.JPanel buttonsPanel;
     private javax.swing.JLabel liczBiletyLabel;
     private javax.swing.JLabel liczOcenyLabel;
