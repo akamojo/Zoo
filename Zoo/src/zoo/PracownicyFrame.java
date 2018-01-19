@@ -212,10 +212,11 @@ public class PracownicyFrame extends javax.swing.JFrame {
                         
                         CallableStatement cstmt = DBSupport.getConn().prepareCall("{? = call GET_SEARCH_QUERY(PATTERN => ?, IN_TABLE_NAME => 'PRACOWNICY')}");                
                         cstmt.registerOutParameter(1, Types.VARCHAR);
-                        cstmt.setString(2, searchTextField.getText());
+                        cstmt.setString(2, searchTextField.getText().replaceAll("'", "''"));
                         cstmt.execute();
                         String wynik = cstmt.getString(1);
 
+                        System.out.println(wynik);
                         CacheSqlTableModel model = new CacheSqlTableModel(wynik + " AND DATA_ZWOLNIENIA IS NULL", columns, "ORDER BY NAZWISKO");
                         pracownicyTable.setModel(model);
                         pracownicyTable.removeColumn(pracownicyTable.getColumnModel().getColumn(0));

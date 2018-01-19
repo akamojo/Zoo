@@ -268,7 +268,7 @@ public class AddWybiegFrame extends javax.swing.JFrame {
              exec.getStatement().setString(3, opisTextArea.getText().toString());
             exec.firePreparedUpdate();
             this.parent.refreshAll();
-        } catch (SQLException ex) {
+        } catch (Exception ex) {
             JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
         }
         this.dispatchEvent(new WindowEvent(this, WindowEvent.WINDOW_CLOSING));

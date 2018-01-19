@@ -525,7 +525,7 @@ public class WybiegiFrame extends javax.swing.JFrame {
 
                 try {
                     q.getRs().next();
-                    raport.fill(selectedId, q.getRs().getString(1));
+                    raport.fill(selectedId);
                     raport.setVisible(true);
                     raport.simpleMode();
 
