@@ -25,6 +25,8 @@ public class RaportFrame extends javax.swing.JFrame {
     private int etat;
     private PracownikFrame parent;
     private int nr = -1;
+    private int numer;
+    private boolean czyZwierze;
 
     /**
      * Creates new form RaportFrame
@@ -60,22 +62,23 @@ public class RaportFrame extends javax.swing.JFrame {
             }
         }
     }
-    
+
     public void updateChipZwierzecia() throws SQLException {
         chipZwierzeciaComboBox.setModel(this.loadChipZwierzecia());
     }
-    
+
     public DefaultComboBoxModel<String> loadChipZwierzecia() throws SQLException {
-        
+
         Execute exec = new Execute();
         exec.ExecuteQuery("SELECT COUNT(*) FROM ZWIERZETA");
         ResultSet rs = exec.getRs();
-        
+
         int count = 0;
-        if (rs.next())
+        if (rs.next()) {
             count = rs.getInt(1);
+        }
         String[] types = new String[count];
-        
+
         exec.ExecuteQuery("SELECT TO_CHAR(CHIP) || ' (' || GATUNKI_NAZWA || ')' FROM ZWIERZETA ORDER BY CHIP ASC");
         rs = exec.getRs();
         for (int i = 0; i < count; i++) {
@@ -83,24 +86,25 @@ public class RaportFrame extends javax.swing.JFrame {
             types[i] = rs.getString(1);
         }
         return new javax.swing.DefaultComboBoxModel<String>(types);
-        
+
     }
-    
+
     public void updateNrWybiegu() throws SQLException {
         nrWybieguComboBox.setModel(this.loadNrWybiegu());
     }
-    
+
     public DefaultComboBoxModel<String> loadNrWybiegu() throws SQLException {
-        
+
         Execute exec = new Execute();
         exec.ExecuteQuery("SELECT COUNT(*) FROM WYBIEGI");
         ResultSet rs = exec.getRs();
-        
+
         int count = 0;
-        if (rs.next())
+        if (rs.next()) {
             count = rs.getInt(1);
+        }
         String[] types = new String[count];
-        
+
         exec.ExecuteQuery("SELECT TO_CHAR(NR) || ' (' || TYPY_WYBIEGU_NAZWA || ')' FROM WYBIEGI ORDER BY NR ASC");
         rs = exec.getRs();
         for (int i = 0; i < count; i++) {
@@ -108,16 +112,46 @@ public class RaportFrame extends javax.swing.JFrame {
             types[i] = rs.getString(1);
         }
         return new javax.swing.DefaultComboBoxModel<String>(types);
-        
+
+    }
+    
+    public void fillen() {
+        this.linkButton.setVisible(false);
+    }
+    
+    public void notFillen() {
+        this.linkSpecialButton.setVisible(false);
     }
 
-    public void fill(int nr, String uwagi) {
-        zwierzePanel.setVisible(false);
-        wybiegPanel.setVisible(false);
-        uwagiTextArea.setText(uwagi);
-        //this.nr = nr;
-        uwagiTextArea.setEditable(false);
-        buttonPanel.setVisible(false);
+    public void fill(int numer) {
+        try {
+            zwierzePanel.setVisible(false);
+            wybiegPanel.setVisible(false);
+            uwagiTextArea.setEditable(false);
+            buttonPanel.setVisible(false);
+            this.nr = numer;
+
+            Execute q = new Execute();
+            q.ExecuteQuery("SELECT NVL(ZWIERZETA_CHIP, -1), NVL(WYBIEGI_NR, -1), UWAGI FROM RAPORTY WHERE NUMER = " + Integer.toString(numer));
+            q.getRs().next();
+            int chip = q.getRs().getInt(1);
+            int nr = q.getRs().getInt(2);
+            String uwagi = q.getRs().getString(3);
+            uwagiTextArea.setText(uwagi);
+
+            if (chip != -1) {
+                this.numer = chip;
+                this.czyZwierze = true;
+                this.linkSpecialButton.setText("Wyświetl zwierzę");
+            } else {
+                this.numer = nr;
+                this.czyZwierze = false;
+                this.linkSpecialButton.setText("Wyświetl wybieg");
+            }
+
+        } catch (SQLException ex) {
+            Logger.getLogger(OcenaFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**
@@ -132,6 +166,7 @@ public class RaportFrame extends javax.swing.JFrame {
 
         linkPanel = new javax.swing.JPanel();
         linkButton = new javax.swing.JButton();
+        linkSpecialButton = new javax.swing.JButton();
         zwierzePanel = new javax.swing.JPanel();
         zwierzeLabel = new javax.swing.JLabel();
         chipZwierzeciaComboBox = new javax.swing.JComboBox<>();
@@ -157,6 +192,14 @@ public class RaportFrame extends javax.swing.JFrame {
             }
         });
         linkPanel.add(linkButton);
+
+        linkSpecialButton.setText("Wyświetl");
+        linkSpecialButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                linkSpecialButtonMouseClicked(evt);
+            }
+        });
+        linkPanel.add(linkSpecialButton);
 
         getContentPane().add(linkPanel, new java.awt.GridBagConstraints());
 
@@ -310,6 +353,26 @@ public class RaportFrame extends javax.swing.JFrame {
         w.setVisible(true);
     }//GEN-LAST:event_linkButtonMouseClicked
 
+    private void linkSpecialButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_linkSpecialButtonMouseClicked
+        if (this.czyZwierze == true) {
+            try {
+                ZwierzeFrame z = new ZwierzeFrame(numer);
+                z.setLocation(Zoo.getShowPosition2(z));
+                z.setVisible(true);
+            } catch (SQLException ex) {
+                Logger.getLogger(OcenaFrame.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else {
+            try {
+                WybiegFrame w = new WybiegFrame(numer);
+                w.setLocation(Zoo.getShowPosition2(w));
+                w.setVisible(true);
+            } catch (SQLException ex) {
+                Logger.getLogger(OcenaFrame.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_linkSpecialButtonMouseClicked
+
     /**
      * @param args the command line arguments
      */
@@ -351,6 +414,7 @@ public class RaportFrame extends javax.swing.JFrame {
     private javax.swing.JComboBox<String> chipZwierzeciaComboBox;
     private javax.swing.JButton linkButton;
     private javax.swing.JPanel linkPanel;
+    private javax.swing.JButton linkSpecialButton;
     private javax.swing.JComboBox<String> nrWybieguComboBox;
     private javax.swing.JLabel uwagiLabel;
     private javax.swing.JPanel uwagiPanel;

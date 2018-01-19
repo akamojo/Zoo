@@ -64,6 +64,7 @@ public class OcenaFrame extends javax.swing.JFrame {
             buttonPanel.setVisible(false);
             infoPanel.setVisible(false);
             komentarzTextArea.setEditable(false);
+            
             Execute q = new Execute();
             q.ExecuteQuery("SELECT NVL(ZWIERZETA_CHIP, -1), NVL(WYBIEGI_NR, -1), KOMENTARZ FROM OCENY WHERE NUMER_OCENY = " + Integer.toString(numer_oceny));
             q.getRs().next();

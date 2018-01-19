@@ -42,6 +42,14 @@
             <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="linkButtonMouseClicked"/>
           </Events>
         </Component>
+        <Component class="javax.swing.JButton" name="linkSpecialButton">
+          <Properties>
+            <Property name="text" type="java.lang.String" value="Wy&#x15b;wietl"/>
+          </Properties>
+          <Events>
+            <EventHandler event="mouseClicked" listener="java.awt.event.MouseListener" parameters="java.awt.event.MouseEvent" handler="linkSpecialButtonMouseClicked"/>
+          </Events>
+        </Component>
       </SubComponents>
     </Container>
     <Container class="javax.swing.JPanel" name="zwierzePanel">

@@ -504,6 +504,7 @@ public class PracownikFrame extends javax.swing.JFrame {
             raport.setInfo(this.id, 0);
         }
         raport.setVisible(true);
+        raport.notFillen();
     }//GEN-LAST:event_addRaportButtonMouseClicked
 
     private void raportyTableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_raportyTableMouseClicked
@@ -515,18 +516,9 @@ public class PracownikFrame extends javax.swing.JFrame {
                 RaportFrame raport = new RaportFrame(this);
                 raport.setLocation(Zoo.getShowPosition2(raport));
 
-                raport.setLocation(Zoo.getShowPosition2(raport));
-
-                Execute q = new Execute();
-                q.ExecuteQuery("SELECT UWAGI FROM RAPORTY WHERE NUMER = " + Integer.toString(selectedId));
-
-                try {
-                    q.getRs().next();
-                    raport.fill(selectedId, q.getRs().getString(1));
-                    raport.setVisible(true);
-                } catch (SQLException ex) {
-                    JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
-                }
+                raport.fill(selectedId);
+                raport.fillen();
+                raport.setVisible(true);
             }
         }
     }//GEN-LAST:event_raportyTableMouseClicked
