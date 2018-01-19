@@ -95,7 +95,7 @@ public class MainFrame extends javax.swing.JFrame {
         setTitle("Zoo");
         setMinimumSize(new java.awt.Dimension(500, 650));
         setName("Zoo"); // NOI18N
-        setPreferredSize(new java.awt.Dimension(500, 650));
+        setPreferredSize(new java.awt.Dimension(500, 750));
         setResizable(false);
         setSize(new java.awt.Dimension(500, 650));
         addWindowListener(new java.awt.event.WindowAdapter() {

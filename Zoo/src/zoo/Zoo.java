@@ -51,7 +51,7 @@ public class Zoo {
             j.setIconImage(Zoo.getIcon());
 
             URL url = Zoo.class.getResource(cursorName);
-            String cursorPath = url.getFile().replaceAll("%20", " ");
+            String cursorPath = url.getPath().replaceAll("%20", " ");
             AniCursor kursorek = new AniCursor(cursorPath, j);
             kursorek.start();
             

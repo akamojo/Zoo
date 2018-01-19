@@ -31,6 +31,9 @@ public class PodsumowanieFrame extends javax.swing.JFrame {
         liczBilety();
         liczOceny();
         sredniWiek();
+        
+        tablePanel.setVisible(false);
+        
     }
 
     public void pracownikMiesiaca() {
@@ -154,11 +157,17 @@ public class PodsumowanieFrame extends javax.swing.JFrame {
         resLiczBiletyLabel = new javax.swing.JLabel();
         resLiczOcenyLabel = new javax.swing.JLabel();
         resSredWiekLabel = new javax.swing.JLabel();
+        tablePanel = new javax.swing.JPanel();
+        tableScrollPane = new javax.swing.JScrollPane();
+        table = new javax.swing.JTable();
+        buttonsPanel = new javax.swing.JPanel();
+        avgAnimalsButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Podsumowanie");
         setMinimumSize(new java.awt.Dimension(400, 400));
         setSize(new java.awt.Dimension(400, 400));
+        getContentPane().setLayout(new java.awt.GridBagLayout());
 
         mainPanel.setLayout(new java.awt.GridBagLayout());
 
@@ -247,10 +256,102 @@ public class PodsumowanieFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         mainPanel.add(resSredWiekLabel, gridBagConstraints);
 
-        getContentPane().add(mainPanel, java.awt.BorderLayout.CENTER);
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        getContentPane().add(mainPanel, gridBagConstraints);
+
+        tablePanel.setLayout(new java.awt.GridBagLayout());
+
+        table.setModel(new javax.swing.table.DefaultTableModel(
+            new Object [][] {
+
+            },
+            new String [] {
+
+            }
+        ));
+        table.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                tableMouseClicked(evt);
+            }
+        });
+        tableScrollPane.setViewportView(table);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        tablePanel.add(tableScrollPane, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        getContentPane().add(tablePanel, gridBagConstraints);
+
+        buttonsPanel.setLayout(new java.awt.GridBagLayout());
+
+        avgAnimalsButton.setText("Pokaż średnie oceny zwierząt");
+        avgAnimalsButton.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                avgAnimalsButtonActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 0;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 1.0;
+        gridBagConstraints.insets = new java.awt.Insets(10, 10, 10, 10);
+        buttonsPanel.add(avgAnimalsButton, gridBagConstraints);
+
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 1;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.weightx = 1.0;
+        gridBagConstraints.weighty = 0.1;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        getContentPane().add(buttonsPanel, gridBagConstraints);
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void tableMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_tableMouseClicked
+        if (evt.getClickCount() == 2) {
+            int selectionIndex = table.getSelectionModel().getMinSelectionIndex();
+            if (selectionIndex >= 0) {
+                CacheSqlTableModel tableModel = (CacheSqlTableModel) table.getModel();
+                int selectedId = tableModel.getSelectedId(table.getSelectedRow());
+                /*PracownikFrame prac = new PracownikFrame(this);
+                prac.setLocation(getShowPosition2(prac));
+                prac.fill(selectedId);
+                prac.setVisible(true);*/
+            }
+        }
+    }//GEN-LAST:event_tableMouseClicked
+
+    private void avgAnimalsButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_avgAnimalsButtonActionPerformed
+        tablePanel.setVisible(true);
+        
+        String[] columns = new String[]{"Chip", "Gatunek", "Płeć", "Numer wybiegu", "Średnia ocena"};
+        CacheSqlTableModel model = new CacheSqlTableModel("select " +
+            "chip, gatunki_nazwa, plec, zwierzeta.wybiegi_nr, avg(liczba_gwiazdek) as sr " +
+            "from zwierzeta join oceny on chip = zwierzeta_chip group by chip, gatunki_nazwa, plec, zwierzeta.wybiegi_nr", 
+                columns, "ORDER BY sr DESC");
+        table.setModel(model);
+        
+    }//GEN-LAST:event_avgAnimalsButtonActionPerformed
 
     /**
      * @param args the command line arguments
@@ -288,6 +389,8 @@ public class PodsumowanieFrame extends javax.swing.JFrame {
     }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
+    private javax.swing.JButton avgAnimalsButton;
+    private javax.swing.JPanel buttonsPanel;
     private javax.swing.JLabel liczBiletyLabel;
     private javax.swing.JLabel liczOcenyLabel;
     private javax.swing.JLabel liczPracLabel;
@@ -303,5 +406,8 @@ public class PodsumowanieFrame extends javax.swing.JFrame {
     private javax.swing.JLabel resPracMiesiacaLabel;
     private javax.swing.JLabel resSredWiekLabel;
     private javax.swing.JLabel sredWiekLabel;
+    private javax.swing.JTable table;
+    private javax.swing.JPanel tablePanel;
+    private javax.swing.JScrollPane tableScrollPane;
     // End of variables declaration//GEN-END:variables
 }
