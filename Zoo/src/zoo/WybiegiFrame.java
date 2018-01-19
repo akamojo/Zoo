@@ -7,14 +7,17 @@ package zoo;
 
 import java.awt.Image;
 import java.awt.Point;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
+import java.sql.CallableStatement;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.sql.Types;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -133,6 +136,8 @@ public class WybiegiFrame extends javax.swing.JFrame {
         removeWybiegButton = new javax.swing.JButton();
         addZwierzeButton = new javax.swing.JButton();
         removeZwierzeButton = new javax.swing.JButton();
+        searchWybiegTextField = new javax.swing.JTextField();
+        searchZwierzTextField = new javax.swing.JTextField();
         tablePanel = new javax.swing.JPanel();
         tableScrollPaneWybiegi = new javax.swing.JScrollPane();
         wybiegiTable = new javax.swing.JTable();
@@ -151,7 +156,7 @@ public class WybiegiFrame extends javax.swing.JFrame {
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Zoo Wybiegi i zwierzęta");
         setMinimumSize(new java.awt.Dimension(250, 250));
-        setPreferredSize(new java.awt.Dimension(700, 650));
+        setPreferredSize(new java.awt.Dimension(914, 900));
         getContentPane().setLayout(new java.awt.GridBagLayout());
 
         buttonPanel.setLayout(new java.awt.GridBagLayout());
@@ -223,6 +228,30 @@ public class WybiegiFrame extends javax.swing.JFrame {
         gridBagConstraints.gridy = 1;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         buttonPanel.add(removeZwierzeButton, gridBagConstraints);
+
+        searchWybiegTextField.setPreferredSize(new java.awt.Dimension(100, 20));
+        searchWybiegTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                searchWybiegTextFieldKeyPressed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        buttonPanel.add(searchWybiegTextField, gridBagConstraints);
+
+        searchZwierzTextField.setPreferredSize(new java.awt.Dimension(100, 20));
+        searchZwierzTextField.addKeyListener(new java.awt.event.KeyAdapter() {
+            public void keyPressed(java.awt.event.KeyEvent evt) {
+                searchZwierzTextFieldKeyPressed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 3;
+        gridBagConstraints.gridy = 2;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        buttonPanel.add(searchZwierzTextField, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -520,18 +549,9 @@ public class WybiegiFrame extends javax.swing.JFrame {
                 RaportFrame raport = new RaportFrame();                
                 raport.setLocation(Zoo.getShowPosition2(raport));
 
-                Execute q = new Execute();
-                q.ExecuteQuery("SELECT UWAGI FROM RAPORTY WHERE NUMER = " + Integer.toString(selectedId));
-
-                try {
-                    q.getRs().next();
-                    raport.fill(selectedId, q.getRs().getString(1));
-                    raport.setVisible(true);
-                    raport.simpleMode();
-
-                } catch (SQLException ex) {
-                    JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
-                }
+                raport.fill(selectedId);
+                raport.setVisible(true);
+                raport.simpleMode();
             }
         }
     }//GEN-LAST:event_raportyTableMouseClicked
@@ -548,6 +568,54 @@ public class WybiegiFrame extends javax.swing.JFrame {
             raportyOcenyPanel.setVisible(true);
         }
     }//GEN-LAST:event_showRaportyOcenyButtonActionPerformed
+
+    private void searchWybiegTextFieldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchWybiegTextFieldKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            if (searchWybiegTextField.getText().isEmpty()) {
+                refreshAll();
+            } else {
+                try {
+                    String[] columns = new String[]{"Numer wybiegu", "Typ wybiegu", "Powierzchnia (m2)"};
+                    
+                    CallableStatement cstmt = DBSupport.getConn().prepareCall("{? = call GET_SEARCH_QUERY(PATTERN => ?, IN_TABLE_NAME => 'WYBIEGI')}");
+                    cstmt.registerOutParameter(1, Types.VARCHAR);
+                    cstmt.setString(2, searchWybiegTextField.getText());
+                    cstmt.execute();
+                    String wynik = cstmt.getString(1).replace("*", "nr, typy_wybiegu_nazwa, powierzchnia");
+                    
+                    CacheSqlTableModel model = new CacheSqlTableModel(wynik, columns, "ORDER BY NR");
+                    wybiegiTable.setModel(model);
+                    
+                } catch (SQLException ex) {
+                    Logger.getLogger(OcenyFrame.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+    }//GEN-LAST:event_searchWybiegTextFieldKeyPressed
+
+    private void searchZwierzTextFieldKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_searchZwierzTextFieldKeyPressed
+        if (evt.getKeyCode() == KeyEvent.VK_ENTER) {
+            if (searchZwierzTextField.getText().isEmpty()) {
+                refreshAll();
+            } else {
+                try {
+                    String[] columns = new String[]{"Gatunek", "Plec", "Chip"};
+                    
+                    CallableStatement cstmt = DBSupport.getConn().prepareCall("{? = call GET_SEARCH_QUERY(PATTERN => ?, IN_TABLE_NAME => 'ZWIERZETA')}");
+                    cstmt.registerOutParameter(1, Types.VARCHAR);
+                    cstmt.setString(2, searchZwierzTextField.getText());
+                    cstmt.execute();
+                    String wynik = cstmt.getString(1).replace("*", "gatunki_nazwa, plec, chip");
+                    
+                    CacheSqlTableModel model = new CacheSqlTableModel(wynik, columns, "ORDER BY CHIP");
+                    zwierzetaTable.setModel(model);
+                    
+                } catch (SQLException ex) {
+                    Logger.getLogger(OcenyFrame.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
+    }//GEN-LAST:event_searchZwierzTextFieldKeyPressed
 
     /**
      * @param args the command line arguments
@@ -597,6 +665,8 @@ public class WybiegiFrame extends javax.swing.JFrame {
     private javax.swing.JTable raportyTable;
     private javax.swing.JButton removeWybiegButton;
     private javax.swing.JButton removeZwierzeButton;
+    private javax.swing.JTextField searchWybiegTextField;
+    private javax.swing.JTextField searchZwierzTextField;
     private javax.swing.JButton showAllButton;
     private javax.swing.JButton showGatunkiButton;
     private javax.swing.JButton showRaportyOcenyButton;
