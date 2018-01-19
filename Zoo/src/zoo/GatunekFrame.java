@@ -39,7 +39,7 @@ public class GatunekFrame extends javax.swing.JFrame {
      */
     public GatunekFrame() throws SQLException {
         initComponents();
-        setIconImage(Zoo.getIcon());
+        Zoo.setIconAndCursor(this);
         kategoriaComboBox.setModel(this.loadKategorie());
         typWybieguComboBox.setModel(this.loadWybiegiTypes());
         

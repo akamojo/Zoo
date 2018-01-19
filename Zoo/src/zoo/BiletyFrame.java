@@ -6,7 +6,9 @@
 package zoo;
 
 import java.awt.event.KeyEvent;
+import java.sql.CallableStatement;
 import java.sql.SQLException;
+import java.sql.Types;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
@@ -22,7 +24,7 @@ public class BiletyFrame extends javax.swing.JFrame {
      */
     public BiletyFrame() {
         initComponents();
-        setIconImage(Zoo.getIcon());
+        Zoo.setIconAndCursor(this);
         String[] columns = new String[]{"Numer", "Wiek klienta", "Czas sprzedaży", "Id sprzedawcy", "Typ biletu"};
         CacheSqlTableModel model = new CacheSqlTableModel("select * from bilety", columns, "ORDER BY NR");
         biletyTable.setModel(model);
@@ -153,11 +155,22 @@ public class BiletyFrame extends javax.swing.JFrame {
             if (searchTextField.getText().isEmpty()) {
                 refresh();
             } else {
-                String[] where = new String[]{searchTextField.getText().toLowerCase()};
-                String[] columns = new String[]{"Numer", "Wiek klienta", "Czas sprzedaży", "Id sprzedawcy", "Typ biletu"};
-                CacheSqlTableModel model = new CacheSqlTableModel("select * from BILETY where TO_CHAR(CZAS_SPRZEDAZY, 'YYYY-MM-DD') LIKE ?", columns, "ORDER BY NR", where);
-                biletyTable.setModel(model);
-                biletyTable.removeColumn(biletyTable.getColumnModel().getColumn(0));
+                try {
+                    String[] columns = new String[]{"Numer", "Wiek klienta", "Czas sprzedaży", "Id sprzedawcy", "Typ biletu"};
+                    
+                    CallableStatement cstmt = DBSupport.getConn().prepareCall("{? = call GET_SEARCH_QUERY(PATTERN => ?, IN_TABLE_NAME => 'BILETY')}");
+                    cstmt.registerOutParameter(1, Types.VARCHAR);
+                    cstmt.setString(2, searchTextField.getText());
+                    cstmt.execute();
+                    String wynik = cstmt.getString(1);
+                    
+                    CacheSqlTableModel model = new CacheSqlTableModel(wynik, columns, "ORDER BY NR");
+                    biletyTable.setModel(model);
+                    biletyTable.removeColumn(biletyTable.getColumnModel().getColumn(0));
+                    
+                } catch (SQLException ex) {
+                    Logger.getLogger(OcenyFrame.class.getName()).log(Level.SEVERE, null, ex);
+                }
             }
         }
     }//GEN-LAST:event_searchTextFieldKeyPressed

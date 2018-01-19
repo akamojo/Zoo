@@ -33,7 +33,7 @@ public class PracownicyFrame extends javax.swing.JFrame {
      */
     public PracownicyFrame() {
         initComponents();
-        setIconImage(Zoo.getIcon());
+        Zoo.setIconAndCursor(this);
         String[] columns = new String[]{"Id", "Nazwisko", "Pensja", "Premia", "Etat", "Godziny", "Zatrudniony"};
         CacheSqlTableModel model = new CacheSqlTableModel("select ID, NAZWISKO, PENSJA, PREMIA, ETATY_NAZWA, GODZIN_TYGODNIOWO, DATA_ZATRUDNIENIA"
                 + " from pracownicy WHERE DATA_ZWOLNIENIA IS NULL", columns, "ORDER BY NAZWISKO");
@@ -209,17 +209,14 @@ public class PracownicyFrame extends javax.swing.JFrame {
                 try {
                     String[] columns = new String[]{"Id", "Nazwisko", "Pensja", "Premia", "Etat", "Godziny", "Zatrudniony", "Zwolniony"};
                     if (columnComboBox.getSelectedItem().toString().equals("WSZYSTKIE")) {
-                        Execute ex = new Execute();
-
+                        
                         CallableStatement cstmt = DBSupport.getConn().prepareCall("{? = call GET_SEARCH_QUERY(PATTERN => ?, IN_TABLE_NAME => 'PRACOWNICY')}");                
                         cstmt.registerOutParameter(1, Types.VARCHAR);
                         cstmt.setString(2, searchTextField.getText());
                         cstmt.execute();
                         String wynik = cstmt.getString(1);
 
-                        // resPracMiesiacaLabel.setText(wynik);
-
-                        CacheSqlTableModel model = new CacheSqlTableModel(wynik, columns, "ORDER BY NAZWISKO");
+                        CacheSqlTableModel model = new CacheSqlTableModel(wynik + " AND DATA_ZWOLNIENIA IS NULL", columns, "ORDER BY NAZWISKO");
                         pracownicyTable.setModel(model);
                         pracownicyTable.removeColumn(pracownicyTable.getColumnModel().getColumn(0));
                         pracownicyTable.removeColumn(pracownicyTable.getColumnModel().getColumn(6));
@@ -229,7 +226,7 @@ public class PracownicyFrame extends javax.swing.JFrame {
                         Execute q = new Execute();
                         
                         if (kolumna.equals("DATA_ZATRUDNIENIA")) {
-                            String query = "SELECT * FROM PRACOWNICY WHERE TO_CHAR(" + kolumna + ", 'YYYY-MM-DD') LIKE ?";
+                            String query = "SELECT * FROM PRACOWNICY WHERE DATA_ZWOLNIENIA IS NULL AND TO_CHAR(" + kolumna + ", 'YYYY-MM-DD') LIKE ?";
                             
                             String myTable[] = {searchTextField.getText().trim()};
                             CacheSqlTableModel model = new CacheSqlTableModel(query, columns, "ORDER BY NAZWISKO", myTable);
@@ -238,7 +235,7 @@ public class PracownicyFrame extends javax.swing.JFrame {
                             pracownicyTable.removeColumn(pracownicyTable.getColumnModel().getColumn(6));
                         }
                         else {
-                            String query = "SELECT * FROM PRACOWNICY WHERE LOWER(TO_CHAR(" + kolumna + ")) LIKE ?";
+                            String query = "SELECT * FROM PRACOWNICY WHERE DATA_ZWOLNIENIA IS NULL AND LOWER(TO_CHAR(" + kolumna + ")) LIKE ?";
                             
                             String myTable[] = {searchTextField.getText().trim().toLowerCase()};
                             CacheSqlTableModel model = new CacheSqlTableModel(query, columns, "ORDER BY NAZWISKO", myTable);

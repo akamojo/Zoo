@@ -21,27 +21,29 @@ import javax.swing.JOptionPane;
 public class OcenaFrame extends javax.swing.JFrame {
 
     private javax.swing.JFrame parent;
+    private int numerBiletu;
     private int numer;
+    private boolean czyZwierze;
 
-    public int getNumer() {
-        return numer;
+    public int getNumerBiletu() {
+        return numerBiletu;
     }
 
-    public void setNumer(int numer) {
-        this.numer = numer;
+    public void setNumerBiletu(int numerBiletu) {
+        this.numerBiletu = numerBiletu;
     }
-    
+
     /**
      * Creates new form OcenaFrame
      */
     public OcenaFrame() {
         initComponents();
     }
-    
+
     public OcenaFrame(javax.swing.JFrame parent) {
         this.parent = parent;
         initComponents();
-        setIconImage(Zoo.getIcon());
+        Zoo.setIconAndCursor(this);
         try {
             updateChipZwierzecia();
         } catch (SQLException ex) {
@@ -49,63 +51,94 @@ public class OcenaFrame extends javax.swing.JFrame {
         }
     }
     
-    public void fill(String komentarz) {
-        buttonPanel.setVisible(false);
-        infoPanel.setVisible(false);
-        komentarzTextArea.setText(komentarz);
-        komentarzTextArea.setEditable(false);
+    public void fillen() {
+        this.linkButton.setVisible(false);
     }
     
+    public void notFillen() {
+        this.linkSpecialButton.setVisible(false);
+    }
+
+    public void fill(int numer_oceny) {
+        try {
+            buttonPanel.setVisible(false);
+            infoPanel.setVisible(false);
+            komentarzTextArea.setEditable(false);
+            Execute q = new Execute();
+            q.ExecuteQuery("SELECT NVL(ZWIERZETA_CHIP, -1), NVL(WYBIEGI_NR, -1), KOMENTARZ FROM OCENY WHERE NUMER_OCENY = " + Integer.toString(numer_oceny));
+            q.getRs().next();
+            int chip = q.getRs().getInt(1);
+            int nr = q.getRs().getInt(2);
+            String komentarz = q.getRs().getString(3);
+            komentarzTextArea.setText(komentarz);
+            
+            if(chip != -1) {
+                this.numer = chip;
+                this.czyZwierze = true;
+                this.linkSpecialButton.setText("Wyświetl zwierzę");
+            } else {
+                this.numer = nr;
+                this.czyZwierze = false;
+                this.linkSpecialButton.setText("Wyświetl wybieg");
+            }
+            
+        } catch (SQLException ex) {
+            Logger.getLogger(OcenaFrame.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
     public void updateChipZwierzecia() throws SQLException {
         numerLabel.setText("Podaj chip zwierzęcia:");
         numerComboBox.setModel(this.loadChipZwierzecia());
     }
-    
+
     public DefaultComboBoxModel<String> loadChipZwierzecia() throws SQLException {
-        
+
         Execute exec = new Execute();
         exec.ExecuteQuery("SELECT COUNT(*) FROM ZWIERZETA");
         ResultSet rs = exec.getRs();
-        
+
         int count = 0;
-        if (rs.next())
+        if (rs.next()) {
             count = rs.getInt(1);
+        }
         String[] types = new String[count];
-        
-        exec.ExecuteQuery("SELECT CHIP FROM ZWIERZETA ORDER BY CHIP ASC");
+
+        exec.ExecuteQuery("SELECT TO_CHAR(CHIP) || ' (' || GATUNKI_NAZWA || ')' FROM ZWIERZETA ORDER BY CHIP ASC");
         rs = exec.getRs();
         for (int i = 0; i < count; i++) {
             rs.next();
             types[i] = rs.getString(1);
         }
         return new javax.swing.DefaultComboBoxModel<String>(types);
-        
+
     }
-    
+
     public void updateNrWybiegu() throws SQLException {
         numerLabel.setText("Podaj numer wybiegu:");
         numerComboBox.setModel(this.loadNrWybiegu());
     }
-    
+
     public DefaultComboBoxModel<String> loadNrWybiegu() throws SQLException {
-        
+
         Execute exec = new Execute();
         exec.ExecuteQuery("SELECT COUNT(*) FROM WYBIEGI");
         ResultSet rs = exec.getRs();
-        
+
         int count = 0;
-        if (rs.next())
+        if (rs.next()) {
             count = rs.getInt(1);
+        }
         String[] types = new String[count];
-        
-        exec.ExecuteQuery("SELECT NR FROM WYBIEGI ORDER BY NR ASC");
+
+        exec.ExecuteQuery("SELECT TO_CHAR(NR) || ' (' || TYPY_WYBIEGU_NAZWA || ')' FROM WYBIEGI ORDER BY NR ASC");
         rs = exec.getRs();
         for (int i = 0; i < count; i++) {
             rs.next();
             types[i] = rs.getString(1);
         }
         return new javax.swing.DefaultComboBoxModel<String>(types);
-        
+
     }
 
     /**
@@ -133,6 +166,7 @@ public class OcenaFrame extends javax.swing.JFrame {
         komentarzTextArea = new javax.swing.JTextArea();
         linkPanel = new javax.swing.JPanel();
         linkButton = new javax.swing.JButton();
+        linkSpecialButton = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setTitle("Ocena");
@@ -251,6 +285,14 @@ public class OcenaFrame extends javax.swing.JFrame {
         });
         linkPanel.add(linkButton);
 
+        linkSpecialButton.setText("Wyświetl");
+        linkSpecialButton.addMouseListener(new java.awt.event.MouseAdapter() {
+            public void mouseClicked(java.awt.event.MouseEvent evt) {
+                linkSpecialButtonMouseClicked(evt);
+            }
+        });
+        linkPanel.add(linkSpecialButton);
+
         getContentPane().add(linkPanel, java.awt.BorderLayout.PAGE_START);
 
         pack();
@@ -261,10 +303,10 @@ public class OcenaFrame extends javax.swing.JFrame {
         if (questionComboBox.getSelectedIndex() == 0) {
             try {
                 up.ExecutePreparedQuery("INSERT INTO OCENY(LICZBA_GWIAZDEK, KOMENTARZ, NUMER_BILETU, ZWIERZETA_CHIP) VALUES(?, ?, ?, ?)");
-                 up.getStatement().setInt(1, Integer.parseInt(gwiazdkiSpinner.getValue().toString()));
-                 up.getStatement().setString(2, komentarzTextArea.getText());
-                 up.getStatement().setInt(3, this.numer);
-                 up.getStatement().setInt(4, new Integer(numerComboBox.getSelectedItem().toString()));
+                up.getStatement().setInt(1, Integer.parseInt(gwiazdkiSpinner.getValue().toString()));
+                up.getStatement().setString(2, komentarzTextArea.getText());
+                up.getStatement().setInt(3, this.numerBiletu);
+                up.getStatement().setInt(4, new Integer(numerComboBox.getSelectedItem().toString().split(" ")[0]));
                 up.firePreparedUpdate();
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
@@ -272,10 +314,10 @@ public class OcenaFrame extends javax.swing.JFrame {
         } else {
             try {
                 up.ExecutePreparedQuery("INSERT INTO OCENY(LICZBA_GWIAZDEK, KOMENTARZ, NUMER_BILETU, WYBIEGI_NR) VALUES(?, ?, ?, ?)");
-                 up.getStatement().setInt(1, Integer.parseInt(gwiazdkiSpinner.getValue().toString()));
-                 up.getStatement().setString(2, komentarzTextArea.getText());
-                 up.getStatement().setInt(3, this.numer);
-                 up.getStatement().setInt(4, new Integer(numerComboBox.getSelectedItem().toString()));
+                up.getStatement().setInt(1, Integer.parseInt(gwiazdkiSpinner.getValue().toString()));
+                up.getStatement().setString(2, komentarzTextArea.getText());
+                up.getStatement().setInt(3, this.numerBiletu);
+                up.getStatement().setInt(4, new Integer(numerComboBox.getSelectedItem().toString().split(" ")[0]));
                 up.firePreparedUpdate();
             } catch (SQLException ex) {
                 JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
@@ -306,6 +348,26 @@ public class OcenaFrame extends javax.swing.JFrame {
             }
         }
     }//GEN-LAST:event_questionComboBoxActionPerformed
+
+    private void linkSpecialButtonMouseClicked(java.awt.event.MouseEvent evt) {//GEN-FIRST:event_linkSpecialButtonMouseClicked
+        if (this.czyZwierze == true) {
+            try {
+                ZwierzeFrame z = new ZwierzeFrame(numer);
+                z.setLocation(Zoo.getShowPosition2(z));
+                z.setVisible(true);
+            } catch (SQLException ex) {
+                Logger.getLogger(OcenaFrame.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        } else {
+            try {
+                WybiegFrame w = new WybiegFrame(numer);
+                w.setLocation(Zoo.getShowPosition2(w));
+                w.setVisible(true);
+            } catch (SQLException ex) {
+                Logger.getLogger(OcenaFrame.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }//GEN-LAST:event_linkSpecialButtonMouseClicked
 
     /**
      * @param args the command line arguments
@@ -353,6 +415,7 @@ public class OcenaFrame extends javax.swing.JFrame {
     private javax.swing.JTextArea komentarzTextArea;
     private javax.swing.JButton linkButton;
     private javax.swing.JPanel linkPanel;
+    private javax.swing.JButton linkSpecialButton;
     private javax.swing.JPanel mainPanel;
     private javax.swing.JComboBox<String> numerComboBox;
     private javax.swing.JLabel numerLabel;
