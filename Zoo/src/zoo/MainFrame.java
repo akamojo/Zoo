@@ -16,19 +16,26 @@ import javax.swing.JLabel;
 import static zoo.Zoo.getShowPosition1;
 import static zoo.Zoo.getShowPosition2;
 
+import ca.mb.javajeff.anicursor.*;
+import java.io.IOException;
+import java.net.URL;
+
 /**
  *
  * @author akamojo
  */
 public class MainFrame extends javax.swing.JFrame {
 
+    AniCursor kursorek;
     /**
      * Creates new form MainJFrame
      */
     public MainFrame() {
         initComponents();
-        setIconImage(Zoo.getIcon());
+        Zoo.setIconAndCursor(this);
+        // setIconImage(Zoo.getIcon());
         setCuteImageInBackground();
+        
     }
     
     public void disableButtons() {

@@ -5,6 +5,8 @@
  */
 package zoo;
 
+import ca.mb.javajeff.anicursor.AniCursor;
+import ca.mb.javajeff.anicursor.BadAniException;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Image;
@@ -12,6 +14,7 @@ import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.IOException;
 import java.net.URL;
 import java.sql.CallableStatement;
 import java.sql.Connection;
@@ -38,13 +41,34 @@ import javax.swing.UnsupportedLookAndFeelException;
 public class Zoo {
 
     private static Image icon;
+    private static String cursorName = "Elephant.ani";
+    private static AniCursor aC;
 
+    public Zoo() {
+        URL url = Zoo.class.getResource("Elephant.ani");
+        //cursorPath = url.getFile().replaceAll("%20", " ");
+    }
+    
     public static Image getIcon() {
         return icon;
     }
 
     public static void setIcon(Image icon) {
         Zoo.icon = icon;
+    }
+    
+    public static void setIconAndCursor(javax.swing.JFrame j) {
+        try {
+            j.setIconImage(Zoo.getIcon());
+
+            URL url = Zoo.class.getResource(cursorName);
+            String cursorPath = url.getFile().replaceAll("%20", " ");
+            AniCursor kursorek = new AniCursor(cursorPath, j);
+            kursorek.start();
+            
+        } catch (BadAniException | IOException ex) {
+            Logger.getLogger(Zoo.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     /**

@@ -39,7 +39,8 @@ public class WybiegiFrame extends javax.swing.JFrame {
     
     public WybiegiFrame() {
         initComponents();
-        setIconImage(Zoo.getIcon());
+        // setIconImage(Zoo.getIcon());
+        Zoo.setIconAndCursor(this);
         raportyOcenyPanel.setVisible(false);
         
         this.refreshAll();
