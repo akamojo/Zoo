@@ -18,7 +18,8 @@ import javax.swing.JOptionPane;
  */
 public class GatunekFrame extends javax.swing.JFrame {
 
-    private PracownicyFrame parent;
+    private ZwierzeFrame parent;
+    
     private boolean newGatunek;
     private boolean showZwierzetaMode = false;
 
@@ -29,9 +30,28 @@ public class GatunekFrame extends javax.swing.JFrame {
      *
      * @throws SQLException
      */
-    public GatunekFrame() throws SQLException {
+    public GatunekFrame(ZwierzeFrame zf) throws SQLException {
         initComponents();
         Zoo.setIconAndCursor(this);
+        
+        this.parent = zf;
+        kategoriaComboBox.setModel(this.loadKategorie());
+        typWybieguComboBox.setModel(this.loadWybiegiTypes());
+
+        newGatunek = true;
+        nazwaGatunkuTxtField.setEditable(true); // na momencik
+        zwierzetaPanel.setVisible(false);
+        
+        gatunekComboBox.setVisible(false);
+        gatunekComboBox.setEditable(false);
+    }
+    
+    public GatunekFrame() throws SQLException {
+        
+        initComponents();
+        Zoo.setIconAndCursor(this);
+        this.parent = null;
+        
         kategoriaComboBox.setModel(this.loadKategorie());
         typWybieguComboBox.setModel(this.loadWybiegiTypes());
 
@@ -47,9 +67,12 @@ public class GatunekFrame extends javax.swing.JFrame {
      * @param nazwa
      * @throws SQLException
      */
-    public GatunekFrame(String nazwa) throws SQLException {
+    public GatunekFrame(String nazwa, ZwierzeFrame zf) throws SQLException {
         initComponents();
-        setIconImage(Zoo.getIcon());
+        
+        this.parent = zf;
+        
+        Zoo.setIconAndCursor(this);
         kategoriaComboBox.setModel(this.loadKategorie());
         typWybieguComboBox.setModel(this.loadWybiegiTypes());
 
@@ -204,8 +227,10 @@ public class GatunekFrame extends javax.swing.JFrame {
             typWybieguComboBox.setEnabled(false);
             nazwaGatunkuTxtField.setEditable(false);
 
+            String myTable[] = {nazwaGatunku};
+            
             CacheSqlTableModel model = new CacheSqlTableModel("select wybiegi_nr, plec, waga, chip from zwierzeta "
-                    + "where gatunki_nazwa = '" + nazwaGatunku + "'", columnsZwierzeta, "order by wybiegi_nr");
+                    + "where gatunki_nazwa = ?", columnsZwierzeta, "order by wybiegi_nr", myTable);
             zwierzetaTable.setModel(model);
 
             gatunekComboBox.setSelectedItem(nazwaGatunku);
@@ -492,28 +517,38 @@ public class GatunekFrame extends javax.swing.JFrame {
                 newGatunek = false;
 
                 this.setShowZwierzetaModeWith(nazwaGatunkuTxtField.getText().toString());
+                
             } else {
-                String nazwa = "'" + nazwaGatunkuTxtField.getText().toString() + "'";
+                String nazwa = nazwaGatunkuTxtField.getText().toString();
 
-                exec.ExecutePreparedQuery("UPDATE GATUNKI SET ILOSC_POZYWIENIA = ? WHERE NAZWA = " + nazwa);
+                exec.ExecutePreparedQuery("UPDATE GATUNKI SET ILOSC_POZYWIENIA = ? WHERE NAZWA = ?");
                 exec.getStatement().setInt(1, new Integer(ilPozTextField.getText().toString()));
+                exec.getStatement().setString(2, nazwa);
+
                 exec.firePreparedUpdate();
 
-                exec.ExecutePreparedQuery("UPDATE GATUNKI SET RODZAJ_POZYWIENIA = ? WHERE NAZWA = " + nazwa);
+                exec.ExecutePreparedQuery("UPDATE GATUNKI SET RODZAJ_POZYWIENIA = ? WHERE NAZWA = ?");
                 exec.getStatement().setString(1, rodzPozTextField.getText().toString());
+                exec.getStatement().setString(2, nazwa);
                 exec.firePreparedUpdate();
 
-                exec.ExecutePreparedQuery("UPDATE GATUNKI SET POTRZEBNA_PRZESTRZEN_M2 = ? WHERE NAZWA = " + nazwa);
+                exec.ExecutePreparedQuery("UPDATE GATUNKI SET POTRZEBNA_PRZESTRZEN_M2 = ? WHERE NAZWA = ?");
                 exec.getStatement().setInt(1, new Integer(przestrzenTextField.getText().toString()));
+                exec.getStatement().setString(2, nazwa);
                 exec.firePreparedUpdate();
 
                 if (!"".equals(stadoTextField.getText().toString())) {
-                    exec.ExecutePreparedQuery("UPDATE GATUNKI SET MIN_LICZNOSC_STADA = ? WHERE NAZWA = " + nazwa);
+                    exec.ExecutePreparedQuery("UPDATE GATUNKI SET MIN_LICZNOSC_STADA = ? WHERE NAZWA = ?");
                     exec.getStatement().setInt(1, new Integer(stadoTextField.getText().toString()));
+                    exec.getStatement().setString(2, nazwa);
                     exec.firePreparedUpdate();
                 }
 
             }
+            
+            if (this.parent != null)
+                    this.parent.updateGatunki();
+            
         } catch (Exception ex) {
             JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -532,9 +567,15 @@ public class GatunekFrame extends javax.swing.JFrame {
     private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
         try {
             Execute up = new Execute();
-            up.ExecuteUpdate("DELETE FROM GATUNKI WHERE NAZWA = '" + gatunekComboBox.getSelectedItem().toString() + "'");
+            up.ExecutePreparedQuery("DELETE FROM GATUNKI WHERE NAZWA = ?");
+            up.getStatement().setString(1, gatunekComboBox.getSelectedItem().toString());
+            up.firePreparedUpdate();
+
             JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), "Gatunek usunięty!", "DELETE", JOptionPane.INFORMATION_MESSAGE);
+            
+            this.updateGatunki();
             this.loadFirstGatunek();
+            
         } catch (SQLException ex) {
             JOptionPane.showMessageDialog(JOptionPane.getRootFrame(), ex, "Smutax Error", JOptionPane.ERROR_MESSAGE);
         }
@@ -610,11 +651,12 @@ public class GatunekFrame extends javax.swing.JFrame {
         /* Create and display the form */
         java.awt.EventQueue.invokeLater(new Runnable() {
             public void run() {
-                try {
-                    new GatunekFrame().setVisible(true);
+                /*try {
+                    //new GatunekFrame().setVisible(true);
+                    ;
                 } catch (SQLException ex) {
                     Logger.getLogger(GatunekFrame.class.getName()).log(Level.SEVERE, null, ex);
-                }
+                }*/
             }
         });
     }

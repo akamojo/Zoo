@@ -182,8 +182,6 @@ public class ZwierzeFrame extends javax.swing.JFrame {
         wagaTextField = new javax.swing.JTextField();
         wagaLabel = new javax.swing.JLabel();
         dataUrLabel = new javax.swing.JLabel();
-        dataUrTextField = new javax.swing.JTextField();
-        dataZooTextField = new javax.swing.JTextField();
         dataZooLabel = new javax.swing.JLabel();
         plecLabel = new javax.swing.JLabel();
         leaveZooLabel = new javax.swing.JLabel();
@@ -193,6 +191,8 @@ public class ZwierzeFrame extends javax.swing.JFrame {
         wybiegLabel = new javax.swing.JLabel();
         nrWybieguComboBox = new javax.swing.JComboBox<>();
         plecComboBox = new javax.swing.JComboBox<>();
+        dataUrTextField = new javax.swing.JFormattedTextField();
+        dataZooTextField = new javax.swing.JFormattedTextField();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         addWindowListener(new java.awt.event.WindowAdapter() {
@@ -279,33 +279,14 @@ public class ZwierzeFrame extends javax.swing.JFrame {
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         mainPanel.add(wagaLabel, gridBagConstraints);
 
-        dataUrLabel.setText("Data urodzin");
+        dataUrLabel.setText("Data urodzin (YYYY-MM-DD)");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 4;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         mainPanel.add(dataUrLabel, gridBagConstraints);
 
-        dataUrTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 5;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 0.5;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        mainPanel.add(dataUrTextField, gridBagConstraints);
-
-        dataZooTextField.setHorizontalAlignment(javax.swing.JTextField.CENTER);
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 5;
-        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
-        gridBagConstraints.weightx = 0.5;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        mainPanel.add(dataZooTextField, gridBagConstraints);
-
-        dataZooLabel.setText("Data przyjęcia do ZOO");
+        dataZooLabel.setText("Data przyjęcia do ZOO (YYYY-MM-DD)");
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 1;
         gridBagConstraints.gridy = 4;
@@ -402,6 +383,32 @@ public class ZwierzeFrame extends javax.swing.JFrame {
         gridBagConstraints.fill = java.awt.GridBagConstraints.HORIZONTAL;
         gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
         mainPanel.add(plecComboBox, gridBagConstraints);
+
+        dataUrTextField.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.DateFormatter()));
+        dataUrTextField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                dataUrTextFieldActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 0;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        mainPanel.add(dataUrTextField, gridBagConstraints);
+
+        dataZooTextField.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                dataZooTextFieldActionPerformed(evt);
+            }
+        });
+        gridBagConstraints = new java.awt.GridBagConstraints();
+        gridBagConstraints.gridx = 1;
+        gridBagConstraints.gridy = 5;
+        gridBagConstraints.gridwidth = java.awt.GridBagConstraints.REMAINDER;
+        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
+        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
+        mainPanel.add(dataZooTextField, gridBagConstraints);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -542,7 +549,7 @@ public class ZwierzeFrame extends javax.swing.JFrame {
 
     private void newGatunekButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_newGatunekButtonActionPerformed
         try {
-            GatunekFrame w = new GatunekFrame();
+            GatunekFrame w = new GatunekFrame(this);
             w.setLocation(getShowPosition2(w));
             w.setVisible(true);
         } catch (SQLException ex) {
@@ -555,6 +562,14 @@ public class ZwierzeFrame extends javax.swing.JFrame {
             this.parent.addRemoveAbility(true);
         }
     }//GEN-LAST:event_tellParent
+
+    private void dataUrTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dataUrTextFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_dataUrTextFieldActionPerformed
+
+    private void dataZooTextFieldActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_dataZooTextFieldActionPerformed
+        // TODO add your handling code here:
+    }//GEN-LAST:event_dataZooTextFieldActionPerformed
 
     /**
      * @param args the command line arguments
@@ -605,9 +620,9 @@ public class ZwierzeFrame extends javax.swing.JFrame {
     private javax.swing.JLabel chipLabel;
     private javax.swing.JTextField chipTextField;
     private javax.swing.JLabel dataUrLabel;
-    private javax.swing.JTextField dataUrTextField;
+    private javax.swing.JFormattedTextField dataUrTextField;
     private javax.swing.JLabel dataZooLabel;
-    private javax.swing.JTextField dataZooTextField;
+    private javax.swing.JFormattedTextField dataZooTextField;
     private javax.swing.JButton deleteButton;
     private javax.swing.JComboBox<String> gatunekComboBox;
     private javax.swing.JLabel gatunekLabel;
