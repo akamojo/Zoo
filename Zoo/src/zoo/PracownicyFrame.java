@@ -48,7 +48,7 @@ public class PracownicyFrame extends javax.swing.JFrame {
     public DefaultComboBoxModel<String> loadColumns() throws SQLException {
         Execute exec = new Execute();
         exec.ExecuteQuery("SELECT COUNT(*) FROM USER_TAB_COLUMNS WHERE TABLE_NAME = 'PRACOWNICY'"
-                + " AND COLUMN_NAME != 'DATA_ZWOLNIENIA'");
+                + " AND COLUMN_NAME != 'DATA_ZWOLNIENIA' AND COLUMN_NAME != 'ID'");
         ResultSet rs = exec.getRs();
 
         int count = 0;
@@ -59,7 +59,7 @@ public class PracownicyFrame extends javax.swing.JFrame {
         String[] types = new String[count];
 
         exec.ExecuteQuery("SELECT COLUMN_NAME FROM USER_TAB_COLUMNS WHERE TABLE_NAME = 'PRACOWNICY'"
-                + " AND COLUMN_NAME != 'DATA_ZWOLNIENIA'");
+                + " AND COLUMN_NAME != 'DATA_ZWOLNIENIA' AND COLUMN_NAME != 'ID'");
         rs = exec.getRs();
         int i;
         for (i = 0; i < count - 1; i++) {
@@ -211,7 +211,6 @@ public class PracownicyFrame extends javax.swing.JFrame {
                         cstmt.execute();
                         String wynik = cstmt.getString(1);
 
-                        System.out.println(wynik);
                         CacheSqlTableModel model = new CacheSqlTableModel(wynik + " AND DATA_ZWOLNIENIA IS NULL", columns, "ORDER BY NAZWISKO");
                         pracownicyTable.setModel(model);
                         pracownicyTable.removeColumn(pracownicyTable.getColumnModel().getColumn(0));
