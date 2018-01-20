@@ -124,7 +124,7 @@ public class WybiegiFrame extends javax.swing.JFrame {
         removeZwierzeButton = new javax.swing.JButton();
         searchWybiegTextField = new javax.swing.JTextField();
         searchZwierzTextField = new javax.swing.JTextField();
-        tablePanel = new javax.swing.JPanel();
+        wybZwierzSplitPane = new javax.swing.JSplitPane();
         tableScrollPaneWybiegi = new javax.swing.JScrollPane();
         wybiegiTable = new javax.swing.JTable();
         tableScrollPaneZwierzeta = new javax.swing.JScrollPane();
@@ -247,7 +247,7 @@ public class WybiegiFrame extends javax.swing.JFrame {
         gridBagConstraints.weighty = 0.5;
         getContentPane().add(buttonPanel, gridBagConstraints);
 
-        tablePanel.setLayout(new java.awt.GridBagLayout());
+        wybZwierzSplitPane.setDividerLocation(400);
 
         wybiegiTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
@@ -264,13 +264,7 @@ public class WybiegiFrame extends javax.swing.JFrame {
         });
         tableScrollPaneWybiegi.setViewportView(wybiegiTable);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 0;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 0.5;
-        gridBagConstraints.weighty = 0.5;
-        tablePanel.add(tableScrollPaneWybiegi, gridBagConstraints);
+        wybZwierzSplitPane.setLeftComponent(tableScrollPaneWybiegi);
 
         tableScrollPaneZwierzeta.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -293,13 +287,7 @@ public class WybiegiFrame extends javax.swing.JFrame {
         });
         tableScrollPaneZwierzeta.setViewportView(zwierzetaTable);
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
-        gridBagConstraints.gridx = 1;
-        gridBagConstraints.gridy = 0;
-        gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
-        gridBagConstraints.weightx = 0.5;
-        gridBagConstraints.weighty = 0.5;
-        tablePanel.add(tableScrollPaneZwierzeta, gridBagConstraints);
+        wybZwierzSplitPane.setRightComponent(tableScrollPaneZwierzeta);
 
         gridBagConstraints = new java.awt.GridBagConstraints();
         gridBagConstraints.gridx = 0;
@@ -307,8 +295,7 @@ public class WybiegiFrame extends javax.swing.JFrame {
         gridBagConstraints.fill = java.awt.GridBagConstraints.BOTH;
         gridBagConstraints.weightx = 5.0;
         gridBagConstraints.weighty = 5.0;
-        gridBagConstraints.insets = new java.awt.Insets(5, 5, 5, 5);
-        getContentPane().add(tablePanel, gridBagConstraints);
+        getContentPane().add(wybZwierzSplitPane, gridBagConstraints);
 
         moreButtonsPanel.setLayout(new java.awt.GridBagLayout());
 
@@ -655,9 +642,9 @@ public class WybiegiFrame extends javax.swing.JFrame {
     private javax.swing.JButton showAllButton;
     private javax.swing.JButton showGatunkiButton;
     private javax.swing.JButton showRaportyOcenyButton;
-    private javax.swing.JPanel tablePanel;
     private javax.swing.JScrollPane tableScrollPaneWybiegi;
     private javax.swing.JScrollPane tableScrollPaneZwierzeta;
+    private javax.swing.JSplitPane wybZwierzSplitPane;
     private javax.swing.JTable wybiegiTable;
     private javax.swing.JTable zwierzetaTable;
     // End of variables declaration//GEN-END:variables
