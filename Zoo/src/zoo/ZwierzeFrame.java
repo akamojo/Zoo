@@ -72,7 +72,7 @@ public class ZwierzeFrame extends javax.swing.JFrame {
     public DefaultComboBoxModel<String> loadGatunki() throws SQLException {
 
         Execute exec = new Execute();
-        exec.ExecuteQuery("SELECT COUNT(*) FROM GATUNKI ORDER BY NAZWA");
+        exec.ExecuteQuery("SELECT COUNT(*) FROM GATUNKI_ZOO ORDER BY NAZWA");
         ResultSet rs = exec.getRs();
 
         int count = 0;
@@ -81,7 +81,7 @@ public class ZwierzeFrame extends javax.swing.JFrame {
         }
         String[] types = new String[count];
 
-        exec.ExecuteQuery("SELECT NAZWA FROM GATUNKI ORDER BY NAZWA");
+        exec.ExecuteQuery("SELECT NAZWA FROM GATUNKI_ZOO ORDER BY NAZWA");
         rs = exec.getRs();
         for (int i = 0; i < count; i++) {
             rs.next();

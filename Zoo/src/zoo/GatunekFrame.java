@@ -113,7 +113,7 @@ public class GatunekFrame extends javax.swing.JFrame {
 
     public void loadFirstGatunek() throws SQLException {
         Execute exec = new Execute();
-        exec.ExecuteQuery("SELECT NAZWA FROM GATUNKI ORDER BY NAZWA FETCH FIRST 1 ROW ONLY");
+        exec.ExecuteQuery("SELECT NAZWA FROM GATUNKI_ZOO ORDER BY NAZWA FETCH FIRST 1 ROW ONLY");
         ResultSet rs = exec.getRs();
         exec.getRs().next();
         String first = rs.getString(1);
@@ -127,7 +127,7 @@ public class GatunekFrame extends javax.swing.JFrame {
     public DefaultComboBoxModel<String> loadGatunki() throws SQLException {
 
         Execute exec = new Execute();
-        exec.ExecuteQuery("SELECT COUNT(*) FROM GATUNKI");
+        exec.ExecuteQuery("SELECT COUNT(*) FROM GATUNKI_ZOO");
         ResultSet rs = exec.getRs();
 
         int count = 0;
@@ -136,7 +136,7 @@ public class GatunekFrame extends javax.swing.JFrame {
         }
         String[] types = new String[count];
 
-        exec.ExecuteQuery("SELECT NAZWA FROM GATUNKI ORDER BY NAZWA");
+        exec.ExecuteQuery("SELECT NAZWA FROM GATUNKI_ZOO ORDER BY NAZWA");
         rs = exec.getRs();
         for (int i = 0; i < count; i++) {
             rs.next();
@@ -203,7 +203,7 @@ public class GatunekFrame extends javax.swing.JFrame {
             Execute exec = new Execute();
             exec.ExecutePreparedQuery("select ilosc_pozywienia, rodzaj_pozywienia, potrzebna_przestrzen_m2,"
                     + "kategorie_nazwa, min_licznosc_stada, typ_wybiegu "
-                    + "from gatunki where nazwa = ?");
+                    + "from GATUNKI_ZOO where nazwa = ?");
             exec.getStatement().setString(1, nazwaGatunku);
             exec.firePreparedQuery();
             exec.getRs().next();
@@ -496,7 +496,7 @@ public class GatunekFrame extends javax.swing.JFrame {
         try {
             if (newGatunek) {
                 // insert
-                exec.ExecutePreparedQuery("INSERT INTO GATUNKI(NAZWA, ILOSC_POZYWIENIA, RODZAJ_POZYWIENIA,"
+                exec.ExecutePreparedQuery("INSERT INTO GATUNKI_ZOO(NAZWA, ILOSC_POZYWIENIA, RODZAJ_POZYWIENIA,"
                         + "POTRZEBNA_PRZESTRZEN_M2, KATEGORIE_NAZWA, MIN_LICZNOSC_STADA, TYP_WYBIEGU) "
                         + "VALUES(?, ?, ?, ?, ?, ?, ?)");
                 exec.getStatement().setString(1, nazwaGatunkuTxtField.getText().toString());
@@ -521,24 +521,24 @@ public class GatunekFrame extends javax.swing.JFrame {
             } else {
                 String nazwa = nazwaGatunkuTxtField.getText().toString();
 
-                exec.ExecutePreparedQuery("UPDATE GATUNKI SET ILOSC_POZYWIENIA = ? WHERE NAZWA = ?");
+                exec.ExecutePreparedQuery("UPDATE GATUNKI_ZOO SET ILOSC_POZYWIENIA = ? WHERE NAZWA = ?");
                 exec.getStatement().setInt(1, new Integer(ilPozTextField.getText().toString()));
                 exec.getStatement().setString(2, nazwa);
 
                 exec.firePreparedUpdate();
 
-                exec.ExecutePreparedQuery("UPDATE GATUNKI SET RODZAJ_POZYWIENIA = ? WHERE NAZWA = ?");
+                exec.ExecutePreparedQuery("UPDATE GATUNKI_ZOO SET RODZAJ_POZYWIENIA = ? WHERE NAZWA = ?");
                 exec.getStatement().setString(1, rodzPozTextField.getText().toString());
                 exec.getStatement().setString(2, nazwa);
                 exec.firePreparedUpdate();
 
-                exec.ExecutePreparedQuery("UPDATE GATUNKI SET POTRZEBNA_PRZESTRZEN_M2 = ? WHERE NAZWA = ?");
+                exec.ExecutePreparedQuery("UPDATE GATUNKI_ZOO SET POTRZEBNA_PRZESTRZEN_M2 = ? WHERE NAZWA = ?");
                 exec.getStatement().setInt(1, new Integer(przestrzenTextField.getText().toString()));
                 exec.getStatement().setString(2, nazwa);
                 exec.firePreparedUpdate();
 
                 if (!"".equals(stadoTextField.getText().toString())) {
-                    exec.ExecutePreparedQuery("UPDATE GATUNKI SET MIN_LICZNOSC_STADA = ? WHERE NAZWA = ?");
+                    exec.ExecutePreparedQuery("UPDATE GATUNKI_ZOO SET MIN_LICZNOSC_STADA = ? WHERE NAZWA = ?");
                     exec.getStatement().setInt(1, new Integer(stadoTextField.getText().toString()));
                     exec.getStatement().setString(2, nazwa);
                     exec.firePreparedUpdate();
@@ -567,7 +567,7 @@ public class GatunekFrame extends javax.swing.JFrame {
     private void deleteButtonActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_deleteButtonActionPerformed
         try {
             Execute up = new Execute();
-            up.ExecutePreparedQuery("DELETE FROM GATUNKI WHERE NAZWA = ?");
+            up.ExecutePreparedQuery("DELETE FROM GATUNKI_ZOO WHERE NAZWA = ?");
             up.getStatement().setString(1, gatunekComboBox.getSelectedItem().toString());
             up.firePreparedUpdate();
 
@@ -584,7 +584,7 @@ public class GatunekFrame extends javax.swing.JFrame {
     private void gatunekComboBoxActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_gatunekComboBoxActionPerformed
         // TODO add your handling code here:
         this.fill(gatunekComboBox.getSelectedItem().toString());
-        // CacheSqlTableModel model = new CacheSqlTableModel("select gatunki_nazwa, plec, chip from zwierzeta where pracownicy_id = " + Integer.toString(id), columns, "ORDER BY nr");
+        // CacheSqlTableModel model = new CacheSqlTableModel("select GATUNKI_ZOO_nazwa, plec, chip from zwierzeta where pracownicy_id = " + Integer.toString(id), columns, "ORDER BY nr");
 
     }//GEN-LAST:event_gatunekComboBoxActionPerformed
 
